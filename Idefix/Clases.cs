@@ -8,15 +8,34 @@ namespace Idefix
 {
     public class Archivo
     {
-        public double[] Array1;
+        public List<List<double>> MensajesCAT10 = new List<List<double>>();
+        public List<List<double>> MensajesCAT20 = new List<List<double>>();
+        public List<List<double>> MensajesCAT21 = new List<List<double>>();
 
-        public void SetArray1(double[] ar)
+        public void SetMsgCat10(List<double> msgCat10)
         {
-            this.Array1 = ar;
+            this.MensajesCAT10.Add(msgCat10);
         }
-        public double[] GetArray1()
+        public void SetMsgCat20(List<double> msgCat20)
         {
-            return (this.Array1);
+            this.MensajesCAT20.Add(msgCat20);
+        }
+        public void SetMsgCat21(List<double> msgCat21)
+        {
+            this.MensajesCAT21.Add(msgCat21);
+        }
+
+        public List<List<double>> GetMsgsCat10()
+        {
+            return this.MensajesCAT10;
+        }
+        public List<List<double>> GetMsgsCat20()
+        {
+            return this.MensajesCAT20;
+        }
+        public List<List<double>> GetMsgsCat21()
+        {
+            return this.MensajesCAT21;
         }
     }
     public class CAT10

@@ -12,31 +12,68 @@ namespace Idefix
 {
     public class Funciones
     {
-        public double[] LeerArchivo(string fileName)
+        public Archivo LeerArchivo(string fileName)
         {
-            Archivo Plan = new Archivo();
-            using (BinaryReader b = new BinaryReader(
-            File.Open(fileName, FileMode.Open)))
-            {
-                int length = (int)b.BaseStream.Length;
-                Console.WriteLine(length);
-                double line = b.BaseStream.ReadByte();
-                List<double> termsList = new List<double>();
-                termsList.Add(line);
-                int pos = 1;
-                while (pos <= length)
-                {
+            Archivo fichero = new Archivo();
 
-                    Console.WriteLine(line);
-                    line = b.BaseStream.ReadByte();
-                    termsList.Add(line);
-                    pos++;
+            using (BinaryReader read = new BinaryReader(File.Open(fileName, FileMode.Open)))
+            {
+                List<double> msgCAT10 = new List<double>();
+                List<double> msgCAT20 = new List<double>();
+                List<double> msgCAT21 = new List<double>();
+
+                int pos = 1;
+                int end = (int)read.BaseStream.Length;
+                int lengthMsg = 0;
+                bool isStarting = true;
+
+                double category = read.BaseStream.ReadByte();
+
+                while (pos <= end)
+                {
+                    if (isStarting)
+                    {
+                        byte byte1 = (byte)read.BaseStream.ReadByte();
+                        byte byte2 = (byte)read.BaseStream.ReadByte();
+                        lengthMsg = byte1 << 8 | byte2;
+                        isStarting = false;
+                        pos += 2;
+                    }
+                    else
+                    {
+                        while (lengthMsg != 0)
+                        {
+                            if (category == 10) msgCAT10.Add(read.BaseStream.ReadByte());
+                            else if (category == 20) msgCAT20.Add(read.BaseStream.ReadByte());
+                            else if (category == 21) msgCAT21.Add(read.BaseStream.ReadByte());
+                            lengthMsg--;
+                            pos++;
+                        }
+
+                        if (category == 10)
+                        {
+                            fichero.SetMsgCat10(msgCAT10);
+                            msgCAT10.Clear();
+                        }
+                        else if (category == 20)
+                        {
+                            fichero.SetMsgCat20(msgCAT20);
+                            msgCAT20.Clear();
+                        }
+                        else if (category == 21)
+                        {
+                            fichero.SetMsgCat21(msgCAT21);
+                            msgCAT21.Clear();
+                        }
+
+                        category = read.BaseStream.ReadByte();
+                        isStarting = true;
+                        pos++;
+                    }
                 }
-                double[] terms = termsList.ToArray();
-                Plan.SetArray1(terms);
-                double[] tv = Plan.GetArray1();
-                return tv;
             }
+
+            return fichero;
         }
 
         public string[] SepararMensajes(double[] ar, string path, string filename)

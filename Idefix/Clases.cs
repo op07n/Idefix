@@ -233,6 +233,13 @@ namespace Idefix
 
             return this.TargetReportDescriptor;
         }
+
+        public void CAT10Constructor (CAT10 a, int b)
+        {
+            a.SAC = b;
+            // to be finnished.
+        }
+
         public TimeSpan GetTimeOfDay(double dec)
         {
             TimeSpan time = TimeSpan.FromSeconds(dec);

@@ -19,15 +19,17 @@ namespace Idefix
             using (BinaryReader read = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {
                 List<double> msgCAT10 = new List<double>();
+                List<double> msgCAT19 = new List<double>();
                 List<double> msgCAT20 = new List<double>();
                 List<double> msgCAT21 = new List<double>();
 
-                int pos = 1;
+                int pos = 0;
                 int end = (int)read.BaseStream.Length;
                 int lengthMsg = 0;
                 bool isStarting = true;
 
                 double category = read.BaseStream.ReadByte();
+                pos++;
 
                 while (pos <= end)
                 {
@@ -35,7 +37,7 @@ namespace Idefix
                     {
                         byte byte1 = (byte)read.BaseStream.ReadByte();
                         byte byte2 = (byte)read.BaseStream.ReadByte();
-                        lengthMsg = byte1 << 8 | byte2;
+                        lengthMsg = (byte1 << 8 | byte2)-3;
                         isStarting = false;
                         pos += 2;
                     }
@@ -44,6 +46,7 @@ namespace Idefix
                         while (lengthMsg != 0)
                         {
                             if (category == 10) msgCAT10.Add(read.BaseStream.ReadByte());
+                            else if (category == 19) msgCAT19.Add(read.BaseStream.ReadByte());
                             else if (category == 20) msgCAT20.Add(read.BaseStream.ReadByte());
                             else if (category == 21) msgCAT21.Add(read.BaseStream.ReadByte());
                             lengthMsg--;
@@ -54,6 +57,11 @@ namespace Idefix
                         {
                             fichero.SetMsgCat10(msgCAT10);
                             msgCAT10.Clear();
+                        }
+                        if (category == 19)
+                        {
+                            fichero.SetMsgCat19(msgCAT19);
+                            msgCAT19.Clear();
                         }
                         else if (category == 20)
                         {
@@ -76,26 +84,35 @@ namespace Idefix
             return fichero;
         }
 
-        public double[] GetFSPEC(List<double> msg)
+        public List<string[]> GetFSPEC(List<double[]> msgs)
         {
-            double[] fspecInit = msg.Take(4).ToArray();
-            List<double> fspecFinal = new List<double>();
-            bool checkbyte = true;
-            int i = 0;
-
-            while (checkbyte)
+            List<string[]> fspecsList = new List<string[]>();
+            foreach(double[] msg in msgs)
             {
-                bool bit = ((byte)fspecInit[0] & (1 << 0)) != 0;
+                double[] fspecInit = new double[4];
+                Array.Copy(msg, fspecInit, 4);
+                List<string> fspecFinal = new List<string>();
+                bool checkbyte = true;
+                int i = 0;
 
-                if(bit == false) checkbyte = false;
-                else
+                while (checkbyte)
                 {
-                    fspecFinal.Add(fspecInit[i]);
-                }
-                i++;
-            }
+                    string tempFspec = Convert.ToString(Convert.ToInt32(fspecInit[i].ToString(), 10), 2).PadLeft(8, '0');
 
-            return fspecFinal.ToArray();
+                    if (tempFspec[tempFspec.Length - 1] == '0')
+                    {
+                        fspecFinal.Add(tempFspec);
+                        checkbyte = false;
+                    }
+                    else
+                    {
+                        fspecFinal.Add(tempFspec);
+                    }
+                    i++;
+                }
+                fspecsList.Add(fspecFinal.ToArray());
+            }
+            return fspecsList;
         }
 
         public string[] SepararMensajes(double[] ar, string path, string filename)

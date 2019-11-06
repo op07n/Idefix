@@ -8,32 +8,41 @@ namespace Idefix
 {
     public class Archivo
     {
-        public List<List<double>> MensajesCAT10 = new List<List<double>>();
-        public List<List<double>> MensajesCAT20 = new List<List<double>>();
-        public List<List<double>> MensajesCAT21 = new List<List<double>>();
+        public List<double[]> MensajesCAT10 = new List<double[]>();
+        public List<double[]> MensajesCAT19 = new List<double[]>();
+        public List<double[]> MensajesCAT20 = new List<double[]>();
+        public List<double[]> MensajesCAT21 = new List<double[]>();
 
         public void SetMsgCat10(List<double> msgCat10)
         {
-            this.MensajesCAT10.Add(msgCat10);
+            this.MensajesCAT10.Add(msgCat10.ToArray());
+        }
+        public void SetMsgCat19(List<double> msgCat19)
+        {
+            this.MensajesCAT19.Add(msgCat19.ToArray());
         }
         public void SetMsgCat20(List<double> msgCat20)
         {
-            this.MensajesCAT20.Add(msgCat20);
+            this.MensajesCAT20.Add(msgCat20.ToArray());
         }
         public void SetMsgCat21(List<double> msgCat21)
         {
-            this.MensajesCAT21.Add(msgCat21);
+            this.MensajesCAT21.Add(msgCat21.ToArray());
         }
 
-        public List<List<double>> GetMsgsCat10()
+        public List<double[]> GetMsgsCat10()
         {
             return this.MensajesCAT10;
         }
-        public List<List<double>> GetMsgsCat20()
+        public List<double[]> GetMsgsCat19()
+        {
+            return this.MensajesCAT19;
+        }
+        public List<double[]> GetMsgsCat20()
         {
             return this.MensajesCAT20;
         }
-        public List<List<double>> GetMsgsCat21()
+        public List<double[]> GetMsgsCat21()
         {
             return this.MensajesCAT21;
         }

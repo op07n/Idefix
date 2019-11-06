@@ -33,7 +33,11 @@ namespace Idefix
             {
                 Funciones funcs = new Funciones();
                 Archivo fichero = funcs.LeerArchivo(openFileDialog1.FileName);
-                List<List<double>> msgsCat20 = fichero.GetMsgsCat20();
+                List<double[]> msgsCat19 = fichero.GetMsgsCat19();
+                List<double[]> msgsCat20 = fichero.GetMsgsCat20();
+                List<string[]> fspecs19 = funcs.GetFSPEC(msgsCat19);
+                List<string[]> fspecs20 = funcs.GetFSPEC(msgsCat20);
+                string[] helou = fspecs19[7379];
                 label2.Text = "Done";
             }
         }

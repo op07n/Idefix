@@ -76,6 +76,28 @@ namespace Idefix
             return fichero;
         }
 
+        public double[] GetFSPEC(List<double> msg)
+        {
+            double[] fspecInit = msg.Take(4).ToArray();
+            List<double> fspecFinal = new List<double>();
+            bool checkbyte = true;
+            int i = 0;
+
+            while (checkbyte)
+            {
+                bool bit = ((byte)fspecInit[0] & (1 << 0)) != 0;
+
+                if(bit == false) checkbyte = false;
+                else
+                {
+                    fspecFinal.Add(fspecInit[i]);
+                }
+                i++;
+            }
+
+            return fspecFinal.ToArray();
+        }
+
         public string[] SepararMensajes(double[] ar, string path, string filename)
         {
             string d = path + @"\" + filename + ".txt";

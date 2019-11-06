@@ -33,6 +33,7 @@ namespace Idefix
             {
                 Funciones funcs = new Funciones();
                 Archivo fichero = funcs.LeerArchivo(openFileDialog1.FileName);
+                List<List<double>> msgsCat20 = fichero.GetMsgsCat20();
                 label2.Text = "Done";
             }
         }

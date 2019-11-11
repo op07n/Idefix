@@ -225,7 +225,7 @@ namespace Idefix
                             MsgType = "Event-Triggered Status Message";
                             break;
                     }
-                    pos = pos + 1;
+                    pos += 1;
                 }
                 if (FSPEC_1[2] == 1)
                 {
@@ -259,7 +259,7 @@ namespace Idefix
                     if (va[6].Equals("0")) { CRT = "No Corrupted Reply in Multilateration"; }
                     else { CRT = "Corrupted Replies in Multilateration"; }
                     
-                    pos = pos + 1;
+                    pos += 1;
 
                     if (va[7].Equals("1")) 
                     {
@@ -292,7 +292,7 @@ namespace Idefix
                         else if (val3.Equals("10")) { TOT = "Ground Vehicle"; }
                         else if (val3.Equals("11")) { TOT = "Helicopter"; }
 
-                        pos = pos + 1;
+                        pos += 1;
 
                         if(va2[7].Equals("1")) 
                         {
@@ -301,7 +301,7 @@ namespace Idefix
                             string SIP = String.Empty;
                             if (va3[0].Equals("0")) { SIP = "Absence of SPI"; }
                             else { SIP = "Special Position Identification"; }
-                            pos = pos + 1;
+                            pos += 1;
                         }
                     }
 
@@ -321,7 +321,7 @@ namespace Idefix
                     TimeSpan TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
                     pos += 3;
                 }
-                if (FSPEC_1[4] == 1) { pos += 1; } // we all gon'die // FRN = 5
+                if (FSPEC_1[4] == 1) { pos += 8; } // we all gon'die // FRN = 5
                 if (FSPEC_1[5] == 1) // FRN = 6
                 {
                     string rho1 = Convert2Binary(msgcat10[pos]);
@@ -354,37 +354,50 @@ namespace Idefix
                     double y = ((int)Convert.ToInt64(y_BIN_TOTAL, 10)); // in degrees
                     pos += 4;
                 }
-                if (FSPEC_1[8] == 1) // FRN = 8
-                {
-                    string ground_speed1 = Convert2Binary(msgcat10[pos]);
-                    string ground_speed2 = Convert2Binary(msgcat10[pos + 1]);
-                    StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
-                    ground_speed_BIN.Append(ground_speed2);
-                    string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
-                    double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 10))*0.22; // in m
-                    string track_angle1 = Convert2Binary(msgcat10[pos + 2]);
-                    string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
-                    StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
-                    track_angle_BIN.Append(track_angle2);
-                    string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
-                    double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 10))*360/2^16; // in degrees
-                    pos += 4;
-                } 
-                if (FSPEC_1[9] == 1) // FRN = 9
-                {
-                    string Vx1 = Convert2Binary(msgcat10[pos]);
-                    string Vx2 = Convert2Binary(msgcat10[pos + 1]);
-                    StringBuilder Vx_BIN = new StringBuilder(Vx1);
-                    Vx_BIN.Append(Vx2);
-                    string Vx_BIN_TOTAL = Vx_BIN.ToString();
-                    double Vx = (int)Convert.ToInt64(Vx_BIN_TOTAL, 10); // in m
-                    string Vy1 = Convert2Binary(msgcat10[pos + 2]);
-                    string Vy2 = Convert2Binary(msgcat10[pos + 3]);
-                    StringBuilder Vy_BIN = new StringBuilder(Vy1);
-                    Vy_BIN.Append(Vy2);
-                    string Vy_BIN_TOTAL = Vy_BIN.ToString();
-                    double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 10)); // in degrees
-                    pos += 4;
+                if (FSPEC_1[7] == 0) { }
+                else {
+                    string FSPEC_2 = FSPEC_T[a][1];
+                    if (FSPEC_2[0] == 1) // FRN = 8
+                    {
+                        string ground_speed1 = Convert2Binary(msgcat10[pos]);
+                        string ground_speed2 = Convert2Binary(msgcat10[pos + 1]);
+                        StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
+                        ground_speed_BIN.Append(ground_speed2);
+                        string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
+                        double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 10))*0.22; // in m
+                        string track_angle1 = Convert2Binary(msgcat10[pos + 2]);
+                        string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
+                        StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
+                        track_angle_BIN.Append(track_angle2);
+                        string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
+                        double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 10))*360/2^16; // in degrees
+                        pos += 4;
+                        }
+                    if (FSPEC_2[1] == 1) // FRN = 9
+                    {
+                        string Vx1 = Convert2Binary(msgcat10[pos]);
+                        string Vx2 = Convert2Binary(msgcat10[pos + 1]);
+                        StringBuilder Vx_BIN = new StringBuilder(Vx1);
+                        Vx_BIN.Append(Vx2);
+                        string Vx_BIN_TOTAL = Vx_BIN.ToString();
+                        double Vx = (int)Convert.ToInt64(Vx_BIN_TOTAL, 10); // in m
+                        string Vy1 = Convert2Binary(msgcat10[pos + 2]);
+                        string Vy2 = Convert2Binary(msgcat10[pos + 3]);
+                        StringBuilder Vy_BIN = new StringBuilder(Vy1);
+                        Vy_BIN.Append(Vy2);
+                        string Vy_BIN_TOTAL = Vy_BIN.ToString();
+                        double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 10)); // in degrees
+                        pos += 4;
+                    }
+                    if (FSPEC_2[2] == 1) // FRN = 10; Track Number
+                    {
+                        string frn_1 = Convert2Binary(msgcat10[pos]);
+                        string frn_2 = Convert2Binary(msgcat10[pos+1]);
+                        // cal concatenar els 2 B, eliminar els 4 bits primers i agafar la resta de bits en decimal per a track number
+                        pos += 2;
+                        
+                    }
+
                 }
             }
 

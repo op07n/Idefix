@@ -192,81 +192,158 @@ namespace Idefix
             return archivos;
         }
 
-        public DataTable ReadFSPEC(string filename)
-        {
-            StreamReader file = new StreamReader(filename);
-            DataTable Table = new DataTable();
-            Table.Columns.Add("Category", typeof(int));
-            Table.Columns.Add("Length", typeof(int));
-            Table.Columns.Add("LastPositionFSPEC", typeof(int)); //Hasta donde llega el FSPEC
-            Table.Columns.Add("DataFields", typeof(string));
+        
+        
+        public int ReadCat10(List<double> msgcat10, DataTable FSPEC_T) {
+            int a = 0;
+            while (a< msgcat10.Count)
             {
-                string line = file.ReadLine();
-                while (line != null)
+                string FSPEC = FSPEC_T.Rows[a][3].ToString();
+                // int n = 0;
+                int pos = 0; // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
+                if(FSPEC[0] == 1)
                 {
-                    bool pro = true; //indica si el FSPEC es prorroga 8 bits mes o no
-                    string[] Values;
-                    Values = line.Split(' ');
-                    int F = Convert.ToInt32(Values[3]);
-                    int v = 4; //Posiciones del FSPEC
-                    string G = Convert.ToString(F, 2);
-                    char[] bi = G.ToCharArray(); //el numero binari original/(potser no arriba als 8 bits)
-                    char[] zeros = new char[8 - G.Length]; //zeros a l'esquerra
-                    char[] bin = bi;
-                    int z = 0; //el numeros de zeros que haig d'afegir
-                    while (z < zeros.Length)
-                    {
-                        zeros[z] = '0';
-                        z++;
-                    }
-                    bin = zeros.Concat(bin).ToArray();
-                    int p = 1; //per recorrer tot els data fields del FSPEC
-                    string fields = null;
-                    while (pro == true)
-                    {
-                        int c = 0; //per recorrer els 8 bits
-                        while (c < 7)
-                        {
-                            if (bin[c] == '1')
-                            {
-                                fields = fields + " " + Convert.ToString(p);
-                            }
-                            c++;
-                            p++;
-                        }
-                        if (c == 7)
-                        {
-                            if (bin[c] == '1')
-                            {
-                                F = Convert.ToInt32(Values[v]);
-                                G = Convert.ToString(F, 2);
-                                bi = G.ToCharArray();
-                                zeros = new char[8 - G.Length]; //zeros a l'esquerra
-                                bin = bi;
-                                z = 0; //el numeros de zeros que haig d'afegir
-                                while (z < zeros.Length)
-                                {
-                                    zeros[z] = '0';
-                                    z++;
-                                }
-                                bin = zeros.Concat(bin).ToArray();
-                                v++;
-                            }
-                            else
-                            {
-                                pro = false;
-                            }
-                        }
-                    }
-                    fields = fields.Substring(1, fields.Length - 1);
-                    Table.Rows.Add(Convert.ToInt32(Values[0]), Convert.ToInt32(Values[2]), v, fields);
-                    line = file.ReadLine();
+                    double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
+                    double SID = msgcat10[pos+1];
+                    pos = 2;
                 }
-                return Table;
+                if (FSPEC[1] == 1)
+                {
+                    double val = msgcat10[pos];
+                    String MsgType = String.Empty;
+                    switch (val)
+                    {
+                        case 1:
+                            MsgType = "Target Report";
+                            break;
+                        case 2:
+                            MsgType = "Start of Update Cycle";
+                            break;
+                        case 3:
+                            MsgType = "Periodic Status Message";
+                            break;
+                        case 4:
+                            MsgType = "Event-Triggered Status Message";
+                            break;
+                    }
+                    pos = pos + 1;
+                }
+                if (FSPEC[2] == 1)
+                {
+                    string va = Convert2Binary(msgcat10[pos]);
+                    StringBuilder val = new StringBuilder(va[0]);
+                    val.Append(va[1]);
+                    val.Append(va[2]);
+                    String TYP = String.Empty;
+                    if (val.Equals("000")){TYP = "SSR Multilateration";}
+                    else if (val.Equals("001")){TYP = "Mode S Multilateration";}
+                    else if (val.Equals("010")){TYP = "ADS-B";}
+                    else if (val.Equals("011")){TYP = "PSR";}
+                    else if (val.Equals("100")){TYP = "Magnetic Loop System";}
+                    else if (val.Equals("101")){TYP = "HF Multilateration";}
+                    else if (val.Equals("110")){TYP = "Not Defined";}
+                    else if (val.Equals("111")){TYP = "Other types";}
+
+                    string DCR = String.Empty;
+                    if (va[3].Equals("0")) { DCR = "No differential correction"; }
+                    else { DCR = "Differential correction"; }
+
+                    string CHN = String.Empty;
+                    if (va[4].Equals("0")) { CHN = "Chain 1"; }
+                    //else { CHN = "Revisar ELSE"; }
+
+                    string GBS = String.Empty;
+                    if (va[5].Equals("0")) { GBS = "Transponder Ground Bit Not Set"; }
+                    else { GBS = "Transponder Ground Bit Set"; }
+
+                    string CRT = String.Empty;
+                    if (va[6].Equals("0")) { CRT = "No Corrupted Reply in Multilateration"; }
+                    else { CRT = "Corrupted Replies in Multilateration"; }
+                    
+                    pos = pos + 1;
+
+                    if (va[7].Equals("1")) 
+                    {
+                        string va2 = Convert2Binary(msgcat10[pos]);
+
+                        string SIM = String.Empty;
+                        if (va2[0].Equals("0")) { SIM = "Actual Target Report"; }
+                        else { SIM = "Simulated Target Report"; }
+
+                        string TST = String.Empty;
+                        if (va2[1].Equals("0")) { TST = "Default"; }
+                        else { TST = "Test Target"; }
+
+                        string RAB = String.Empty;
+                        if (va2[2].Equals("0")) { RAB = "Report from Target Responder"; }
+                        else { TST = "Report From Field Monitor (fixed transpoder)"; }
+
+                        StringBuilder val2 = new StringBuilder(va2[3]);
+                        val2.Append(va2[4]);
+                        string LOP = String.Empty;
+                        if (val2.Equals("00")) { LOP = "Undetermined"; }
+                        else if (val2.Equals("01")) { LOP = "Loop Start"; }
+                        else if (val2.Equals("10")) { LOP = "Loop Finish"; }
+
+                        StringBuilder val3 = new StringBuilder(va2[5]);
+                        val3.Append(va2[6]);
+                        string TOT = String.Empty;
+                        if (val3.Equals("00")) { TOT = "Undetermined"; }
+                        else if (val3.Equals("01")) { TOT = "Aircraft"; }
+                        else if (val3.Equals("10")) { TOT = "Ground Vehicle"; }
+                        else if (val3.Equals("11")) { TOT = "Helicopter"; }
+
+                        pos = pos + 1;
+
+                        if(va2[7].Equals("1")) 
+                        {
+                            string va3 = Convert2Binary(msgcat10[pos]);
+
+                            string SIP = String.Empty;
+                            if (va3[0].Equals("0")) { SIP = "Absence of SPI"; }
+                            else { SIP = "Special Position Identification"; }
+                            pos = pos + 1;
+                        }
+                    }
+
+
+                }
+                if (FSPEC[3] == 1)
+                {
+                    string a1 = Convert2Binary(msgcat10[pos]);
+                    string a2 = Convert2Binary(msgcat10[pos + 1]);
+                    string a3 = Convert2Binary(msgcat10[pos + 2]);
+                    StringBuilder hour = new StringBuilder(a1);
+                    hour.Append(a2);
+                    hour.Append(a3);
+                    int Hour = Convert2DEC(hour);
+                    Hour = Hour / 128;
+                    String TimeOfDay = "09"; // Pasar segundos a horas:minutos:segundos
+                    pos = pos + 3;
+                }
+                if (FSPEC[4] == 1) { } // we all gon'die
+                if (FSPEC[5] == 1)
+                {
+                    double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
+                    double SID = msgcat10[pos + 1];
+                    pos = 2;
+                }
             }
+
+         return 0;
+        }
+            
+           
+
+        public string Convert2Binary(double input)
+        {
+            String ret = string.Empty;
+            // Cal crear una funció que posi cada bit a una posició de l'string
+            return ret;
         }
 
-        public DataTable ReadCAT10(DataTable CAT10, string filename)
+
+        public DataTable ReadCAT10_old(DataTable CAT10, string filename)
         {
             DataTable FieldsCAT10 = new DataTable();
             CAT10 Mensajes10 = new CAT10();

@@ -309,7 +309,7 @@ namespace Idefix
 
 
                 }
-                if (FSPEC_1[3] == 1)
+                if (FSPEC_1[3] == 1) //FRN = 4
                 {
                     string a1 = Convert2Binary(msgcat10[pos]);
                     string a2 = Convert2Binary(msgcat10[pos + 1]);
@@ -317,17 +317,44 @@ namespace Idefix
                     StringBuilder hour = new StringBuilder(a1);
                     hour.Append(a2);
                     hour.Append(a3);
-                    int Hour = 0; // Convert2DEC(hour);
-                    Hour = Hour / 128;
-                    String TimeOfDay = "09"; // Pasar segundos a horas:minutos:segundos
-                    pos = pos + 3;
+                    string hour_in_seconds = hour.ToString();
+                    int Hour = (int)Convert.ToInt64(hour_in_seconds, 2);
+                    Hour /= 128;
+                    TimeSpan TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
+                    pos += 3;
                 }
-                if (FSPEC_1[4] == 1) { } // we all gon'die
-                if (FSPEC_1[5] == 1)
+                if (FSPEC_1[4] == 1) { pos += 1; } // we all gon'die // FRN = 5
+                if (FSPEC_1[5] == 1) // FRN = 6
                 {
-                    double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
-                    double SID = msgcat10[pos + 1];
-                    pos = 2;
+                    string rho1 = Convert2Binary(msgcat10[pos]);
+                    string rho2 = Convert2Binary(msgcat10[pos + 1]);
+                    StringBuilder rho_BIN = new StringBuilder(rho1);
+                    rho_BIN.Append(rho2);
+                    string rho_BIN_TOTAL = rho_BIN.ToString();
+                    double rho = (int)Convert.ToInt64(rho_BIN_TOTAL, 2); // in m
+                    string theta1 = Convert2Binary(msgcat10[pos + 2]);
+                    string theta2 = Convert2Binary(msgcat10[pos + 3]);
+                    StringBuilder theta_BIN = new StringBuilder(theta1);
+                    theta_BIN.Append(theta2);
+                    string theta_BIN_TOTAL = theta_BIN.ToString();
+                    double theta = ((int)Convert.ToInt64(theta_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
+                    pos += 4;
+                }
+                if (FSPEC_1[6] == 1) // FRN = 7
+                {
+                    string x1 = Convert2Binary(msgcat10[pos]);
+                    string x2 = Convert2Binary(msgcat10[pos + 1]);
+                    StringBuilder x_BIN = new StringBuilder(x1);
+                    x_BIN.Append(x2);
+                    string x_BIN_TOTAL = x_BIN.ToString();
+                    double x = (int)Convert.ToInt64(x_BIN_TOTAL, 2); // in m
+                    string y1 = Convert2Binary(msgcat10[pos + 2]);
+                    string y2 = Convert2Binary(msgcat10[pos + 3]);
+                    StringBuilder y_BIN = new StringBuilder(y1);
+                    y_BIN.Append(y2);
+                    string y_BIN_TOTAL = y_BIN.ToString();
+                    double theta = ((int)Convert.ToInt64(y_BIN_TOTAL, 2)); // in degrees
+                    pos += 4;
                 }
             }
 

@@ -129,7 +129,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
+            this.pictureBox2.BackgroundImage = global::Idefix.Properties.Resources.airport;
             this.pictureBox2.Location = new System.Drawing.Point(177, 38);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(865, 611);
@@ -139,6 +139,7 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.BackgroundImage = global::Idefix.Properties.Resources.idefix;
             this.pictureBox1.Location = new System.Drawing.Point(31, 199);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(83, 104);

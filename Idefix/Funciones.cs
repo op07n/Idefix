@@ -192,8 +192,6 @@ namespace Idefix
             return archivos;
         }
 
-        
-        
         public int ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
             while (a< msgcat10_T.Count)
@@ -207,7 +205,7 @@ namespace Idefix
                     double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
                     double SID = msgcat10[pos+1];
                     pos = pos + 2;
-                }
+                } 
                 if (FSPEC_1[1] == 1)
                 {
                     double val = msgcat10[pos];
@@ -331,13 +329,13 @@ namespace Idefix
                     StringBuilder rho_BIN = new StringBuilder(rho1);
                     rho_BIN.Append(rho2);
                     string rho_BIN_TOTAL = rho_BIN.ToString();
-                    double rho = (int)Convert.ToInt64(rho_BIN_TOTAL, 2); // in m
+                    double rho = (int)Convert.ToInt64(rho_BIN_TOTAL, 10); // in m
                     string theta1 = Convert2Binary(msgcat10[pos + 2]);
                     string theta2 = Convert2Binary(msgcat10[pos + 3]);
                     StringBuilder theta_BIN = new StringBuilder(theta1);
                     theta_BIN.Append(theta2);
                     string theta_BIN_TOTAL = theta_BIN.ToString();
-                    double theta = ((int)Convert.ToInt64(theta_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
+                    double theta = ((int)Convert.ToInt64(theta_BIN_TOTAL, 10)) * 360 / 2 ^ 16; // in degrees
                     pos += 4;
                 }
                 if (FSPEC_1[6] == 1) // FRN = 7
@@ -347,29 +345,59 @@ namespace Idefix
                     StringBuilder x_BIN = new StringBuilder(x1);
                     x_BIN.Append(x2);
                     string x_BIN_TOTAL = x_BIN.ToString();
-                    double x = (int)Convert.ToInt64(x_BIN_TOTAL, 2); // in m
+                    double x = (int)Convert.ToInt64(x_BIN_TOTAL, 10); // in m
                     string y1 = Convert2Binary(msgcat10[pos + 2]);
                     string y2 = Convert2Binary(msgcat10[pos + 3]);
                     StringBuilder y_BIN = new StringBuilder(y1);
                     y_BIN.Append(y2);
                     string y_BIN_TOTAL = y_BIN.ToString();
-                    double theta = ((int)Convert.ToInt64(y_BIN_TOTAL, 2)); // in degrees
+                    double y = ((int)Convert.ToInt64(y_BIN_TOTAL, 10)); // in degrees
+                    pos += 4;
+                }
+                if (FSPEC_1[8] == 1) // FRN = 8
+                {
+                    string ground_speed1 = Convert2Binary(msgcat10[pos]);
+                    string ground_speed2 = Convert2Binary(msgcat10[pos + 1]);
+                    StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
+                    ground_speed_BIN.Append(ground_speed2);
+                    string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
+                    double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 10))*0.22; // in m
+                    string track_angle1 = Convert2Binary(msgcat10[pos + 2]);
+                    string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
+                    StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
+                    track_angle_BIN.Append(track_angle2);
+                    string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
+                    double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 10))*360/2^16; // in degrees
+                    pos += 4;
+                } 
+                if (FSPEC_1[9] == 1) // FRN = 9
+                {
+                    string Vx1 = Convert2Binary(msgcat10[pos]);
+                    string Vx2 = Convert2Binary(msgcat10[pos + 1]);
+                    StringBuilder Vx_BIN = new StringBuilder(Vx1);
+                    Vx_BIN.Append(Vx2);
+                    string Vx_BIN_TOTAL = Vx_BIN.ToString();
+                    double Vx = (int)Convert.ToInt64(Vx_BIN_TOTAL, 10); // in m
+                    string Vy1 = Convert2Binary(msgcat10[pos + 2]);
+                    string Vy2 = Convert2Binary(msgcat10[pos + 3]);
+                    StringBuilder Vy_BIN = new StringBuilder(Vy1);
+                    Vy_BIN.Append(Vy2);
+                    string Vy_BIN_TOTAL = Vy_BIN.ToString();
+                    double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 10)); // in degrees
                     pos += 4;
                 }
             }
 
          return 0;
         }
-            
-           
-
+        
         public string Convert2Binary(double input)
         {
-            String ret = string.Empty;
+            String input_s = input.ToString();
+            String output = Convert.ToInt32(input_s, 2).ToString();
             // Cal crear una funció que posi cada bit a una posició de l'string
-            return ret;
+            return output;
         }
-
 
         public DataTable ReadCAT10_old(DataTable CAT10, string filename)
         {
@@ -973,6 +1001,7 @@ namespace Idefix
             return FieldsCAT10;
 
         }
+
         public string ConvertToBite(string c)
         {
             int n;
@@ -2006,7 +2035,7 @@ namespace Idefix
                     TIBiteString = TIBiteString + ConvertToBite(Values[n + 4]);
                     TIBiteString = TIBiteString + ConvertToBite(Values[n + 5]);
                     char[] TIbite2 = TIBiteString.ToCharArray();
-                    string TI = null;
+                    string TI = String.Empty;
                     int j = 0;
                     for (int p = 0; p < 8; p++)
                     {
@@ -2015,7 +2044,7 @@ namespace Idefix
                         {
                             if (g.Equals("0000"))
                             {
-                                TI = TI; //+ " ";
+                                TI += " ";
                             }
                             if (g.Equals("0001"))
                             {
@@ -2126,12 +2155,12 @@ namespace Idefix
                             }
                             else
                             {
-                                TI = TI; //+ " ";
+                                TI += " ";
                             }
                         }
                         if ((Char.GetNumericValue(TIbite2[j + 0])) == 1 && (Char.GetNumericValue(TIbite2[j + 1])) == 0)
                         {
-                            TI = TI;// + " ";
+                            TI += " ";
                         }
                         if ((Char.GetNumericValue(TIbite2[j + 0])) == 1 && (Char.GetNumericValue(TIbite2[j + 1])) == 1)
                         {
@@ -2177,7 +2206,7 @@ namespace Idefix
                             }
                             else
                             {
-                                TI = TI;// + " ";
+                                TI = TI + " ";
                             }
                         }
                         j = j + 6;

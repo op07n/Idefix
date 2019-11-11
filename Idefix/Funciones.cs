@@ -194,20 +194,21 @@ namespace Idefix
 
         
         
-        public int ReadCat10(List<double> msgcat10, DataTable FSPEC_T) {
+        public int ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
-            while (a< msgcat10.Count)
+            while (a< msgcat10_T.Count)
             {
-                string FSPEC = FSPEC_T.Rows[a][3].ToString();
+                string FSPEC_1 = FSPEC_T[a][0];
+                double[] msgcat10 = msgcat10_T[a];
                 // int n = 0;
-                int pos = 0; // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
-                if(FSPEC[0] == 1)
+                int pos = FSPEC_T[a].Count(); // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
+                if(FSPEC_1[0] == 1)
                 {
                     double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
                     double SID = msgcat10[pos+1];
-                    pos = 2;
+                    pos = pos + 2;
                 }
-                if (FSPEC[1] == 1)
+                if (FSPEC_1[1] == 1)
                 {
                     double val = msgcat10[pos];
                     String MsgType = String.Empty;
@@ -228,7 +229,7 @@ namespace Idefix
                     }
                     pos = pos + 1;
                 }
-                if (FSPEC[2] == 1)
+                if (FSPEC_1[2] == 1)
                 {
                     string va = Convert2Binary(msgcat10[pos]);
                     StringBuilder val = new StringBuilder(va[0]);
@@ -308,7 +309,7 @@ namespace Idefix
 
 
                 }
-                if (FSPEC[3] == 1)
+                if (FSPEC_1[3] == 1)
                 {
                     string a1 = Convert2Binary(msgcat10[pos]);
                     string a2 = Convert2Binary(msgcat10[pos + 1]);
@@ -316,13 +317,13 @@ namespace Idefix
                     StringBuilder hour = new StringBuilder(a1);
                     hour.Append(a2);
                     hour.Append(a3);
-                    int Hour = Convert2DEC(hour);
+                    int Hour = 0; // Convert2DEC(hour);
                     Hour = Hour / 128;
                     String TimeOfDay = "09"; // Pasar segundos a horas:minutos:segundos
                     pos = pos + 3;
                 }
-                if (FSPEC[4] == 1) { } // we all gon'die
-                if (FSPEC[5] == 1)
+                if (FSPEC_1[4] == 1) { } // we all gon'die
+                if (FSPEC_1[5] == 1)
                 {
                     double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
                     double SID = msgcat10[pos + 1];

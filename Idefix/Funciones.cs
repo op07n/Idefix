@@ -194,6 +194,7 @@ namespace Idefix
 
         public int ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
+            string[] TRD; 
             while (a< msgcat10_T.Count)
             {
                 string FSPEC_1 = FSPEC_T[a][0];
@@ -229,6 +230,7 @@ namespace Idefix
                 }
                 if (FSPEC_1[2] == 1)
                 {
+                    string SIP = String.Empty;
                     string va = Convert2Binary(msgcat10[pos]);
                     StringBuilder val = new StringBuilder(va[0]);
                     val.Append(va[1]);
@@ -297,12 +299,12 @@ namespace Idefix
                         if(va2[7].Equals("1")) 
                         {
                             string va3 = Convert2Binary(msgcat10[pos]);
-
-                            string SIP = String.Empty;
                             if (va3[0].Equals("0")) { SIP = "Absence of SPI"; }
                             else { SIP = "Special Position Identification"; }
                             pos += 1;
                         }
+
+                        TRD = new string[10] { TYP, DCR, CHN, GBS, CRT, SIM, TST, LOP, TOT, SIP };
                     }
 
 
@@ -391,11 +393,91 @@ namespace Idefix
                     }
                     if (FSPEC_2[2] == 1) // FRN = 10; Track Number
                     {
-                        string frn_1 = Convert2Binary(msgcat10[pos]);
-                        string frn_2 = Convert2Binary(msgcat10[pos+1]);
-                        // cal concatenar els 2 B, eliminar els 4 bits primers i agafar la resta de bits en decimal per a track number
-                        pos += 2;
+                        string tn_1 = Convert2Binary(msgcat10[pos]);
+                        string tn_2 = Convert2Binary(msgcat10[pos+1]);
+                        string tn_t = tn_1[4] + tn_1[5] + tn_1[6] + tn_1[7] + tn_2;
+                        int TN;
+                        TN = (int)Convert.ToInt32(tn_t, 10);
+                        pos += 2; 
+                    }
+                    if (FSPEC_2[3] == 1) // FRN = 11; Track Status
+                    {
+                        string ts = Convert2Binary(msgcat10[pos]);
+                        string CNF = String.Empty;
+                        if (ts[0].Equals(1)){CNF = "Track initialization phase"; }
+                        else {CNF = "Confirmed Track"; }
                         
+                        string TRE = String.Empty;
+                        if (ts[1].Equals(1)) { TRE = "Last report of track"; }
+                        else { TRE = "Default"; }
+
+                        StringBuilder cst = new StringBuilder(ts[2]);
+                        cst.Append(ts[3]);
+                        string CST = string.Empty;
+                        if (cst.Equals("00")) { CST = "No Extrapolation"; }
+                        else if (cst.Equals("01")) { CST = "Predictable extrapolation due to sensor refresh period"; }
+                        else if (cst.Equals("10")) { CST = "Predictable extrapolation in masked area"; }
+                        else if (cst.Equals("11")) { CST = "Extrapolation due to unpredictable absence of detection"; }
+
+                        string MAH = String.Empty;
+                        if (ts[4].Equals(1)) { MAH = "Horizontal manoeuvre"; }
+                        else { MAH = "Default"; }
+
+                        string TCC = String.Empty;
+                        if (ts[5].Equals(1)) { TCC = "Slant range correction and a suitable projection technique are used to track in a 2D.reference plane, tangential to the earth model at the Sensor Site co-ordinates."; }
+                        else { TCC = "Tracking performed in 'Sensor Plane', i.e. neither slant range correction nor projection was applied"; }
+
+                        string STH = String.Empty;
+                        if (ts[6].Equals(1)) { STH = "Smoothed position"; }
+                        else { STH = "Measured position"; }
+
+                        pos += 1;
+                        if (ts[7].Equals(0)) { }
+                        else
+                        {
+                            string ts_1 = Convert2Binary(msgcat10[pos]);
+                            StringBuilder tom = new StringBuilder(ts_1[0]);
+                            cst.Append(ts_1[1]);
+                            string TOM = string.Empty;
+                            if (tom.Equals("00")) { TOM = "Unknown type of movement "; }
+                            else if (tom.Equals("01")) { TOM = "Taking-off "; }
+                            else if (tom.Equals("10")) { TOM = "Landing"; }
+                            else if (tom.Equals("11")) { TOM = "Other types of movement"; }
+
+                            StringBuilder dou = new StringBuilder(ts_1[2]);
+                            dou.Append(ts_1[3]);
+                            dou.Append(ts_1[4]);
+                            String DOU = String.Empty;
+                            if (dou.Equals("000")) { DOU = "No doubt "; }
+                            else if (dou.Equals("001")) { DOU = "Doubtful correlation (undetermined reason)"; }
+                            else if (dou.Equals("010")) { DOU = "Doubtful correlation in clutter"; }
+                            else if (dou.Equals("011")) { DOU = "Loss of accuracy"; }
+                            else if (dou.Equals("100")) { DOU = "Loss of accuracy in clutter"; }
+                            else if (dou.Equals("101")) { DOU = "HF Multilateration"; }
+                            else if (dou.Equals("110")) { DOU = "Unstable track "; }
+                            else if (dou.Equals("111")) { DOU = "Previously coasted"; }
+
+                            StringBuilder mrs = new StringBuilder(ts_1[5]);
+                            mrs.Append(ts_1[6]);
+                            string MRS = string.Empty;
+                            if (mrs.Equals("00")) { MRS = "Merge or split indication undetermined"; }
+                            else if (mrs.Equals("01")) { MRS = "Track merged by association to plot"; }
+                            else if (mrs.Equals("10")) { MRS = "Track merged by non-association to plot"; }
+                            else if (mrs.Equals("11")) { MRS = "Split track"; }
+
+                            pos += 1;
+
+                            if (ts_1[7].Equals(0)) { }
+                            else
+                            {
+                                string ts_2 = Convert2Binary(msgcat10[pos]);
+                                string GHO = String.Empty;
+                                if (ts_2[4].Equals(1)) { GHO = "Default"; }
+                                else { GHO = "Ghost track"; }
+
+                                pos += 1;
+                            }
+                        }
                     }
 
                 }
@@ -410,609 +492,6 @@ namespace Idefix
             String output = Convert.ToInt32(input_s, 2).ToString();
             // Cal crear una funció que posi cada bit a una posició de l'string
             return output;
-        }
-
-        public DataTable ReadCAT10_old(DataTable CAT10, string filename)
-        {
-            DataTable FieldsCAT10 = new DataTable();
-            CAT10 Mensajes10 = new CAT10();
-            FieldsCAT10.Columns.Add("SAC", typeof(int));
-            FieldsCAT10.Columns.Add("SIC", typeof(int));
-            FieldsCAT10.Columns.Add("MessageType", typeof(string));
-            FieldsCAT10.Columns.Add("TargetReportDescriptor", typeof(string));
-            FieldsCAT10.Columns.Add("TimeUTC", typeof(TimeSpan));
-            FieldsCAT10.Columns.Add("Rho [m]", typeof(string));
-            FieldsCAT10.Columns.Add("Theta[º]", typeof(string));
-            FieldsCAT10.Columns.Add("X [m]", typeof(string));
-            FieldsCAT10.Columns.Add("Y [m]", typeof(string));
-            FieldsCAT10.Columns.Add("Ground Speed [Km/h])", typeof(string));
-            FieldsCAT10.Columns.Add("Track Angle [º]", typeof(string));
-            FieldsCAT10.Columns.Add("Vx [m/s]", typeof(string));
-            FieldsCAT10.Columns.Add("Vy [m/s]", typeof(string));
-            FieldsCAT10.Columns.Add("Track Number", typeof(string));
-            FieldsCAT10.Columns.Add("Track Status", typeof(string));
-            FieldsCAT10.Columns.Add("Mode-3/A Code in Octal Representation", typeof(string));
-            FieldsCAT10.Columns.Add("Target Address", typeof(string));
-            FieldsCAT10.Columns.Add("Target Identification", typeof(string));
-            FieldsCAT10.Columns.Add("Flight Level", typeof(string));
-            FieldsCAT10.Columns.Add("Target Size and Orientation", typeof(string));
-            FieldsCAT10.Columns.Add("Acceleration (Ax)", typeof(string));
-            FieldsCAT10.Columns.Add("Acceleration (Ay)", typeof(string));
-            string[] values;
-            int Length = CAT10.Rows.Count;
-            int i = 0; //para recorrer la tabla
-            System.IO.StreamReader file = new System.IO.StreamReader(filename);
-
-            string[] Blanco; //para la linea del fichero una vez separada
-            while (i < Length) //RECORREMOS LA TABLA
-            {
-                string pos = CAT10.Rows[i]["LastPositionFSPEC"].ToString(); //posicion dentro de la linea del fichero
-                int posicion = Int32.Parse(pos);
-                string line = file.ReadLine();
-                Blanco = line.Split(' ');
-                string Fields = CAT10.Rows[i]["DataFields"].ToString();
-                values = Fields.Split(' '); //els datafields presents en el misaatge
-                int f = 0; //para recorrer los DataFields
-                while (f < values.Length)
-                {
-                    if (values[f] == "1")
-                    {
-                        Mensajes10.SAC = Mensajes10.GetSAC(Blanco[posicion]);
-                        posicion++;
-                        Mensajes10.SIC = Mensajes10.GetSIC(Blanco[posicion]);
-                        posicion++;
-                        f = f + 1;
-                    }
-                    if (f < values.Length && values[f] == "2")
-                    {
-                        Mensajes10.MessageType = Mensajes10.GetMessageType(Blanco[posicion]);
-                        posicion++;
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.MessageType = null;
-                        //posicion++;
-                        //f++;
-                    }
-                    if (f < values.Length && values[f] == "3")
-                    {
-                        int F;
-                        string G;
-                        char[] bi;
-                        char[] bin;
-                        char[] bitsTotals = new char[0];
-                        bool terminado = false;
-                        while (terminado == false)
-                        {
-                            F = Convert.ToInt32(Blanco[posicion]);
-                            G = Convert.ToString(F, 2);
-                            bi = G.ToCharArray(); //el numero binari original/(potser no arriba als 8 bits)
-                            char[] zeros = new char[8 - G.Length]; //zeros a l'esquerra
-                            bin = bi;
-                            int z = 0; //el numeros de zeros que haig d'afegir
-                            while (z < zeros.Length)
-                            {
-                                zeros[z] = '0';
-                                z++;
-                            }
-                            bin = zeros.Concat(bin).ToArray();
-                            if (bin[bin.Length - 1] == '0')
-                            {
-                                terminado = true;
-                            }
-                            posicion++;
-                            bitsTotals = bitsTotals.Concat(bin).ToArray();
-                        }
-                        Mensajes10.TargetReportDescriptor = Mensajes10.GetTargetReportDescriptor(bitsTotals);
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.TargetReportDescriptor = " ";
-                        //posicion++;
-                        //f++;
-                    }
-                    if (f < values.Length && values[f] == "4")
-                    {
-                        //int m = 0;
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-
-                        }
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-
-                        }
-                        string OctetsTime = Oct1St + Oct2St + Oct3St;
-                        int b = Convert.ToInt32(OctetsTime, 2);//converteixo el binari a decimal
-                        double seconds = ((double)b / (double)128);
-                        Mensajes10.TimeUTC = Mensajes10.GetTimeOfDay(seconds);
-                        posicion = posicion + 3;
-                        f++;
-                    }
-                    if (f < values.Length && values[f] == "6")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-
-                        }
-                        string OctetsRho = Oct1St + Oct2St;
-                        int Rho = Convert.ToInt32(OctetsRho, 2);
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-
-                        }
-                        int Oct4 = Convert.ToInt32(Blanco[posicion + 3]);
-                        string Oct4St = Convert.ToString(Oct4, 2);
-                        while (Oct4St.Length < 8)
-                        {
-                            Oct4St = "0" + Oct4St;
-
-                        }
-                        string OctetsTheta = Oct3St + Oct4St;
-                        int Theta = Convert.ToInt32(OctetsTheta, 2);
-                        Mensajes10.PolarPosition = Mensajes10.GetPolarCoordinates(Rho, Theta);
-                        posicion = posicion + 4;
-                        f++;
-
-                    }
-                    else
-                    {
-                        string[] PolarCoordinates = new string[2];
-                        PolarCoordinates[0] = " ";
-                        PolarCoordinates[1] = " ";
-                        Mensajes10.PolarPosition = PolarCoordinates;
-
-                    }
-                    if (f < values.Length && values[f] == "7")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-
-                        }
-                        string OctetsX = Oct1St + Oct2St;
-                        int X = Convert.ToInt32(OctetsX, 2);
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-
-                        }
-                        int Oct4 = Convert.ToInt32(Blanco[posicion + 3]);
-                        string Oct4St = Convert.ToString(Oct4, 2);
-                        while (Oct4St.Length < 8)
-                        {
-                            Oct4St = "0" + Oct4St;
-
-                        }
-                        string OctetsY = Oct3St + Oct4St;
-                        int Y = Convert.ToInt32(OctetsY, 2);
-                        Mensajes10.CartesianCoordinates = Mensajes10.GetCartesianCoordinates(X, Y);
-
-                        posicion = posicion + 4;
-                        f++;
-                    }
-                    else
-                    {
-                        string[] CartCoordinates = new string[2];
-                        CartCoordinates[0] = "N/A";
-                        CartCoordinates[1] = "N/A";
-                        Mensajes10.CartesianCoordinates = CartCoordinates;
-
-                    }
-                    if (f < values.Length && values[f] == "8")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-
-                        }
-                        string OctetsGS = Oct1St + Oct2St;
-                        int GS = Convert.ToInt32(OctetsGS, 2);
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-
-                        }
-                        int Oct4 = Convert.ToInt32(Blanco[posicion + 3]);
-                        string Oct4St = Convert.ToString(Oct4, 2);
-                        while (Oct4St.Length < 8)
-                        {
-                            Oct4St = "0" + Oct4St;
-
-                        }
-                        string OctetsTA = Oct3St + Oct4St;
-                        int TA = Convert.ToInt32(OctetsTA, 2);
-                        Mensajes10.PolarTrackVelocity = Mensajes10.GetPolarTrackVelocity(GS, TA);
-                        posicion = posicion + 4;
-                        f++;
-                    }
-                    else
-                    {
-                        string[] PolarTrackVelocity = new string[2];
-                        PolarTrackVelocity[0] = " ";
-                        PolarTrackVelocity[1] = " ";
-                        Mensajes10.PolarTrackVelocity = PolarTrackVelocity;
-
-                    }
-                    if (f < values.Length && values[f] == "9")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-
-                        }
-                        string OctetsVx = Oct1St + Oct2St;
-                        int Vx = Convert.ToInt32(OctetsVx, 2);
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-
-                        }
-                        int Oct4 = Convert.ToInt32(Blanco[posicion + 3]);
-                        string Oct4St = Convert.ToString(Oct4, 2);
-                        while (Oct4St.Length < 8)
-                        {
-                            Oct4St = "0" + Oct4St;
-
-                        }
-                        string OctetsVy = Oct3St + Oct4St;
-                        int Vy = Convert.ToInt32(OctetsVy, 2);
-                        posicion = posicion + 4;
-                        f++;
-                        Mensajes10.CartesianTrackVelocity = Mensajes10.GetCartesianTrackVelocity(Vx, Vy);
-                    }
-                    else
-                    {
-                        string[] CartesianVelocity = new string[2];
-                        CartesianVelocity[0] = " ";
-                        CartesianVelocity[1] = " ";
-                        Mensajes10.CartesianTrackVelocity = CartesianVelocity;
-                    }
-
-                    if (f < values.Length && values[f] == "10")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-
-                        }
-                        string OctetsTN = Oct1St.Substring(4, 4) + Oct2St;
-                        int TrackNumber = Convert.ToInt32(OctetsTN, 2);
-                        Mensajes10.TrackNumber = Mensajes10.GetTrackNumber(TrackNumber);
-                        posicion = posicion + 2;
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.TrackNumber = " ";
-                    }
-                    if (f < values.Length && values[f] == "11")
-                    {
-
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        string OctTotal = Oct1St;
-                        posicion++;
-                        if (Oct1St.Substring(7) == "1")
-                        {
-                            int Oct2 = Convert.ToInt32(Blanco[posicion]);
-                            string Oct2St = Convert.ToString(Oct2, 2);
-                            while (Oct2St.Length < 8)
-                            {
-                                Oct2St = "0" + Oct2St;
-                            }
-                            OctTotal = Oct1St + Oct2St;
-                            posicion++;
-                            if (Oct2St.Substring(7) == "1")
-                            {
-                                int Oct3 = Convert.ToInt32(Blanco[posicion]);
-                                string Oct3St = Convert.ToString(Oct3, 2);
-                                while (Oct3St.Length < 8)
-                                {
-                                    Oct3St = "0" + Oct3St;
-                                }
-                                OctTotal = OctTotal + Oct3St;
-                                posicion++;
-                            }
-                        }
-                        f++;
-                        Mensajes10.TrackStatus = Mensajes10.GetTrackStatus(OctTotal);
-                    }
-                    else
-                    {
-                        Mensajes10.TrackStatus = " ";
-                    }
-                    if (f < values.Length && values[f] == "12")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-                        }
-                        string OctetsMode3A = Oct1St + Oct2St;
-                        Mensajes10.Mode3A = Mensajes10.GetMode3A(OctetsMode3A);
-                        posicion = posicion + 2;
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.Mode3A = " ";
-                    }
-                    if (f < values.Length && values[f] == "13")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-                        }
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-                        }
-                        string OctetsTargetAddress = Oct1St + Oct2St + Oct3St;
-                        Mensajes10.TargetAddress = Mensajes10.GetTargetAddress(OctetsTargetAddress);
-                        posicion = posicion + 3;
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.TargetAddress = " ";
-                    }
-                    if (f < values.Length && values[f] == "14")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-                        }
-                        int Oct3 = Convert.ToInt32(Blanco[posicion + 2]);
-                        string Oct3St = Convert.ToString(Oct3, 2);
-                        while (Oct3St.Length < 8)
-                        {
-                            Oct3St = "0" + Oct3St;
-                        }
-                        int Oct4 = Convert.ToInt32(Blanco[posicion + 3]);
-                        string Oct4St = Convert.ToString(Oct4, 2);
-                        while (Oct4St.Length < 8)
-                        {
-                            Oct4St = "0" + Oct4St;
-                        }
-                        int Oct5 = Convert.ToInt32(Blanco[posicion + 4]);
-                        string Oct5St = Convert.ToString(Oct5, 2);
-                        while (Oct5St.Length < 8)
-                        {
-                            Oct5St = "0" + Oct5St;
-                        }
-                        int Oct6 = Convert.ToInt32(Blanco[posicion + 5]);
-                        string Oct6St = Convert.ToString(Oct6, 2);
-                        while (Oct6St.Length < 8)
-                        {
-                            Oct6St = "0" + Oct6St;
-                        }
-                        int Oct7 = Convert.ToInt32(Blanco[posicion + 6]);
-                        string Oct7St = Convert.ToString(Oct7, 2);
-                        while (Oct7St.Length < 8)
-                        {
-                            Oct7St = "0" + Oct7St;
-                        }
-                        string OctetsTotal = Oct1St + Oct2St + Oct3St + Oct4St + Oct5St + Oct6St + Oct7St;
-                        Mensajes10.TargetIdentification = Mensajes10.GetTargetIdentification(OctetsTotal);
-                        posicion = posicion + 7;
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.TargetIdentification = " ";
-                    }
-                    if (f < values.Length && values[f] == "17")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-                        }
-                        string OctetsFlightLevel = Oct1St + Oct2St;
-                        Mensajes10.FlightLevel = Mensajes10.GetFlightLevel(OctetsFlightLevel);
-                        posicion = posicion + 2;
-                        f++;
-                    }
-                    else
-                    {
-                        Mensajes10.FlightLevel = " ";
-                    }
-                    if (f < values.Length && values[f] == "19")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        string OctTotal = Oct1St;
-                        posicion++;
-                        if (Oct1St.Substring(7) == "1")
-                        {
-                            int Oct2 = Convert.ToInt32(Blanco[posicion]);
-                            string Oct2St = Convert.ToString(Oct2, 2);
-                            while (Oct2St.Length < 8)
-                            {
-                                Oct2St = "0" + Oct2St;
-                            }
-                            OctTotal = Oct1St + Oct2St;
-                            posicion++;
-                            if (Oct2St.Substring(7) == "1")
-                            {
-                                int Oct3 = Convert.ToInt32(Blanco[posicion]);
-                                string Oct3St = Convert.ToString(Oct3, 2);
-                                while (Oct3St.Length < 8)
-                                {
-                                    Oct3St = "0" + Oct3St;
-                                }
-                                OctTotal = OctTotal + Oct3St;
-                                posicion++;
-                            }
-                        }
-                        f++;
-                        Mensajes10.TargetSizeAndOrientation = Mensajes10.GetTargetSizeAndOrientation(OctTotal);
-                    }
-                    else
-                    {
-                        Mensajes10.TargetSizeAndOrientation = " ";
-                    }
-                    if (f < values.Length && values[f] == "25")
-                    {
-                        int Oct1 = Convert.ToInt32(Blanco[posicion]);
-                        string Oct1St = Convert.ToString(Oct1, 2);
-                        while (Oct1St.Length < 8)
-                        {
-                            Oct1St = "0" + Oct1St;
-
-                        }
-                        int Oct2 = Convert.ToInt32(Blanco[posicion + 1]);
-                        string Oct2St = Convert.ToString(Oct2, 2);
-                        while (Oct2St.Length < 8)
-                        {
-                            Oct2St = "0" + Oct2St;
-                        }
-                        string OctetsAcceleration = Oct1St + Oct2St;
-                        Mensajes10.CalculatedAcceleration = Mensajes10.GetCalculatedAcceleration(OctetsAcceleration);
-                        posicion = posicion + 2;
-                        f++;
-                    }
-                    else
-                    {
-                        string[] Acceleration = new string[2];
-                        Acceleration[0] = " ";
-                        Acceleration[1] = " ";
-                        Mensajes10.CalculatedAcceleration = Acceleration;
-                    }
-                    f = values.Length;
-
-
-                }
-
-                if (Mensajes10.MessageType != "Periodic Status Message" && Mensajes10.MessageType != "State of Update Cycle")
-                {
-                    FieldsCAT10.Rows.Add(Mensajes10.SAC, Mensajes10.SIC, Mensajes10.MessageType, Mensajes10.TargetReportDescriptor, Mensajes10.TimeUTC,
-                    Mensajes10.PolarPosition[0], Mensajes10.PolarPosition[1], Mensajes10.CartesianCoordinates[0], Mensajes10.CartesianCoordinates[1],
-                    Mensajes10.PolarTrackVelocity[0], Mensajes10.PolarTrackVelocity[1], Mensajes10.CartesianTrackVelocity[0], Mensajes10.CartesianTrackVelocity[1],
-                    Mensajes10.TrackNumber, Mensajes10.TrackStatus, Mensajes10.Mode3A, Mensajes10.TargetAddress, Mensajes10.TargetIdentification,
-                    Mensajes10.FlightLevel, Mensajes10.TargetSizeAndOrientation, Mensajes10.CalculatedAcceleration[0], Mensajes10.CalculatedAcceleration[1]);
-
-                }
-                i++;
-            }
-            return FieldsCAT10;
-
         }
 
         public string ConvertToBite(string c)

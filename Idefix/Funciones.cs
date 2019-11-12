@@ -192,7 +192,7 @@ namespace Idefix
             return archivos;
         }
 
-        public int ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
+        public List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
             double SAC = 0; double SIC = 0;
             String MsgType = String.Empty;
@@ -200,6 +200,9 @@ namespace Idefix
             int TN = 0;
             string[] TRD = new string[0] ; string[] TS = new string[0]; string[] SS = new string[0];
             double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0];
+
+            List<CAT10> listCAT10 = new List<CAT10>();
+
             while (a< msgcat10_T.Count)
             {
                 string FSPEC_1 = FSPEC_T[a][0];
@@ -363,7 +366,9 @@ namespace Idefix
                     CP = new double[2] { x, y};
                     pos += 4;
                 }// FRN = 7: Cartesian Position
-                if (FSPEC_1[7] == 0) { }
+                string error = FSPEC_1;
+                char error_in = FSPEC_1[7];
+                if (FSPEC_1[7] == '0') { }
                 else
                 {
                     string FSPEC_2 = FSPEC_T[a][1];
@@ -491,7 +496,7 @@ namespace Idefix
                         }
                     }// FRN = 11; Track Status
                     //some more shit shit here
-                    if (FSPEC_2[7] == 0) { }
+                    if (FSPEC_2[7] == '0') { }
                     else
                     {
                         string FSPEC_3 = FSPEC_T[a][2];
@@ -562,7 +567,7 @@ namespace Idefix
                             SS = new string[5] {NOGO, OVL, TSV, DIV, TTF};
                             pos += 1;
                         }//FRN = 20; SYSTEM STATUS
-                        if (FSPEC_3[7] == 0) { }
+                        if (FSPEC_3[7] == '0') { }
                         else
                         {
                             string FSPEC_4 = FSPEC_T[a][3];
@@ -590,8 +595,11 @@ namespace Idefix
                 }
                 CAT10 obj = new CAT10();
                 obj.CAT10Constructor(obj, SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
+                listCAT10.Add(obj);
+                a += 1;
             }
-         return 0;
+
+            return listCAT10;
         }
         
         public string Convert2Binary(double input)

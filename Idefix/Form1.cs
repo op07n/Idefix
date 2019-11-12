@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -13,8 +14,6 @@ namespace Idefix
 {
     public partial class Idefix : Form
     {
-
-
         public List<double[]> msgsCat10 = new List<double[]>();
         public List<double[]> msgsCat19 = new List<double[]>();
         public List<double[]> msgsCat20 = new List<double[]>();
@@ -60,8 +59,9 @@ namespace Idefix
                 this.fspecsCat19 = funcs.GetFSPEC(this.msgsCat19);
                 this.fspecsCat20 = funcs.GetFSPEC(this.msgsCat20);
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
+
                 label2.Visible = true;
-                tableLayoutPanel1.Visible = false;
+                dataGridView1.Visible = false;
                 pictureBox2.Visible = false;
                 label2.Text = "Successfully read file " + openFileDialog1.FileName.Split('\\').Last() + "! Use buttons on the left to access file data.";
                 label2.BackColor = System.Drawing.Color.LightGreen;
@@ -73,21 +73,19 @@ namespace Idefix
         private void button2_Click(object sender, EventArgs e)
         {
             label2.Visible = false;
-            tableLayoutPanel1.Visible = true;
+            dataGridView1.Visible = true;
             pictureBox2.Visible = false;
-            tableLayoutPanel1.Controls.Clear();
-            tableLayoutPanel1.ColumnCount = 3;
-            tableLayoutPanel1.RowCount = 1;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            tableLayoutPanel1.Controls.Add(new Label() { Text = "Column 1" }, 0, 0);
-            tableLayoutPanel1.Controls.Add(new Label() { Text = "Column 2" }, 1, 0);
-            tableLayoutPanel1.Controls.Add(new Label() { Text = "Column 3" }, 2, 0);
-            tableLayoutPanel1.Controls.Add(new Label() { Text = "Data" }, 0, 1);
-            tableLayoutPanel1.Controls.Add(new Label() { Text = "Data" }, 1, 1);
-            tableLayoutPanel1.Controls.Add(new Label() { Text = "Data" }, 2, 1);
+            button5.Visible = false;
+            button6.Visible = false;
+            button7.Visible = false;
+
+            Funciones funcs = new Funciones();
+            List<CAT10> objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
+            var bindingList = new BindingList<CAT10>(objCat10);
+            dataGridView1.DataSource = typeof(List<>);
+            dataGridView1.DataSource = bindingList;
+            dataGridView1.AutoResizeColumns();
+            dataGridView1.Refresh();
         }
 
         public void pintarMapaLEBL()
@@ -278,7 +276,7 @@ namespace Idefix
             label2.Visible = true;
             label2.BackColor = default(Color);
             label2.Text = "Choose a map";
-            tableLayoutPanel1.Visible = false;
+            dataGridView1.Visible = false;
             pictureBox2.Visible = true;
             button5.Visible = true;
             button5.BackColor = default(Color);

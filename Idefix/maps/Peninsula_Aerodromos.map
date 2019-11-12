@@ -1,0 +1,39 @@
+/*
+ *       AIRPORTS SYMBOLS MAP       
+ *      =======================      
+ */
+
+TituloMapa        Aeropuertos
+
+ColorSimbolos      90 80 110
+
+Simbolo             433353N0060158W      2
+Simbolo             431804N0025440W      2
+Simbolo             422100N0033700W      2
+Simbolo             431810N0082236W      2
+Simbolo             401743N0034320W      2
+Simbolo             423500N0053900W      2
+Simbolo             422700N0021900W      2
+Simbolo             402825N0033334W      2
+Simbolo             393324N0031500W      2
+Simbolo             395625N0033015W      2
+Simbolo             424616N0013841W      2
+Simbolo             405159N0031447W      2
+Simbolo             430705N0072308W      2
+Simbolo             405700N0053000W      2
+Simbolo             431924N0014700W      2
+Simbolo             425346N0082447W      2
+Simbolo             401442N0044735W      2
+Simbolo             402917N0032725W      2
+Simbolo             414226N0045103W      2
+Simbolo             433313N0070511W      2
+Simbolo             402619N0034657W      2
+Simbolo             425302N0024323W      2
+Simbolo             421345N0083740W      2
+Simbolo             432541N0034907W      2
+Simbolo             413958N0010232W      2
+
+
+***********************************************************
+*  ======================   PISTAS   ===================  *
+***********************************************************

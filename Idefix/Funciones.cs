@@ -203,19 +203,19 @@ namespace Idefix
 
             List<CAT10> listCAT10 = new List<CAT10>();
 
-            while (a< msgcat10_T.Count)
+            while (a < msgcat10_T.Count)
             {
                 string FSPEC_1 = FSPEC_T[a][0];
                 double[] msgcat10 = msgcat10_T[a];
                 // int n = 0;
                 int pos = FSPEC_T[a].Count(); // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
-                if(FSPEC_1[0] == 1)// FRN = 1: Data Source ID
+                if(FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                 {
                     SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
                     SIC = msgcat10[pos+1];
                     pos = pos + 2;
                 }// FRN = 1: Data Source ID
-                if (FSPEC_1[1] == 1)// FRN = 2: Message Type
+                if (FSPEC_1[1] == '1')// FRN = 2: Message Type
                 {
                     double val = msgcat10[pos];
                     switch (val)
@@ -235,7 +235,7 @@ namespace Idefix
                     }
                     pos += 1;
                 }// FRN = 2: Message Type
-                if (FSPEC_1[2] == 1)// FRN = 3: Target Report Description
+                if (FSPEC_1[2] == '1')// FRN = 3: Target Report Description
                 {
                     string va = Convert2Binary(msgcat10[pos]);
                     StringBuilder val = new StringBuilder(va[0]);
@@ -317,7 +317,7 @@ namespace Idefix
                         
                     }
                 }// FRN = 3: Target Report Description
-                if (FSPEC_1[3] == 1) //FRN = 4: Time Of Day
+                if (FSPEC_1[3] == '1') //FRN = 4: Time Of Day
                 {
                     string a1 = Convert2Binary(msgcat10[pos]);
                     string a2 = Convert2Binary(msgcat10[pos + 1]);
@@ -326,13 +326,13 @@ namespace Idefix
                     hour.Append(a2);
                     hour.Append(a3);
                     string hour_in_seconds = hour.ToString();
-                    int Hour = (int)Convert.ToInt64(hour_in_seconds, 2);
-                    Hour /= 128;
-                    TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
+                    //int Hour = (int)Convert.ToInt64(hour_in_seconds, 2);
+                    //Hour /= 128;
+                    //TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
                     pos += 3;
                 }//FRN = 4: Time Of Day
-                if (FSPEC_1[4] == 1) { pos += 8; } //FRN = 5: we all gon'die
-                if (FSPEC_1[5] == 1) // FRN = 6: Polar Position
+                if (FSPEC_1[4] == '1') { pos += 8; } //FRN = 5: we all gon'die
+                if (FSPEC_1[5] == '1') // FRN = 6: Polar Position
                 {
                     string rho1 = Convert2Binary(msgcat10[pos]);
                     string rho2 = Convert2Binary(msgcat10[pos + 1]);
@@ -349,20 +349,20 @@ namespace Idefix
                     PP = new double[2] { rho, theta };
                     pos += 4;
                 } // FRN = 6: Polar Position
-                if (FSPEC_1[6] == 1) // FRN = 7: Cartesian Position
+                if (FSPEC_1[6] == '1') // FRN = 7: Cartesian Position
                 {
                     string x1 = Convert2Binary(msgcat10[pos]);
                     string x2 = Convert2Binary(msgcat10[pos + 1]);
                     StringBuilder x_BIN = new StringBuilder(x1);
                     x_BIN.Append(x2);
                     string x_BIN_TOTAL = x_BIN.ToString();
-                    double x = (int)Convert.ToInt64(x_BIN_TOTAL, 10); // in m
+                    double x = (int)Convert.ToInt64(x_BIN_TOTAL,2); // in m
                     string y1 = Convert2Binary(msgcat10[pos + 2]);
                     string y2 = Convert2Binary(msgcat10[pos + 3]);
                     StringBuilder y_BIN = new StringBuilder(y1);
                     y_BIN.Append(y2);
                     string y_BIN_TOTAL = y_BIN.ToString();
-                    double y = ((int)Convert.ToInt64(y_BIN_TOTAL, 10)); // in degrees
+                    double y = ((int)Convert.ToInt64(y_BIN_TOTAL, 2)); // in degrees
                     CP = new double[2] { x, y};
                     pos += 4;
                 }// FRN = 7: Cartesian Position
@@ -372,49 +372,54 @@ namespace Idefix
                 else
                 {
                     string FSPEC_2 = FSPEC_T[a][1];
-                    if (FSPEC_2[0] == 1) // FRN = 8: Polar Track Velocity
+                    if (FSPEC_2[0] == '1') // FRN = 8: Polar Track Velocity
                     {
                         string ground_speed1 = Convert2Binary(msgcat10[pos]);
                         string ground_speed2 = Convert2Binary(msgcat10[pos + 1]);
                         StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
                         ground_speed_BIN.Append(ground_speed2);
                         string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
-                        double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 10)) * 0.22; // in m
+                        double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 2)) * 0.22; // in m
                         string track_angle1 = Convert2Binary(msgcat10[pos + 2]);
                         string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
                         track_angle_BIN.Append(track_angle2);
                         string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
-                        double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 10)) * 360 / 2 ^ 16; // in degrees
+                        double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
                         PTV = new double[2] {ground_speed, track_angle};
                         pos += 4;
                     }// FRN = 8: Polar Track Velocity
-                    if (FSPEC_2[1] == 1) // FRN = 9: Cartesian Track Velocity
+                    if (FSPEC_2[1] == '1') // FRN = 9: Cartesian Track Velocity
                     {
                         string Vx1 = Convert2Binary(msgcat10[pos]);
                         string Vx2 = Convert2Binary(msgcat10[pos + 1]);
                         StringBuilder Vx_BIN = new StringBuilder(Vx1);
                         Vx_BIN.Append(Vx2);
                         string Vx_BIN_TOTAL = Vx_BIN.ToString();
-                        double Vx = (int)Convert.ToInt64(Vx_BIN_TOTAL, 10); // in m
+                        double Vx = (int)Convert.ToInt64(Vx_BIN_TOTAL, 2); // in m
                         string Vy1 = Convert2Binary(msgcat10[pos + 2]);
                         string Vy2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder Vy_BIN = new StringBuilder(Vy1);
                         Vy_BIN.Append(Vy2);
                         string Vy_BIN_TOTAL = Vy_BIN.ToString();
-                        double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 10)); // in degrees
+                        double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 2)); // in degrees
                         CTV = new double[2] { Vx, Vy };
                         pos += 4;
                     }// FRN = 9: Cartesian Track Velocity
-                    if (FSPEC_2[2] == 1) // FRN = 10: Track Number
+                    if (FSPEC_2[2] == '1') // FRN = 10: Track Number
                     {
                         string tn_1 = Convert2Binary(msgcat10[pos]);
                         string tn_2 = Convert2Binary(msgcat10[pos + 1]);
-                        string tn_t = tn_1[4] + tn_1[5] + tn_1[6] + tn_1[7] + tn_2;
-                        TN = (int)Convert.ToInt32(tn_t, 10);
+                        StringBuilder tn_t = new StringBuilder(tn_1[4]);
+                        tn_t.Append(tn_1[5]);
+                        tn_t.Append(tn_1[6]);
+                        tn_t.Append(tn_1[7]);
+                        tn_t.Append(tn_2);
+                        string tn_tot = tn_t.ToString();
+                        TN = (int)Convert.ToInt32(tn_tot, 2);
                         pos += 2;
                     }// FRN = 10: Track Number
-                    if (FSPEC_2[3] == 1) // FRN = 11: Track Status
+                    if (FSPEC_2[3] == '1') // FRN = 11: Track Status
                     {
                         string ts = Convert2Binary(msgcat10[pos]);
                         string CNF = String.Empty;
@@ -500,7 +505,7 @@ namespace Idefix
                     else
                     {
                         string FSPEC_3 = FSPEC_T[a][2];
-                        if (FSPEC_3[4] == 1) //FRN = 19; Target Size and Orientation --> TSO
+                        if (FSPEC_3[4] == '1') //FRN = 19; Target Size and Orientation --> TSO
                         {
                             double LEN; double ORI = 0; double WID = 0;
                             string tso = Convert2Binary(msgcat10[pos]);
@@ -528,7 +533,7 @@ namespace Idefix
 
                             TSO = new double[3] {LEN, ORI, WID };
                         }//FRN = 19; Target Size and Orientation
-                        if (FSPEC_3[5] == 1) //FRN = 20; SYSTEM STATUS
+                        if (FSPEC_3[5] == '1') //FRN = 20; SYSTEM STATUS
                         {
                             String NOGO = String.Empty;
                             String OVL = String.Empty;
@@ -571,21 +576,21 @@ namespace Idefix
                         else
                         {
                             string FSPEC_4 = FSPEC_T[a][3];
-                            if (FSPEC_4[3] == 1) // FRN = 25; Calculated acceleration
+                            if (FSPEC_4[3] == '1') // FRN = 25; Calculated acceleration
                             {
                                 string ax1 = Convert2Binary(msgcat10[pos]);
                                 string ax2 = Convert2Binary(msgcat10[pos + 1]);
                                 StringBuilder ax_BIN = new StringBuilder(ax1);
                                 ax_BIN.Append(ax2);
                                 string ax_BIN_TOTAL = ax_BIN.ToString();
-                                double ax = (int)Convert.ToInt64(ax_BIN_TOTAL, 10);
+                                double ax = (int)Convert.ToInt64(ax_BIN_TOTAL, 2);
                                 ax /= 4;//m/s^2
                                 string ay1 = Convert2Binary(msgcat10[pos + 2]);
                                 string ay2 = Convert2Binary(msgcat10[pos + 3]);
                                 StringBuilder ay_BIN = new StringBuilder(ay1);
                                 ay_BIN.Append(ay2);
                                 string ay_BIN_TOTAL = ay_BIN.ToString();
-                                double ay = ((int)Convert.ToInt64(ay_BIN_TOTAL, 10)); 
+                                double ay = ((int)Convert.ToInt64(ay_BIN_TOTAL, 2)); 
                                 ay /= 4;//m/s^2
                                 CA = new double[2] {ax, ay};
                                 pos += 4;
@@ -593,8 +598,8 @@ namespace Idefix
                         }
                     }
                 }
-                CAT10 obj = new CAT10();
-                obj.CAT10Constructor(obj, SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
+                // CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
+                CAT10 obj = new CAT10(SIC, SAC, MsgType, TN);
                 listCAT10.Add(obj);
                 a += 1;
             }
@@ -604,10 +609,20 @@ namespace Idefix
         
         public string Convert2Binary(double input)
         {
-            String input_s = input.ToString();
-            String output = Convert.ToInt32(input_s, 2).ToString();
-            // Cal crear una funció que posi cada bit a una posició de l'string
-            return output;
+            int n;
+            n = Convert.ToInt32(input);
+            int[] a = new int[8];
+            string b = null;
+            for (int i = 0; i <= 7; i++)
+            {
+                a[7 - i] = n % 2;
+                n = n / 2;
+            }
+            for (int i = 0; i <= 7; i++)
+            {
+                b = b + Convert.ToString(a[i]);
+            }
+            return b;
         }
 
         public string ConvertToBite(string c)

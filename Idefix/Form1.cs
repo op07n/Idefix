@@ -70,6 +70,19 @@ namespace Idefix
             }
         }
 
+        class MyStruct
+        {
+            public string Name { get; set; }
+            public string Adres { get; set; }
+
+
+            public MyStruct(string name, string adress)
+            {
+                Name = name;
+                Adres = adress;
+            }
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             label2.Visible = false;
@@ -81,11 +94,17 @@ namespace Idefix
 
             Funciones funcs = new Funciones();
             List<CAT10> objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
+            var source = new BindingSource();
+            List<MyStruct> list = new List<MyStruct> { new MyStruct("fff", "b"), new MyStruct("c", "d") };
+            source.DataSource = objCat10.Take(2);
+            dataGridView1.DataSource = source;
+
+            /*
             var bindingList = new BindingList<CAT10>(objCat10);
             dataGridView1.DataSource = typeof(List<>);
             dataGridView1.DataSource = bindingList;
             dataGridView1.AutoResizeColumns();
-            dataGridView1.Refresh();
+            dataGridView1.Refresh();*/
         }
 
         public void pintarMapaLEBL()

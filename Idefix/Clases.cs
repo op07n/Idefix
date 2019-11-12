@@ -53,21 +53,21 @@ namespace Idefix
         public double SAC;
         public double SIC;
         public string MessageType;
-        public string[] TargetReportDescriptor;
-        public TimeSpan TimeofDay;
-        public double[] PolarPosition;
-        public double[] CartesianPosition; //Per plotejar
-        public double[] PolarTrackVelocity;
-        public double[] CartesianTrackVelocity; //Per plotejar??
+        //public string[] TargetReportDescriptor;
+       // public TimeSpan TimeofDay;
+        //public double[] PolarPosition;
+        //public double[] CartesianPosition; //Per plotejar
+       // public double[] PolarTrackVelocity;
+        //public double[] CartesianTrackVelocity; //Per plotejar??
         //public string Mode3A;
         //public string FlightLevel;
         public int TrackNumber;
-        public string[] TrackStatus;
+        //public string[] TrackStatus;
         //public string[] TargetAddress;
         //public string TargetIdentification;
-        public double[] TargetSizeAndOrientation;
-        public string[] SystemStatus;
-        public double[] CalculatedAcceleration;
+        //public double[] TargetSizeAndOrientation;
+        //public string[] SystemStatus;
+  //      public double[] CalculatedAcceleration;
 
         public double GetSAC(string Octet)
         {
@@ -83,25 +83,35 @@ namespace Idefix
         }
 
 
-        public void CAT10Constructor (CAT10 a, double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
-        {
-            a.SIC = SIC;
-            a.SAC = SAC;
-            a.MessageType = MsgType;
-            a.TargetReportDescriptor = TargetReportDescriptor;
-            a.TimeofDay = TimeofDay;
-            a.PolarPosition = PolarPosition;
-            a.CartesianPosition = CartesianPosition;
-            a.PolarTrackVelocity = PolarTrackVelocity;
-            a.CartesianTrackVelocity = CartesianTrackVelocity;
-            a.TrackNumber = TrackNumber;
-            a.TrackStatus = TrackStatus;
-            a.TargetSizeAndOrientation = TargetSizeAndOrientation;
-            a.SystemStatus = SystemStatus;
-            a.CalculatedAcceleration = CalculatedAcceleration;
+        /* public CAT10(double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
+         {
+             this.SIC = SIC;
+             this.SAC = SAC;
+             this.MessageType = MsgType;
+             this.TargetReportDescriptor = TargetReportDescriptor;
+             this.TimeofDay = TimeofDay;
+             this.PolarPosition = PolarPosition;
+             this.CartesianPosition = CartesianPosition;
+             this.PolarTrackVelocity = PolarTrackVelocity;
+             this.CartesianTrackVelocity = CartesianTrackVelocity;
+             this.TrackNumber = TrackNumber;
+             this.TrackStatus = TrackStatus;
+             this.TargetSizeAndOrientation = TargetSizeAndOrientation;
+             this.SystemStatus = SystemStatus;
+             this.CalculatedAcceleration = CalculatedAcceleration;
+         }
+         */
 
-            // to be finnished.
+        public CAT10(double SIC, double SAC, String MsgType, int TrackNumber)
+        {
+            this.SIC = SIC;
+            this.SAC = SAC;
+            this.MessageType = MsgType;
+           // this.TimeofDay = TimeofDay;
+            this.TrackNumber = TrackNumber;
+
         }
+
 
 
         /*public string[] GetCartesianCoordinates(int X, int Y)

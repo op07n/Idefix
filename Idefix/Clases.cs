@@ -50,31 +50,32 @@ namespace Idefix
     public class CAT10
     {
         // el SAC y el SIC son el DataSourceIdentifier
-        public int SAC;
-        public int SIC;
+        public double SAC;
+        public double SIC;
         public string MessageType;
-        public string TargetReportDescriptor;
-        public string[] PolarPosition;
-        public string[] CartesianCoordinates; //Per plotejar
-        public string[] PolarTrackVelocity;
-        public string[] CartesianTrackVelocity; //Per plotejar??
-        public string Mode3A;
-        public string FlightLevel;
-        public TimeSpan TimeUTC;
-        public string TrackNumber;
-        public string TrackStatus;
-        public string TargetAddress;
-        public string TargetIdentification;
-        public string TargetSizeAndOrientation;
-        public string[] CalculatedAcceleration;
+        public string[] TargetReportDescriptor;
+        public TimeSpan TimeofDay;
+        public double[] PolarPosition;
+        public double[] CartesianPosition; //Per plotejar
+        public double[] PolarTrackVelocity;
+        public double[] CartesianTrackVelocity; //Per plotejar??
+        //public string Mode3A;
+        //public string FlightLevel;
+        public int TrackNumber;
+        public string[] TrackStatus;
+        //public string[] TargetAddress;
+        //public string TargetIdentification;
+        public double[] TargetSizeAndOrientation;
+        public string[] SystemStatus;
+        public double[] CalculatedAcceleration;
 
-        public int GetSAC(string Octet)
+        public double GetSAC(string Octet)
         {
             this.SAC = Convert.ToInt32(Octet);
             //string SAC = Convert.ToString(Hex, 2);
             return SAC;
         }
-        public int GetSIC(string Octet)
+        public double GetSIC(string Octet)
         {
             this.SIC = Convert.ToInt32(Octet);
             //string SIC = Convert.ToString(Hex, 2);
@@ -106,7 +107,7 @@ namespace Idefix
             }
             return this.MessageType;
         }
-        public string GetTargetReportDescriptor(char[] Octet)
+        public string[] GetTargetReportDescriptor(char[] Octet)
         {
             if (Octet[0] == '0' && Octet[1] == '0' && Octet[2] == '0')
             {
@@ -243,9 +244,23 @@ namespace Idefix
             return this.TargetReportDescriptor;
         }
 
-        public void CAT10Constructor (CAT10 a, int b)
+        public void CAT10Constructor (CAT10 a, double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TargetAddress, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
         {
-            a.SAC = b;
+            a.SIC = SIC;
+            a.SAC = SAC;
+            a.MessageType = MsgType;
+            a.TargetReportDescriptor = TargetReportDescriptor;
+            a.TimeofDay = TimeofDay;
+            a.PolarPosition = PolarPosition;
+            a.CartesianPosition = CartesianPosition;
+            a.PolarTrackVelocity = PolarTrackVelocity;
+            a.CartesianTrackVelocity = CartesianTrackVelocity;
+            a.TrackNumber = TrackNumber;
+            a.TrackStatus = TrackStatus;
+            a.TargetSizeAndOrientation = TargetSizeAndOrientation;
+            a.SystemStatus = SystemStatus;
+            a.CalculatedAcceleration = CalculatedAcceleration;
+
             // to be finnished.
         }
 
@@ -448,7 +463,7 @@ namespace Idefix
             }
             return this.TrackStatus;
         }
-        public string GetMode3A(string OctetsMode3A)
+        /*public string GetMode3A(string OctetsMode3A)
         {
             if (OctetsMode3A.Substring(0, 1) == "0")
             {
@@ -479,13 +494,14 @@ namespace Idefix
             this.Mode3A = this.Mode3A + "-Mode-3/A Reply=" + octal;
             return this.Mode3A;
         }
-        public string GetTargetAddress(string OctetsTargetAddress)
+        //public string GetTargetAddress(string OctetsTargetAddress)
         {
             int TargetAddress = Convert.ToInt32(OctetsTargetAddress, 2);
             string hexadec = Convert.ToString(TargetAddress, 16);
             this.TargetAddress = hexadec;
             return this.TargetAddress;
-        }
+        }*/
+
         public string GetTargetIdentification(string OctetsTargetIndentification)
         {
             if (OctetsTargetIndentification.Substring(0, 2) == "00")

@@ -81,170 +81,9 @@ namespace Idefix
             //string SIC = Convert.ToString(Hex, 2);
             return SIC;
         }
-        public string GetMessageType(string Octet)
-        {
-            int MesHex = Convert.ToInt32(Octet);
 
-            if (MesHex == 1)
-            {
-                this.MessageType = "Target Report";
-            }
-            if (MesHex == 2)
-            {
-                this.MessageType = "State of Update Cycle";
-            }
-            if (MesHex == 3)
-            {
-                this.MessageType = "Periodic Status Message";
-            }
-            if (MesHex == 4)
-            {
-                this.MessageType = "Event-trigerred Status Message";
-            }
-            if (MesHex != 4 && MesHex != 3 && MesHex != 2 && MesHex != 1)
-            {
-                this.MessageType = "N/A";
-            }
-            return this.MessageType;
-        }
-        public string[] GetTargetReportDescriptor(char[] Octet)
-        {
-            if (Octet[0] == '0' && Octet[1] == '0' && Octet[2] == '0')
-            {
-                this.TargetReportDescriptor = "TYP=SSR multilateration";
-            }
-            if (Octet[0] == '0' && Octet[1] == '0' && Octet[2] == '1')
-            {
-                this.TargetReportDescriptor = "TYP=Mode S multilateration";
-            }
-            if (Octet[0] == '0' && Octet[1] == '1' && Octet[2] == '0')
-            {
-                this.TargetReportDescriptor = "TYP=ADS-B";
-            }
-            if (Octet[0] == '0' && Octet[1] == '1' && Octet[2] == '1')
-            {
-                this.TargetReportDescriptor = "TYP=PSR";
-            }
-            if (Octet[0] == '1' && Octet[1] == '0' && Octet[2] == '0')
-            {
-                this.TargetReportDescriptor = "TYP=Magnetic Loop System";
-            }
-            if (Octet[0] == '1' && Octet[1] == '0' && Octet[2] == '1')
-            {
-                this.TargetReportDescriptor = "TYP=HF multilateration";
-            }
-            if (Octet[0] == '1' && Octet[1] == '1' && Octet[2] == '0')
-            {
-                this.TargetReportDescriptor = "TYP=Not Defined";
-            }
-            if (Octet[0] == '1' && Octet[1] == '1' && Octet[2] == '1')
-            {
-                this.TargetReportDescriptor = "TYP=Other Types";
-            }
-            if (Octet[3] == '0')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "DCR=No Differential Correction";
-            }
-            if (Octet[3] == '1')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "DCR=Differential Correction";
-            }
-            if (Octet[4] == '0')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "CHN=Chain1";
-            }
-            if (Octet[4] == '1')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "CHN=Chain2";
-            }
-            if (Octet[5] == '0')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "GBS=Transponder Ground bit not set";
-            }
-            if (Octet[5] == '1')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "GBS=Transponder Ground bit set";
-            }
-            if (Octet[6] == '0')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "CRT=No Corrupted reply in multilateration";
-            }
-            if (Octet[6] == '1')
-            {
-                this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "CRT=Corrupted reply in multilateration";
-            }
-            if (Octet[7] == '1')
-            {
-                if (Octet[8] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "SIM=Actual target report";
-                }
-                if (Octet[8] == '1')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "SIM=Simulated target report";
-                }
-                if (Octet[9] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "TST=Default";
-                }
-                if (Octet[9] == '1')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "TST=TestTarget";
-                }
-                if (Octet[10] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "RAB=Report from target transponder";
-                }
-                if (Octet[10] == '1')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "RAB=Report from field monitor(fixed transponder)";
-                }
-                if (Octet[11] == '0' && Octet[12] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "LOP=Undetermined";
-                }
-                if (Octet[11] == '0' && Octet[12] == '1')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "LOP=Loop Start";
-                }
-                if (Octet[11] == '1' && Octet[12] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "LOP=Loop finish";
-                }
-                if (Octet[13] == '0' && Octet[14] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "TOT=Undetermined";
-                }
-                if (Octet[13] == '0' && Octet[14] == '1')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "TOT=Aircraft";
-                }
-                if (Octet[13] == '1' && Octet[14] == '0')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "TOT=Ground Vehicle";
-                }
-                if (Octet[13] == '1' && Octet[14] == '1')
-                {
-                    this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "TOT=Helicopter";
-                }
-                if (Octet[15] == '1')
-                {
-                    if (Octet[16] == '0')
-                    {
-                        this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "SPI=Absence of SPI";
-                    }
-                    if (Octet[16] == '1')
-                    {
-                        this.TargetReportDescriptor = this.TargetReportDescriptor + "-" + "SPI=Special Position Identification";
-                    }
-                }
 
-            }
-
-            return this.TargetReportDescriptor;
-        }
-
-        public void CAT10Constructor (CAT10 a, double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TargetAddress, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
+        public void CAT10Constructor (CAT10 a, double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
         {
             a.SIC = SIC;
             a.SAC = SAC;
@@ -264,23 +103,8 @@ namespace Idefix
             // to be finnished.
         }
 
-        public TimeSpan GetTimeOfDay(double dec)
-        {
-            TimeSpan time = TimeSpan.FromSeconds(dec);
-            this.TimeUTC = time;
-            return this.TimeUTC;
-        }
-        public string[] GetPolarCoordinates(int Rho, int Theta)
-        {
-            string[] PolarCoordinates = new string[2];
-            PolarCoordinates[0] = ((double)Rho).ToString();
-            double RealTheta = ((double)Theta * (double)360) / (double)65536;
-            PolarCoordinates[1] = RealTheta.ToString();
-            this.PolarPosition = PolarCoordinates;
-            return this.PolarPosition;
 
-        }
-        public string[] GetCartesianCoordinates(int X, int Y)
+        /*public string[] GetCartesianCoordinates(int X, int Y)
         {
             string[] CartesianCoordinates = new string[2];
             if (X > 32768)
@@ -296,8 +120,8 @@ namespace Idefix
             this.CartesianCoordinates = CartesianCoordinates;
             return this.CartesianCoordinates;
 
-        }
-        public string[] GetPolarTrackVelocity(int GS, int TA)
+        }*/
+        /*public string[] GetPolarTrackVelocity(int GS, int TA)
         {
             string[] TrackVelocity = new string[2];
             TrackVelocity[0] = ((double)GS * (double)0.22).ToString();
@@ -306,6 +130,7 @@ namespace Idefix
             return this.PolarTrackVelocity;
 
         }
+
         public string[] GetCartesianTrackVelocity(int Vx, int Vy)
         {
             string[] TrackVelocity = new string[2];
@@ -463,7 +288,7 @@ namespace Idefix
             }
             return this.TrackStatus;
         }
-        /*public string GetMode3A(string OctetsMode3A)
+        public string GetMode3A(string OctetsMode3A)
         {
             if (OctetsMode3A.Substring(0, 1) == "0")
             {
@@ -500,7 +325,7 @@ namespace Idefix
             string hexadec = Convert.ToString(TargetAddress, 16);
             this.TargetAddress = hexadec;
             return this.TargetAddress;
-        }*/
+        }
 
         public string GetTargetIdentification(string OctetsTargetIndentification)
         {
@@ -767,7 +592,7 @@ namespace Idefix
             Acceleration[1] = Ay.ToString();
             this.CalculatedAcceleration = Acceleration;
             return this.CalculatedAcceleration;
-        }
+        }*/
     }
     public class CAT21
     {

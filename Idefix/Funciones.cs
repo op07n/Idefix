@@ -194,23 +194,27 @@ namespace Idefix
 
         public int ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
-            string[] TRD; 
+            double SAC = 0; double SIC = 0;
+            String MsgType = String.Empty;
+            TimeSpan TimeOfDay= TimeSpan.Zero;
+            int TN = 0;
+            string[] TRD = new string[0] ; string[] TS = new string[0]; string[] SS = new string[0];
+            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0];
             while (a< msgcat10_T.Count)
             {
                 string FSPEC_1 = FSPEC_T[a][0];
                 double[] msgcat10 = msgcat10_T[a];
                 // int n = 0;
                 int pos = FSPEC_T[a].Count(); // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
-                if(FSPEC_1[0] == 1)
+                if(FSPEC_1[0] == 1)// FRN = 1: Data Source ID
                 {
-                    double SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
-                    double SID = msgcat10[pos+1];
+                    SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
+                    SIC = msgcat10[pos+1];
                     pos = pos + 2;
-                } 
-                if (FSPEC_1[1] == 1)
+                }// FRN = 1: Data Source ID
+                if (FSPEC_1[1] == 1)// FRN = 2: Message Type
                 {
                     double val = msgcat10[pos];
-                    String MsgType = String.Empty;
                     switch (val)
                     {
                         case 1:
@@ -227,10 +231,9 @@ namespace Idefix
                             break;
                     }
                     pos += 1;
-                }
-                if (FSPEC_1[2] == 1)
+                }// FRN = 2: Message Type
+                if (FSPEC_1[2] == 1)// FRN = 3: Target Report Description
                 {
-                    string SIP = String.Empty;
                     string va = Convert2Binary(msgcat10[pos]);
                     StringBuilder val = new StringBuilder(va[0]);
                     val.Append(va[1]);
@@ -260,7 +263,7 @@ namespace Idefix
                     string CRT = String.Empty;
                     if (va[6].Equals("0")) { CRT = "No Corrupted Reply in Multilateration"; }
                     else { CRT = "Corrupted Replies in Multilateration"; }
-                    
+                    TRD = new string[5] { TYP, DCR, CHN, GBS, CRT };
                     pos += 1;
 
                     if (va[7].Equals("1")) 
@@ -293,23 +296,25 @@ namespace Idefix
                         else if (val3.Equals("01")) { TOT = "Aircraft"; }
                         else if (val3.Equals("10")) { TOT = "Ground Vehicle"; }
                         else if (val3.Equals("11")) { TOT = "Helicopter"; }
+                        TRD = new string[10] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT};
 
                         pos += 1;
 
                         if(va2[7].Equals("1")) 
                         {
+                            string SIP = String.Empty;
                             string va3 = Convert2Binary(msgcat10[pos]);
                             if (va3[0].Equals("0")) { SIP = "Absence of SPI"; }
                             else { SIP = "Special Position Identification"; }
+                            
+                            TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
                             pos += 1;
                         }
 
-                        TRD = new string[10] { TYP, DCR, CHN, GBS, CRT, SIM, TST, LOP, TOT, SIP };
+                        
                     }
-
-
-                }
-                if (FSPEC_1[3] == 1) //FRN = 4
+                }// FRN = 3: Target Report Description
+                if (FSPEC_1[3] == 1) //FRN = 4: Time Of Day
                 {
                     string a1 = Convert2Binary(msgcat10[pos]);
                     string a2 = Convert2Binary(msgcat10[pos + 1]);
@@ -320,11 +325,11 @@ namespace Idefix
                     string hour_in_seconds = hour.ToString();
                     int Hour = (int)Convert.ToInt64(hour_in_seconds, 2);
                     Hour /= 128;
-                    TimeSpan TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
+                    TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
                     pos += 3;
-                }
-                if (FSPEC_1[4] == 1) { pos += 8; } // we all gon'die // FRN = 5
-                if (FSPEC_1[5] == 1) // FRN = 6
+                }//FRN = 4: Time Of Day
+                if (FSPEC_1[4] == 1) { pos += 8; } //FRN = 5: we all gon'die
+                if (FSPEC_1[5] == 1) // FRN = 6: Polar Position
                 {
                     string rho1 = Convert2Binary(msgcat10[pos]);
                     string rho2 = Convert2Binary(msgcat10[pos + 1]);
@@ -338,9 +343,10 @@ namespace Idefix
                     theta_BIN.Append(theta2);
                     string theta_BIN_TOTAL = theta_BIN.ToString();
                     double theta = ((int)Convert.ToInt64(theta_BIN_TOTAL, 10)) * 360 / 2 ^ 16; // in degrees
+                    PP = new double[2] { rho, theta };
                     pos += 4;
-                }
-                if (FSPEC_1[6] == 1) // FRN = 7
+                } // FRN = 6: Polar Position
+                if (FSPEC_1[6] == 1) // FRN = 7: Cartesian Position
                 {
                     string x1 = Convert2Binary(msgcat10[pos]);
                     string x2 = Convert2Binary(msgcat10[pos + 1]);
@@ -354,28 +360,31 @@ namespace Idefix
                     y_BIN.Append(y2);
                     string y_BIN_TOTAL = y_BIN.ToString();
                     double y = ((int)Convert.ToInt64(y_BIN_TOTAL, 10)); // in degrees
+                    CP = new double[2] { x, y};
                     pos += 4;
-                }
+                }// FRN = 7: Cartesian Position
                 if (FSPEC_1[7] == 0) { }
-                else {
+                else
+                {
                     string FSPEC_2 = FSPEC_T[a][1];
-                    if (FSPEC_2[0] == 1) // FRN = 8
+                    if (FSPEC_2[0] == 1) // FRN = 8: Polar Track Velocity
                     {
                         string ground_speed1 = Convert2Binary(msgcat10[pos]);
                         string ground_speed2 = Convert2Binary(msgcat10[pos + 1]);
                         StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
                         ground_speed_BIN.Append(ground_speed2);
                         string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
-                        double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 10))*0.22; // in m
+                        double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 10)) * 0.22; // in m
                         string track_angle1 = Convert2Binary(msgcat10[pos + 2]);
                         string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
                         track_angle_BIN.Append(track_angle2);
                         string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
-                        double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 10))*360/2^16; // in degrees
+                        double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 10)) * 360 / 2 ^ 16; // in degrees
+                        PTV = new double[2] {ground_speed, track_angle};
                         pos += 4;
-                        }
-                    if (FSPEC_2[1] == 1) // FRN = 9
+                    }// FRN = 8: Polar Track Velocity
+                    if (FSPEC_2[1] == 1) // FRN = 9: Cartesian Track Velocity
                     {
                         string Vx1 = Convert2Binary(msgcat10[pos]);
                         string Vx2 = Convert2Binary(msgcat10[pos + 1]);
@@ -389,24 +398,24 @@ namespace Idefix
                         Vy_BIN.Append(Vy2);
                         string Vy_BIN_TOTAL = Vy_BIN.ToString();
                         double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 10)); // in degrees
+                        CTV = new double[2] { Vx, Vy };
                         pos += 4;
-                    }
-                    if (FSPEC_2[2] == 1) // FRN = 10; Track Number
+                    }// FRN = 9: Cartesian Track Velocity
+                    if (FSPEC_2[2] == 1) // FRN = 10: Track Number
                     {
                         string tn_1 = Convert2Binary(msgcat10[pos]);
-                        string tn_2 = Convert2Binary(msgcat10[pos+1]);
+                        string tn_2 = Convert2Binary(msgcat10[pos + 1]);
                         string tn_t = tn_1[4] + tn_1[5] + tn_1[6] + tn_1[7] + tn_2;
-                        int TN;
                         TN = (int)Convert.ToInt32(tn_t, 10);
-                        pos += 2; 
-                    }
-                    if (FSPEC_2[3] == 1) // FRN = 11; Track Status
+                        pos += 2;
+                    }// FRN = 10: Track Number
+                    if (FSPEC_2[3] == 1) // FRN = 11: Track Status
                     {
                         string ts = Convert2Binary(msgcat10[pos]);
                         string CNF = String.Empty;
-                        if (ts[0].Equals(1)){CNF = "Track initialization phase"; }
-                        else {CNF = "Confirmed Track"; }
-                        
+                        if (ts[0].Equals(1)) { CNF = "Track initialization phase"; }
+                        else { CNF = "Confirmed Track"; }
+
                         string TRE = String.Empty;
                         if (ts[1].Equals(1)) { TRE = "Last report of track"; }
                         else { TRE = "Default"; }
@@ -431,7 +440,9 @@ namespace Idefix
                         if (ts[6].Equals(1)) { STH = "Smoothed position"; }
                         else { STH = "Measured position"; }
 
+                        TS = new string[6] {CNF, TRE, CST, MAH, TCC, STH};
                         pos += 1;
+
                         if (ts[7].Equals(0)) { }
                         else
                         {
@@ -464,7 +475,7 @@ namespace Idefix
                             else if (mrs.Equals("01")) { MRS = "Track merged by association to plot"; }
                             else if (mrs.Equals("10")) { MRS = "Track merged by non-association to plot"; }
                             else if (mrs.Equals("11")) { MRS = "Split track"; }
-
+                            TS = new string[9] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS};
                             pos += 1;
 
                             if (ts_1[7].Equals(0)) { }
@@ -474,15 +485,112 @@ namespace Idefix
                                 string GHO = String.Empty;
                                 if (ts_2[4].Equals(1)) { GHO = "Default"; }
                                 else { GHO = "Ghost track"; }
-
+                                TS = new string[10] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS, GHO};
                                 pos += 1;
                             }
                         }
+                    }// FRN = 11; Track Status
+                    //some more shit shit here
+                    if (FSPEC_2[7] == 0) { }
+                    else
+                    {
+                        string FSPEC_3 = FSPEC_T[a][2];
+                        if (FSPEC_3[4] == 1) //FRN = 19; Target Size and Orientation --> TSO
+                        {
+                            double LEN; double ORI = 0; double WID = 0;
+                            string tso = Convert2Binary(msgcat10[pos]);
+                            string len = tso.Remove(tso.Length - 1);
+                            int LEN_0 = (int)Convert.ToInt32(len, 10);
+                            LEN = Convert.ToDouble(LEN_0);
+                            pos += 1;
+                            if (tso[7].Equals("1"))
+                            {
+                                string tso_1 = Convert2Binary(msgcat10[pos]);
+                                string ori = tso_1.Remove(tso.Length - 1);
+                                int ORI_0 = (int)Convert.ToInt32(ori, 10);
+                                ORI = Convert.ToDouble(ORI_0);
+                                ORI *= 360 / 128;
+                                pos += 1;
+                                if (ori[7].Equals("1"))
+                                {
+                                    string tso_2 = Convert2Binary(msgcat10[pos]);
+                                    string wid = tso_2.Remove(tso.Length - 1);
+                                    int WID_0 = (int)Convert.ToInt32(wid, 10);
+                                    WID = Convert.ToDouble(WID_0);
+                                    pos += 1;
+                                }
+                            }
+
+                            TSO = new double[3] {LEN, ORI, WID };
+                        }//FRN = 19; Target Size and Orientation
+                        if (FSPEC_3[5] == 1) //FRN = 20; SYSTEM STATUS
+                        {
+                            String NOGO = String.Empty;
+                            String OVL = String.Empty;
+                            String TSV = String.Empty;
+                            String DIV = String.Empty;
+                            String TTF = String.Empty;
+                            string ss = Convert2Binary(msgcat10[pos]);
+                            StringBuilder nogo = new StringBuilder(ss[0]);
+                            nogo.Append(ss[1]);
+                            string nogo_1 = nogo.ToString();
+                            switch (nogo_1)
+                            {
+                                case "00":
+                                    NOGO = "Operational";
+                                    break;
+                                case "01":
+                                    NOGO = "Degradated";
+                                    break;
+                                case "10":
+                                    NOGO = "NOGO";
+                                    break;
+                            }
+
+                            if (ss[2].Equals("1")) { OVL = "Overload"; }
+                            else { OVL = "No Overload"; }
+
+                            if (ss[3].Equals("1")) { TSV = "Time Source Invalid"; }
+                            else { TSV = "Time Source Valid"; }
+
+                            if (ss[4].Equals("1")) { DIV = "Diversity Degraded"; }
+                            else { DIV = "Normal Operation"; }
+
+                            if (ss[5].Equals("1")) { TTF = "Test Target Failure"; }
+                            else { TTF = "Test Target Operative"; }
+
+                            SS = new string[5] {NOGO, OVL, TSV, DIV, TTF};
+                            pos += 1;
+                        }//FRN = 20; SYSTEM STATUS
+                        if (FSPEC_3[7] == 0) { }
+                        else
+                        {
+                            string FSPEC_4 = FSPEC_T[a][3];
+                            if (FSPEC_4[3] == 1) // FRN = 25; Calculated acceleration
+                            {
+                                string ax1 = Convert2Binary(msgcat10[pos]);
+                                string ax2 = Convert2Binary(msgcat10[pos + 1]);
+                                StringBuilder ax_BIN = new StringBuilder(ax1);
+                                ax_BIN.Append(ax2);
+                                string ax_BIN_TOTAL = ax_BIN.ToString();
+                                double ax = (int)Convert.ToInt64(ax_BIN_TOTAL, 10);
+                                ax /= 4;//m/s^2
+                                string ay1 = Convert2Binary(msgcat10[pos + 2]);
+                                string ay2 = Convert2Binary(msgcat10[pos + 3]);
+                                StringBuilder ay_BIN = new StringBuilder(ay1);
+                                ay_BIN.Append(ay2);
+                                string ay_BIN_TOTAL = ay_BIN.ToString();
+                                double ay = ((int)Convert.ToInt64(ay_BIN_TOTAL, 10)); 
+                                ay /= 4;//m/s^2
+                                CA = new double[2] {ax, ay};
+                                pos += 4;
+                            }// FRN = 25; Calculated acceleration
+                        }
                     }
-
                 }
+                CAT10 obj = new CAT10();
+                obj.CAT10Constructor(obj, SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
             }
-
          return 0;
         }
         

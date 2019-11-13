@@ -208,7 +208,7 @@ namespace Idefix
                 string FSPEC_1 = FSPEC_T[a][0];
                 double[] msgcat10 = msgcat10_T[a];
                 // int n = 0;
-                int pos = FSPEC_T[a].Count(); // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
+                int pos = FSPEC_T[a].Length; // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
                 if(FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                 {
                     SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
@@ -624,115 +624,91 @@ namespace Idefix
                 string FSPEC_1 = FSPEC_T[a][0];
                 double[] msgcat20 = msgcat20_T[a];
                 // int n = 0;
-                int pos = FSPEC_T[a].Count(); // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
+                int pos = FSPEC_T[a].Count(); // posició de byte en el missatge rebut de categoria 20 SENSE cat,lenght,Fspec.
                 if (FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                 {
-                    SAC = msgcat20[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
+                    SAC = msgcat20[pos]; 
                     SIC = msgcat20[pos + 1];
                     pos = pos + 2;
                 }// FRN = 1: Data Source ID
-                if (FSPEC_1[1] == '1')// FRN = 2: Message Type
-                {
-                    double val = msgcat20[pos];
-                    switch (val)
-                    {
-                        case 1:
-                            MsgType = "Target Report";
-                            break;
-                        case 2:
-                            MsgType = "Start of Update Cycle";
-                            break;
-                        case 3:
-                            MsgType = "Periodic Status Message";
-                            break;
-                        case 4:
-                            MsgType = "Event-Triggered Status Message";
-                            break;
-                    }
-                    pos += 1;
-                }// FRN = 2: Message Type
-                if (FSPEC_1[2] == '1')// FRN = 3: Target Report Description
+                if (FSPEC_1[1] == '1')// FRN = 2: Target Report Description
                 {
                     string va = Convert2Binary(msgcat20[pos]);
-                    StringBuilder val = new StringBuilder(va[0]);
-                    val.Append(va[1]);
-                    val.Append(va[2]);
-                    String TYP = String.Empty;
-                    if (val.Equals("000")) { TYP = "SSR Multilateration"; }
-                    else if (val.Equals("001")) { TYP = "Mode S Multilateration"; }
-                    else if (val.Equals("010")) { TYP = "ADS-B"; }
-                    else if (val.Equals("011")) { TYP = "PSR"; }
-                    else if (val.Equals("100")) { TYP = "Magnetic Loop System"; }
-                    else if (val.Equals("101")) { TYP = "HF Multilateration"; }
-                    else if (val.Equals("110")) { TYP = "Not Defined"; }
-                    else if (val.Equals("111")) { TYP = "Other types"; }
 
-                    string DCR = String.Empty;
-                    if (va[3].Equals("0")) { DCR = "No differential correction"; }
-                    else { DCR = "Differential correction"; }
+                    string SSR = String.Empty;
+                    if (va[0].Equals("0")) { SSR = "No Non-Mode S 1090MHz multilateration"; }
+                    else { SSR = "Non-Mode S 1090MHz multilateration"; }
 
-                    string CHN = String.Empty;
-                    if (va[4].Equals("0")) { CHN = "Chain 1"; }
-                    //else { CHN = "Revisar ELSE"; }
+                    string MS = String.Empty;
+                    if (va[1].Equals("0")) { MS = "No Mode-S 1090 MHz multilateration"; }
+                    else { MS = "Mode-S 1090 MHz multilateration"; }
 
-                    string GBS = String.Empty;
-                    if (va[5].Equals("0")) { GBS = "Transponder Ground Bit Not Set"; }
-                    else { GBS = "Transponder Ground Bit Set"; }
+                    string HF = String.Empty;
+                    if (va[2].Equals("0")) { HF = "Non"; }
+                    else { HF = "HF multilateration"; }
 
-                    string CRT = String.Empty;
-                    if (va[6].Equals("0")) { CRT = "No Corrupted Reply in Multilateration"; }
-                    else { CRT = "Corrupted Replies in Multilateration"; }
-                    TRD = new string[5] { TYP, DCR, CHN, GBS, CRT };
-                    pos += 1;
+                    string VDL4 = String.Empty;
+                    if (va[3].Equals("0")) { VDL4 = "No VDL Mode 4 multilateration"; }
+                    else { VDL4 = "VDL Mode 4 multilateration"; }
 
-                    if (va[7].Equals("1"))
+                    string UAT = String.Empty;
+                    if (va[4].Equals("0")) { UAT = "No UAT multilateration"; }
+                    else { UAT = "UAT multilateration"; }
+
+                    string DME = String.Empty;
+                    if (va[5].Equals("0")) { DME = "No UAT multilateration"; }
+                    else { DME = "UAT multilateration"; }
+
+                    string OT = String.Empty;
+                    if (va[6].Equals("0")) { OT = "No UAT multilateration"; }
+                    else { OT = "UAT multilateration"; }
+
+
+
+                    if (va[7].Equals('0')) { pos += 1; }
+                    else
                     {
+                        pos += 1;
                         string va2 = Convert2Binary(msgcat20[pos]);
 
+                        string RAB = String.Empty;
+                        if (va2[0].Equals("0")) { RAB = "Report from Target Responder"; }
+                        else { RAB = "Report From Field Monitor (fixed transpoder)"; }
+
+                        string SPI = String.Empty;
+                        string va3 = Convert2Binary(msgcat20[pos]);
+                        if (va3[1].Equals("0")) { SPI = "Absence of SPI"; }
+                        else { SPI = "Special Position Identification"; }
+
+                        string CHN = String.Empty;
+                        if (va[2].Equals("0")) { CHN = "Chain 1"; }
+                        //else { CHN = "Revisar ELSE"; }
+
+                        string GBS = String.Empty;
+                        if (va[3].Equals("0")) { GBS = "Transponder Ground Bit Not Set"; }
+                        else { GBS = "Transponder Ground Bit Set"; }
+
+                        string CRT = String.Empty;
+                        if (va[4].Equals("0")) { CRT = "No Corrupted replies in multilateration"; }
+                        else { CRT = "Corrupted replies in multilateration"; }
+
                         string SIM = String.Empty;
-                        if (va2[0].Equals("0")) { SIM = "Actual Target Report"; }
+                        if (va2[5].Equals("0")) { SIM = "Actual Target Report"; }
                         else { SIM = "Simulated Target Report"; }
 
                         string TST = String.Empty;
-                        if (va2[1].Equals("0")) { TST = "Default"; }
+                        if (va2[6].Equals("0")) { TST = "Default"; }
                         else { TST = "Test Target"; }
 
-                        string RAB = String.Empty;
-                        if (va2[2].Equals("0")) { RAB = "Report from Target Responder"; }
-                        else { TST = "Report From Field Monitor (fixed transpoder)"; }
-
-                        StringBuilder val2 = new StringBuilder(va2[3]);
-                        val2.Append(va2[4]);
-                        string LOP = String.Empty;
-                        if (val2.Equals("00")) { LOP = "Undetermined"; }
-                        else if (val2.Equals("01")) { LOP = "Loop Start"; }
-                        else if (val2.Equals("10")) { LOP = "Loop Finish"; }
-
-                        StringBuilder val3 = new StringBuilder(va2[5]);
-                        val3.Append(va2[6]);
-                        string TOT = String.Empty;
-                        if (val3.Equals("00")) { TOT = "Undetermined"; }
-                        else if (val3.Equals("01")) { TOT = "Aircraft"; }
-                        else if (val3.Equals("10")) { TOT = "Ground Vehicle"; }
-                        else if (val3.Equals("11")) { TOT = "Helicopter"; }
-                        TRD = new string[10] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT };
 
                         pos += 1;
-
-                        if (va2[7].Equals("1"))
-                        {
-                            string SIP = String.Empty;
-                            string va3 = Convert2Binary(msgcat20[pos]);
-                            if (va3[0].Equals("0")) { SIP = "Absence of SPI"; }
-                            else { SIP = "Special Position Identification"; }
-
-                            TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
-                            pos += 1;
-                        }
-
-
                     }
-                }// FRN = 3: Target Report Description
+
+                    //TRD = new string[5] { TYP, DCR, CHN, GBS, CRT };
+                }// FRN = 2: Target Report Description
+
+
+                //NOT DONE YET
                 if (FSPEC_1[3] == '1') //FRN = 4: Time Of Day
                 {
                     string a1 = Convert2Binary(msgcat20[pos]);

@@ -604,6 +604,25 @@ namespace Idefix
             return this.CalculatedAcceleration;
         }*/
     }
+
+    public class CAT20
+    {
+        public int SAC;
+        public int SIC;
+        public TimeSpan TimeUTC;
+        public string TargetReportDescriptor;
+        public string TargetAddress;
+        public string FigureOfMerit;
+        public string VelocityAccurancy;
+        public string PositionWGS84; //LAT i LON
+        public string FlightLevel;
+        public string GeometricalVerticalRate;
+        public string AirboneGroundVector; //GroundSpeed&TrackAngle
+        public string TargetIdentification;
+        public string LinkTechnologyIndicator;
+    }
+
+
     public class CAT21
     {
         public int SAC;

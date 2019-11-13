@@ -54,10 +54,10 @@ namespace Idefix
         public double SIC;
         public string MessageType;
         //public string[] TargetReportDescriptor;
-       // public TimeSpan TimeofDay;
+        // public TimeSpan TimeofDay;
         //public double[] PolarPosition;
         //public double[] CartesianPosition; //Per plotejar
-       // public double[] PolarTrackVelocity;
+        // public double[] PolarTrackVelocity;
         //public double[] CartesianTrackVelocity; //Per plotejar??
         //public string Mode3A;
         //public string FlightLevel;
@@ -67,7 +67,7 @@ namespace Idefix
         //public string TargetIdentification;
         //public double[] TargetSizeAndOrientation;
         //public string[] SystemStatus;
-  //      public double[] CalculatedAcceleration;
+        //      public double[] CalculatedAcceleration;
 
         public double GetSAC(string Octet)
         {
@@ -107,7 +107,7 @@ namespace Idefix
             this.SIC = SIC;
             this.SAC = SAC;
             this.MessageType = MsgType;
-           // this.TimeofDay = TimeofDay;
+            // this.TimeofDay = TimeofDay;
             this.TrackNumber = TrackNumber;
 
         }
@@ -610,19 +610,24 @@ namespace Idefix
         public int SAC;
         public int SIC;
         public TimeSpan TimeUTC;
-        public string TargetReportDescriptor;
-        public string TargetAddress;
-        public string FigureOfMerit;
-        public string VelocityAccurancy;
-        public string PositionWGS84; //LAT i LON
+        public string[] TargetReportDescription;
+        public double[] CartesianPisition;
+        public int TrackNumber;
+        public string TrackStatus;
+        public string Mode3A;
+        public double[] CartesianTrackVelocity;
         public string FlightLevel;
-        public string GeometricalVerticalRate;
-        public string AirboneGroundVector; //GroundSpeed&TrackAngle
-        public string TargetIdentification;
-        public string LinkTechnologyIndicator;
+        public string TargetAddress;
+        public string TargetId;
+        public double CartesianHeight;
+        public double GeometricHeight;
+        public double[] CalculatedAcceleration;
+        public string VehicleFleetId;
+        public string PreprogrammedMessage;
+        public double[] DOPofPosition;
+        public double[] StandardDeviationofPosition;
+        public double[] StandardDeviationofHeigh;
     }
-
-
     public class CAT21
     {
         public int SAC;

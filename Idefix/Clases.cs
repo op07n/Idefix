@@ -609,14 +609,15 @@ namespace Idefix
     {
         public int SAC;
         public int SIC;
-        public TimeSpan TimeUTC;
         public string[] TargetReportDescription;
+        public TimeSpan TimeofDay;
         public double[] CartesianPisition;
         public int TrackNumber;
         public string TrackStatus;
         public string Mode3A;
         public double[] CartesianTrackVelocity;
-        public string FlightLevel;
+        public string[] FlightLevel;
+        public string[] modeC;
         public string TargetAddress;
         public string TargetId;
         public double CartesianHeight;
@@ -643,5 +644,12 @@ namespace Idefix
         public string AirboneGroundVector; //GroundSpeed&TrackAngle
         public string TargetIdentification;
         public string LinkTechnologyIndicator;
+    }
+
+    public class Flight
+    {
+        public string ID;
+        public TimeSpan TimeofDay;
+        public double[] CartesianPosition;
     }
 }

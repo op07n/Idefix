@@ -118,7 +118,7 @@ namespace Idefix
             return fspecsList;
         }
 
-        public static string[] SepararMensajes(double[] ar, string path, string filename)
+        /*public static string[] SepararMensajes(double[] ar, string path, string filename)
         {
             string d = path + @"\" + filename + ".txt";
             string a = path + @"\Cat10-" + filename + ".txt";
@@ -194,8 +194,8 @@ namespace Idefix
             }
             return archivos;
         }
-
-        public List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
+        */
+        public static List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
             double SAC = 0; double SIC = 0;
             String MsgType = String.Empty;
@@ -583,21 +583,13 @@ namespace Idefix
                                 if (FSPEC_4[3] == '1') // FRN = 25; Calculated acceleration
                                 {
                                     string ax1 = Convert2Binary(msgcat10[pos]);
-                                    string ax2 = Convert2Binary(msgcat10[pos + 1]);
-                                    StringBuilder ax_BIN = new StringBuilder(ax1);
-                                    ax_BIN.Append(ax2);
-                                    string ax_BIN_TOTAL = ax_BIN.ToString();
-                                    double ax = (int)Convert.ToInt64(ax_BIN_TOTAL, 2);
+                                    double ax = (int)Convert.ToInt64(ax1, 2);
                                     ax /= 4;//m/s^2
-                                    string ay1 = Convert2Binary(msgcat10[pos + 2]);
-                                    string ay2 = Convert2Binary(msgcat10[pos + 3]);
-                                    StringBuilder ay_BIN = new StringBuilder(ay1);
-                                    ay_BIN.Append(ay2);
-                                    string ay_BIN_TOTAL = ay_BIN.ToString();
-                                    double ay = ((int)Convert.ToInt64(ay_BIN_TOTAL, 2));
+                                    string ay1 = Convert2Binary(msgcat10[pos + 1]);
+                                    double ay = ((int)Convert.ToInt64(ay1, 2));
                                     ay /= 4;//m/s^2
                                     CA = new double[2] { ax, ay };
-                                    pos += 4;
+                                    pos += 2;
                                 }// FRN = 25; Calculated acceleration
                             }
                         }
@@ -611,15 +603,15 @@ namespace Idefix
             return listCAT10;
         }
 
-        public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
+        public static List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
         {
             int a = 0;
-            double SAC = 0; double SIC = 0;
+            double SAC = 0; double SIC = 0; double cartesianH; double geometricH; double SIGMA_GH;
             String MsgType = String.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = new string[0]; string[] TS = new string[0]; string[] SS = new string[0];
-            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0];
+            string[] TRD = new string[0]; string[] TS = new string[0]; string[] TID;  string[] SS = new string[0]; string[] PPM; string[] CD; string[] Mode3A; string[] FL_T; string[] ModeC;
+            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0]; double[] DOP = new double[0]; double[] SDEV = new double[0];
 
             List<CAT20> listCAT20 = new List<CAT20>();
 
@@ -670,7 +662,7 @@ namespace Idefix
                         if (va[6].Equals("0")) { OT = "No UAT multilateration"; }
                         else { OT = "UAT multilateration"; }
 
-
+                        TRD = new string[7] { SSR, MS, HF, VDL4, UAT, DME, OT };
 
                         if (va[7].Equals('0')) { pos += 1; }
                         else
@@ -707,11 +699,10 @@ namespace Idefix
                             if (va2[6].Equals("0")) { TST = "Default"; }
                             else { TST = "Test Target"; }
 
-
+                            TRD = new string[14] { SSR, MS, HF, VDL4, UAT, DME, OT, RAB, SPI, CHN, GBS, CRT, SIM, TST };
                             pos += 1;
                         }
 
-                        //TRD = new string[5] { TYP, DCR, CHN, GBS, CRT };
                     }// FRN = 2: Target Report Description
 
                     if (FSPEC_1[2] == '1') //FRN = 3: Time Of Day
@@ -819,7 +810,35 @@ namespace Idefix
                         string FSPEC_2 = FSPEC_T[a][1];
                         if (FSPEC_2[0] == '1') // FRN = 8: Mode-3A
                         {
+                            string V = "";
+                            string G = "";
+                            string L = "";
+                            string Response = "";
 
+                            string mode3A = Convert2Binary(msgcat20[pos]);
+                            string mode3A_2 = Convert2Binary(msgcat20[pos + 1]);
+                            if (mode3A[0].Equals('0')) V = "Code validated";
+                            else V = "Code not validated";
+                            if (mode3A[1].Equals('0')) G = "Default";
+                            else G = "Garbled code";
+                            if (mode3A[2].Equals('0')) L = "Mode-3/A code derived from the reply of the transponder";
+                            else L = "Mode-3/A code not extracted during the last update period";
+
+
+
+                            StringBuilder resp = new StringBuilder(mode3A[4]);
+                            resp.Append(mode3A[5]);
+                            resp.Append(mode3A[6]);
+                            resp.Append(mode3A[7]);
+                            resp.Append(mode3A_2);
+
+                            string resp1 = resp.ToString();
+                            int resp2 = (int)Convert.ToInt32(resp1, 2);
+
+                            Response = Convert.ToString(resp2, 8);
+
+                            Mode3A = new string[4] { V, G, L, Response };
+                            pos += 2;
                         }// FRN = 8: Mode-3A
 
                         if (FSPEC_2[1] == '1') // FRN = 9: Cartesian Track Velocity
@@ -842,11 +861,66 @@ namespace Idefix
 
                         if (FSPEC_2[2] == '1') // FRN = 10: Flight Level
                         {
+
+                            string V = "";
+                            string G = "";
+                            double FL = 0.0;
+
+                            string fl = Convert2Binary(msgcat20[pos]);
+                            string fl_2 = Convert2Binary(msgcat20[pos + 1]);
+                            if (fl[0].Equals('0')) V = "Code validated";
+                            else V = "Code not validated";
+                            if (fl[1].Equals('0')) G = "Default";
+                            else G = "Garbled code";
+                            
+
+                            StringBuilder resp = new StringBuilder(fl[2]);
+                            resp.Append(fl[3]);
+                            resp.Append(fl[4]);
+                            resp.Append(fl[5]);
+                            resp.Append(fl[6]);
+                            resp.Append(fl[7]);
+                            resp.Append(fl_2);
+
+                            string FL1 = Convert2Binary(Convert.ToDouble(resp));
+                            FL = Convert.ToDouble(FL1);
+                            FL /= 4;
+
+                            FL_T = new string[3] { V, G, FL.ToString() };
+                            pos += 2;
+
                         }// FRN = 10: Flight Level
 
                         if (FSPEC_2[3] == '1') // FRN = 11: Mode C code
                         {
+                            string V = "";
+                            string G = "";
+                            string response = "";
 
+                            string modec1 = Convert2Binary(msgcat20[pos]);
+                            string modec2 = Convert2Binary(msgcat20[pos + 1]);
+                            string modec3 = Convert2Binary(msgcat20[pos + 2]);
+                            string modec4 = Convert2Binary(msgcat20[pos + 3]);
+                            if (modec1[0].Equals('0')) V = "Code validated";
+                            else V = "Code not validated";
+                            if (modec1[1].Equals('0')) G = "Default";
+                            else G = "Garbled code";
+
+
+                            StringBuilder resp = new StringBuilder(modec1[4]);
+                            resp.Append(modec1[5]);
+                            resp.Append(modec1[6]);
+                            resp.Append(modec1[7]);
+                            resp.Append(modec2);
+
+                            string codeC_BIN = Convert2Binary(Convert.ToDouble(resp));
+                            uint codeC_BINA = Convert.ToUInt32(codeC_BIN);
+                            uint codeC_GRAY = (codeC_BINA >> 1) ^ codeC_BINA;
+
+                            string codeC = codeC_GRAY.ToString();
+
+                            ModeC = new string[3] { V, G, codeC };
+                            pos += 4;
                         }// FRN = 11: Mode C code
 
                         if (FSPEC_2[4] == '1') // FRN = 12: ICAO address
@@ -945,6 +1019,8 @@ namespace Idefix
                             tid8.Append(byte7[7]);
                             char TID8 = ConvertToIA5(tid8);
 
+                            string TID_T = string.Concat(TID1, TID2, TID3, TID4, TID5, TID6, TID7, TID8);
+                            TID = new string[2] { STI, TID_T };
                             pos += 7;
                         }// FRN = 13: Target Identification
 
@@ -954,12 +1030,11 @@ namespace Idefix
                             string h2 = Convert2Binary(msgcat20[pos + 1]);
                             StringBuilder h = new StringBuilder(h1);
                             h.Append(h2);
-                            double cartesianHeigh = Convert.ToDouble(h);
+                            cartesianH = Convert.ToDouble(h);
 
                             pos += 2;
                         }// FRN = 14: Measured heigh in cartesian coordinates
 
-                        //some more shit shit here
                         if (FSPEC_2[7] == '0') { }
                         else
                         {
@@ -970,7 +1045,7 @@ namespace Idefix
                                 string h2 = Convert2Binary(msgcat20[pos + 1]);
                                 StringBuilder h = new StringBuilder(h1);
                                 h.Append(h2);
-                                double geometricHeigh = Convert.ToDouble(h);
+                                geometricH = Convert.ToDouble(h);
 
                                 pos += 2;
                             }// FRN = 15: Geometric Heigh (WGS-84)
@@ -1048,105 +1123,135 @@ namespace Idefix
                                 }
                             } // FRN = 17: Vehicle Fleet Identification
 
-                            if (FSPEC_3[4] == '1') //FRN = 19; Target Size and Orientation --> TSO
+                            if (FSPEC_3[3] == '1') // FRN = 18: Pre-programmed message
                             {
-                                double LEN; double ORI = 0; double WID = 0;
-                                string tso = Convert2Binary(msgcat20[pos]);
-                                string len = tso.Remove(tso.Length - 1);
-                                int LEN_0 = (int)Convert.ToInt32(len, 10);
-                                LEN = Convert.ToDouble(LEN_0);
-                                pos += 1;
-                                if (tso[7].Equals("1"))
-                                {
-                                    string tso_1 = Convert2Binary(msgcat20[pos]);
-                                    string ori = tso_1.Remove(tso.Length - 1);
-                                    int ORI_0 = (int)Convert.ToInt32(ori, 10);
-                                    ORI = Convert.ToDouble(ORI_0);
-                                    ORI *= 360 / 128;
-                                    pos += 1;
-                                    if (ori[7].Equals("1"))
-                                    {
-                                        string tso_2 = Convert2Binary(msgcat20[pos]);
-                                        string wid = tso_2.Remove(tso.Length - 1);
-                                        int WID_0 = (int)Convert.ToInt32(wid, 10);
-                                        WID = Convert.ToDouble(WID_0);
-                                        pos += 1;
-                                    }
-                                }
+                                string ppm = msgcat20[pos].ToString();
+                                char trb = ppm[0];
+                                string TRB = string.Empty;
+                                if (trb.Equals('0')) { TRB = "Default"; }
+                                else { TRB = "In Trouble"; }
 
-                                TSO = new double[3] { LEN, ORI, WID };
-                            }//FRN = 19; Target Size and Orientation
-                            if (FSPEC_3[5] == '1') //FRN = 20; SYSTEM STATUS
-                            {
-                                String NOGO = String.Empty;
-                                String OVL = String.Empty;
-                                String TSV = String.Empty;
-                                String DIV = String.Empty;
-                                String TTF = String.Empty;
-                                string ss = Convert2Binary(msgcat20[pos]);
-                                StringBuilder nogo = new StringBuilder(ss[0]);
-                                nogo.Append(ss[1]);
-                                string nogo_1 = nogo.ToString();
-                                switch (nogo_1)
+                                StringBuilder msg = new StringBuilder(ppm[1]);
+                                msg.Append(ppm[2]);
+                                msg.Append(ppm[3]);
+                                msg.Append(ppm[4]);
+                                msg.Append(ppm[5]);
+                                msg.Append(ppm[6]);
+                                msg.Append(ppm[7]);
+                                string MSG = string.Empty;
+
+                                switch (msg)
                                 {
-                                    case "00":
-                                        NOGO = "Operational";
+
+                                    case "1":
+                                        MSG = "Towing aircraft";
                                         break;
-                                    case "01":
-                                        NOGO = "Degradated";
+                                    case "2":
+                                        MSG = "'Follow me' operations";
                                         break;
-                                    case "10":
-                                        NOGO = "NOGO";
+                                    case "3":
+                                        MSG = "Runway check";
+                                        break;
+                                    case "4":
+                                        MSG = "Emergency operation (fire, medical...)";
+                                        break;
+                                    case "5":
+                                        MSG = "Work in progress (maintenance, birds scarer, sweepers...)";
                                         break;
                                 }
-
-                                if (ss[2].Equals("1")) { OVL = "Overload"; }
-                                else { OVL = "No Overload"; }
-
-                                if (ss[3].Equals("1")) { TSV = "Time Source Invalid"; }
-                                else { TSV = "Time Source Valid"; }
-
-                                if (ss[4].Equals("1")) { DIV = "Diversity Degraded"; }
-                                else { DIV = "Normal Operation"; }
-
-                                if (ss[5].Equals("1")) { TTF = "Test Target Failure"; }
-                                else { TTF = "Test Target Operative"; }
-
-                                SS = new string[5] { NOGO, OVL, TSV, DIV, TTF };
                                 pos += 1;
-                            }//FRN = 20; SYSTEM STATUS
-                            if (FSPEC_3[7] == '0') { }
-                            else
-                            {
-                                string FSPEC_4 = FSPEC_T[a][3];
-                                if (FSPEC_4[3] == '1') // FRN = 25; Calculated acceleration
+                                PPM = new string[2] { TRB, MSG };
+                            } // FRN = 18: Pre-programmed message
+
+                            if (FSPEC_3[4] == '1') //FRN = 19: Position accuracy
+                            { 
+                                string accuracy = Convert2Binary(msgcat20[pos]);
+                                pos += 1;
+                                if (accuracy[0].Equals('1'))
                                 {
-                                    string ax1 = Convert2Binary(msgcat20[pos]);
-                                    string ax2 = Convert2Binary(msgcat20[pos + 1]);
-                                    StringBuilder ax_BIN = new StringBuilder(ax1);
-                                    ax_BIN.Append(ax2);
-                                    string ax_BIN_TOTAL = ax_BIN.ToString();
-                                    double ax = (int)Convert.ToInt64(ax_BIN_TOTAL, 2);
-                                    ax /= 4;//m/s^2
-                                    string ay1 = Convert2Binary(msgcat20[pos + 2]);
-                                    string ay2 = Convert2Binary(msgcat20[pos + 3]);
-                                    StringBuilder ay_BIN = new StringBuilder(ay1);
-                                    ay_BIN.Append(ay2);
-                                    string ay_BIN_TOTAL = ay_BIN.ToString();
-                                    double ay = ((int)Convert.ToInt64(ay_BIN_TOTAL, 2));
-                                    ay /= 4;//m/s^2
-                                    CA = new double[2] { ax, ay };
-                                    pos += 4;
-                                }// FRN = 25; Calculated acceleration
-                            }
+                                    string dopx1 = Convert2Binary(msgcat20[pos]);
+                                    string dopx2 = Convert2Binary(msgcat20[pos + 1]);
+                                    StringBuilder dopx_bin = new StringBuilder(dopx1);
+                                    dopx_bin.Append(dopx2);
+                                    double DOPx = (Convert.ToDouble(dopx_bin))*0.25;
+
+                                    string dopy1 = Convert2Binary(msgcat20[pos + 2]);
+                                    string dopy2 = Convert2Binary(msgcat20[pos + 3]);
+                                    StringBuilder dopy_bin = new StringBuilder(dopy1);
+                                    dopy_bin.Append(dopy2);
+                                    double DOPy = (Convert.ToDouble(dopy_bin)) * 0.25;
+
+                                    string dopxy1 = Convert2Binary(msgcat20[pos + 4]);
+                                    string dopxy2 = Convert2Binary(msgcat20[pos + 5]);
+                                    StringBuilder dopxy_bin = new StringBuilder(dopxy1);
+                                    dopxy_bin.Append(dopxy2);
+                                    double DOPxy = (Convert.ToDouble(dopxy_bin)) * 0.25;
+
+                                    DOP = { DOPx, DOPy, DOPxy };
+                                    pos += 6;
+
+                                }
+
+                                if (accuracy[1].Equals('1'))
+                                {
+                                    string sigmax1 = Convert2Binary(msgcat20[pos]);
+                                    string sigmax2 = Convert2Binary(msgcat20[pos + 1]);
+                                    StringBuilder sigmax_bin = new StringBuilder(sigmax1);
+                                    sigmax_bin.Append(sigmax2);
+                                    double SIGMAx = (Convert.ToDouble(sigmax_bin)) * 0.25;
+
+                                    string sigmay1 = Convert2Binary(msgcat20[pos + 2]);
+                                    string sigmay2 = Convert2Binary(msgcat20[pos + 3]);
+                                    StringBuilder sigmay_bin = new StringBuilder(sigmay1);
+                                    sigmax_bin.Append(sigmay2);
+                                    double SIGMAy = (Convert.ToDouble(sigmay_bin)) * 0.25;
+
+                                    string rhoxy1 = Convert2Binary(msgcat20[pos + 4]);
+                                    string rhoxy2 = Convert2Binary(msgcat20[pos + 5]);
+                                    StringBuilder rhoxy_bin = new StringBuilder(rhoxy1);
+                                    rhoxy_bin.Append(rhoxy2);
+                                    double RHOxy = (Convert.ToDouble(rhoxy_bin)) * 0.25;
+
+                                    SDEV = new double [3] { SIGMAx, SIGMAy, RHOxy };
+                                    pos += 6;
+                                }
+
+                                if (accuracy[2].Equals('1'))
+                                {
+                                    string sigmaGH1 = Convert2Binary(msgcat20[pos]);
+                                    string sigmaGH2 = Convert2Binary(msgcat20[pos + 1]);
+                                    StringBuilder sigmaGH = new StringBuilder(sigmaGH1);
+                                    sigmaGH.Append(sigmaGH2);
+
+                                    SIGMA_GH = (Convert.ToDouble(sigmaGH)) * 0.5;
+                                    pos += 2;
+                                }
+
+                            }//FRN = 19: Position accuracy
+
+                            if (FSPEC_3[5] == '1') //FRN = 20: Contributing devices
+                            {
+                                string REP = msgcat20[pos].ToString();
+                                string[] CTRU = new string[8];
+                                string TRx = msgcat20[pos + 1].ToString(); 
+                                int n = 0;
+                                while(n < 8)
+                                {
+                                    if (TRx[n].Equals('1'))
+                                        CTRU[n] = "TUx/RUx number " + n + " has contributed to the target detection";
+                                    else
+                                        CTRU[n] = "TUx/RUx number " + n + " has NOT contributed to the target detection";
+                                }
+                                pos += 2;
+                                CD = new string[2] { REP, TRx };
+                            }//FRN = 20: Contributing devices
                         }
                     }
-                    // CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
+                    // CAT20 obj = new CAT20(SIC, SAC, TRD, TimeOfDay, CP, TN, TS, Mode3A, CTV, FL_T, ModeC, ICAO_Address, TID, cartesianH, geometricH, CA, VFI, PPM, DOP, SDEV, SIGMA_GH, CD);
                 }
             }
             return listCAT20;
         }
-
 
         public static string Convert2Binary(double input)
         {
@@ -1194,11 +1299,12 @@ namespace Idefix
 
         public static char ConvertToIA5(StringBuilder Code)
         {
-            char letter = ' ';
+            char letter = '\0';
             if (Code != null) { 
                 string code = Code.ToString(); 
             
-                if (code.Equals("000001"))
+                if (code.Equals("000001", System.StringComparison))
+                    
                 {
                     letter = 'A';
                 }
@@ -1350,1213 +1456,5 @@ namespace Idefix
 
             return letter;
         }
-
-        /*public DataTable ReadCAT20(DataTable CAT20, string filename)
-        {
-            DataTable FieldsCAT20 = new DataTable();
-            FieldsCAT20.Columns.Add("SAC", typeof(int));
-            FieldsCAT20.Columns.Add("SIC", typeof(int));
-            FieldsCAT20.Columns.Add("Target Report Descriptor", typeof(string));
-            FieldsCAT20.Columns.Add("Time of Day", typeof(TimeSpan));
-            FieldsCAT20.Columns.Add("Position X [m]", typeof(double));
-            FieldsCAT20.Columns.Add("Position Y [m]", typeof(double));
-            FieldsCAT20.Columns.Add("Track Number", typeof(int));
-            FieldsCAT20.Columns.Add("Track Status", typeof(string));
-            FieldsCAT20.Columns.Add("Mode-3/A", typeof(int));
-            FieldsCAT20.Columns.Add("Mode-3/A Info.", typeof(string));
-            FieldsCAT20.Columns.Add("Vx [m/s]", typeof(double));
-            FieldsCAT20.Columns.Add("Vy [m/s]", typeof(double));
-            FieldsCAT20.Columns.Add("Flight Level", typeof(double));
-            FieldsCAT20.Columns.Add("Flight Level Info.", typeof(string));
-            FieldsCAT20.Columns.Add("Target Adress", typeof(string));
-            FieldsCAT20.Columns.Add("Target Identification", typeof(string));
-            FieldsCAT20.Columns.Add("Target Identification Info.", typeof(string));
-            FieldsCAT20.Columns.Add("DOP-x [m]", typeof(double));
-            FieldsCAT20.Columns.Add("DOP-y [m]", typeof(double));
-            FieldsCAT20.Columns.Add("DOP-xy [m]", typeof(double));
-            FieldsCAT20.Columns.Add("Standard Deviation of X", typeof(int));
-            FieldsCAT20.Columns.Add("Standard Deviation of Y", typeof(int));
-            FieldsCAT20.Columns.Add("Correlation coefficient", typeof(int));
-            FieldsCAT20.Columns.Add("Standard Deviation of Geometric Height", typeof(int));
-            FieldsCAT20.Columns.Add("Contributing Devices", typeof(string));
-
-
-            StreamReader file = new StreamReader(filename);
-
-            for (int i = 0; i < CAT20.Rows.Count; i++)
-            {
-                string a = CAT20.Rows[i]["DataFields"].ToString();
-                string[] DataItems = a.Split(' ');
-                int n = Convert.ToInt32(CAT20.Rows[i]["LastPositionFSPEC"].ToString());
-                string line = file.ReadLine();
-                string[] Values = line.Split(' ');
-                DataRow rowFieldsCAT20 = FieldsCAT20.NewRow();
-                int c = 0;
-                if (Convert.ToInt32(DataItems[c]) == 1)
-                {
-                    rowFieldsCAT20["SAC"] = Convert.ToInt32(Values[n]);
-                    rowFieldsCAT20["SIC"] = Convert.ToInt32(Values[n + 1]);
-                    n = n + 2; //Posición del octeto dentro el txt
-                    c = c + 1; //Posición de los dataitems dentro del datagreed "Dataitems"
-                }
-                if (Convert.ToInt32(DataItems[c]) == 2)
-                {
-                    string TDRString;
-                    string TRDBiteString = ConvertToBit(Values[n]);
-                    char[] TRDbite = TRDBiteString.ToCharArray();
-                    n = n + 1;
-
-                    if (Char.GetNumericValue(TRDbite[0]) == 1)
-                    {
-                        TDRString = "Non-Mode S 1090MHz multilateration - ";
-                    }
-                    else
-                    {
-                        TDRString = "No Non-Mode S 1090MHz multilat - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[1]) == 1)
-                    {
-                        TDRString = TDRString + "Mode-S 1090 MHz multilateration - ";
-                    }
-                    else
-                    {
-                        TDRString = TDRString + "No Mode-S 1090 MHz multilateration - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[2]) == 1)
-                    {
-                        TDRString = TDRString + "HF multilateration - ";
-                    }
-                    else
-                    {
-                        TDRString = TDRString + "No HF multilateration - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[3]) == 1)
-                    {
-                        TDRString = TDRString + "VDL Mode 4 multilateration - ";
-                    }
-                    else
-                    {
-                        TDRString = TDRString + "No VDL Mode 4 multilateration - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[4]) == 1)
-                    {
-                        TDRString = TDRString + "UAT multilateration - ";
-                    }
-                    else
-                    {
-                        TDRString = TDRString + "No UAT multilateration - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[5]) == 1)
-                    {
-                        TDRString = TDRString + "DME/TACAN multilateration - ";
-                    }
-                    else
-                    {
-                        TDRString = TDRString + "No DME/TACAN multilateration - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[6]) == 1)
-                    {
-                        TDRString = TDRString + "Other Technology Multilateration. ";
-                    }
-                    else
-                    {
-                        TDRString = TDRString + "No Other Technology Multilateration. ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[7]) == 1)
-                    {
-                        string TRDBiteString2 = ConvertToBit(Values[n]);
-                        char[] TRDbite2 = TRDBiteString2.ToCharArray();
-                        n = n + 1;
-                        if (Char.GetNumericValue(TRDbite2[0]) == 1)
-                        {
-                            TDRString = TDRString + "Report from field monitor - ";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "Report from target transponder - ";
-                        }
-                        if (Char.GetNumericValue(TRDbite2[1]) == 1)
-                        {
-                            TDRString = TDRString + "Special Position Identification - ";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "Absence of SPI - ";
-                        }
-                        if (Char.GetNumericValue(TRDbite2[2]) == 1)
-                        {
-                            TDRString = TDRString + "Chain 2 - ";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "Chain - ";
-                        }
-                        if (Char.GetNumericValue(TRDbite2[3]) == 1)
-                        {
-                            TDRString = TDRString + "Transponder Ground bit set - ";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "Transponder Ground bit not set - ";
-                        }
-                        if (Char.GetNumericValue(TRDbite2[4]) == 1)
-                        {
-                            TDRString = TDRString + "Corrupted replies in multilateration - ";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "No Corrupted reply in multilateration - ";
-                        }
-                        if (Char.GetNumericValue(TRDbite2[5]) == 1)
-                        {
-                            TDRString = TDRString + "Simulated target report - ";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "Actual target report - ";
-                        }
-                        if (Char.GetNumericValue(TRDbite2[6]) == 1)
-                        {
-                            TDRString = TDRString + "Test Target.";
-                        }
-                        else
-                        {
-                            TDRString = TDRString + "Default.";
-                        }
-
-                    }
-                    rowFieldsCAT20["Target Report Descriptor"] = TDRString;
-                    c = c + 1;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 3)
-                {
-                    string TimeString = ConvertToBit(Values[n]);
-                    TimeString = TimeString + ConvertToBit(Values[n + 1]);
-                    TimeString = TimeString + ConvertToBit(Values[n + 2]);
-                    int Time = Convert.ToInt32(TimeString, 2);
-                    double Time2 = Time / (double)128;
-                    TimeSpan time = TimeSpan.FromSeconds(Time2);
-                    rowFieldsCAT20["Time of Day"] = time;
-                    c = c + 1;
-                    n = n + 3;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 5)
-                {
-                    string XString = ConvertToBit(Values[n]);
-                    XString = XString + ConvertToBit(Values[n + 1]);
-                    XString = XString + ConvertToBit(Values[n + 2]);
-
-                    string YString = ConvertToBit(Values[n + 3]);
-                    YString = YString + ConvertToBit(Values[n + 4]);
-                    YString = YString + ConvertToBit(Values[n + 5]);
-                    int X = Convert.ToInt32(XString, 2);
-                    int Y = Convert.ToInt32(YString, 2);
-                    if (X > 8388600)
-                    {
-                        X = X - 16777216;
-                    }
-                    if (Y > 8388600)
-                    {
-                        Y = Y - 16777216;
-                    }
-                    rowFieldsCAT20["Position X [m]"] = X * (double)0.5;
-                    rowFieldsCAT20["Position Y [m]"] = Y * (double)0.5;
-                    c = c + 1;
-                    n = n + 6;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 6)
-                {
-                    string TNString = ConvertToBit(Values[n]);
-                    string TNString1 = TNString + ConvertToBit(Values[n + 1]);
-                    char[] TNSbite = TNString1.ToCharArray();
-                    string TNString2 = null;
-                    for (int t = 4; t < 16; t++)
-                    {
-                        TNString2 = TNString2 + Convert.ToString(TNSbite[t]);
-                    }
-                    rowFieldsCAT20["Track Number"] = Convert.ToInt32(TNString2, 2);
-                    c = c + 1;
-                    n = n + 2;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 7)
-                {
-                    string TSString;
-                    string TSBiteString = ConvertToBit(Values[n]);
-                    char[] TSbite = TSBiteString.ToCharArray();
-                    n = n + 1;
-                    c = c + 1;
-                    if (Char.GetNumericValue(TSbite[0]) == 1)
-                    {
-                        TSString = "Track in initation phase - ";
-                    }
-                    else
-                    {
-                        TSString = "Confirmed track - ";
-                    }
-                    if (Char.GetNumericValue(TSbite[1]) == 1)
-                    {
-                        TSString = TSString + "Last report for a track - ";
-                    }
-                    else
-                    {
-                        TSString = TSString + "TRE default - ";
-                    }
-                    if (Char.GetNumericValue(TSbite[2]) == 1)
-                    {
-                        TSString = TSString + "CST Extrapolated - ";
-                    }
-                    else
-                    {
-                        TSString = TSString + "CTS No extrapolated - ";
-                    }
-                    if ((Convert.ToString(TSbite[3]) + Convert.ToString(TSbite[4])).Equals("11") == true)
-                    {
-                        TSString = TSString + "CDM Invalid - ";
-                    }
-                    if ((Convert.ToString(TSbite[3]) + Convert.ToString(TSbite[4])).Equals("10") == true)
-                    {
-                        TSString = TSString + "CDM Descending - ";
-                    }
-                    if ((Convert.ToString(TSbite[3]) + Convert.ToString(TSbite[4])).Equals("01") == true)
-                    {
-                        TSString = TSString + "CDM Climbing - ";
-                    }
-                    if ((Convert.ToString(TSbite[3]) + Convert.ToString(TSbite[4])).Equals("00") == true)
-                    {
-                        TSString = TSString + "CDM Maintaining - ";
-                    }
-                    if (Char.GetNumericValue(TSbite[5]) == 1)
-                    {
-                        TSString = TSString + "MAH Horizontal manoeuvre - ";
-                    }
-                    else
-                    {
-                        TSString = TSString + "MAH Default - ";
-                    }
-                    if (Char.GetNumericValue(TSbite[6]) == 1)
-                    {
-                        TSString = TSString + "STH Smoothed position.";
-                    }
-                    else
-                    {
-                        TSString = TSString + "STH Mesured position.";
-                    }
-                    if (Char.GetNumericValue(TSbite[7]) == 1)
-                    {
-                        string TSBiteString2 = ConvertToBit(Values[n]);
-                        char[] TSbite2 = TSBiteString2.ToCharArray();
-                        n = n + 1;
-                        if (Char.GetNumericValue(TSbite2[0]) == 1)
-                        {
-                            TSString = TSString + "GHO Ghost track";
-                        }
-                        else
-                        {
-                            TSString = TSString + "GHO Default";
-                        }
-                    }
-                    rowFieldsCAT20["Track Status"] = TSString;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 8)
-                {
-                    string AString = ConvertToBit(Values[n]);
-                    string AString1 = AString + ConvertToBit(Values[n + 1]);
-                    char[] Abite = AString1.ToCharArray();
-                    string AString2;
-                    string AString3 = null;
-
-                    for (int t = 4; t < 16; t++)
-                    {
-                        AString3 = AString3 + Convert.ToString(Abite[t]);
-                    }
-                    if (Char.GetNumericValue(Abite[0]) == 1)
-                    {
-                        AString2 = "Code not validated - ";
-                    }
-                    else
-                    {
-                        AString2 = "Code validated - ";
-                    }
-                    if (Char.GetNumericValue(Abite[1]) == 1)
-                    {
-                        AString2 = AString2 + "Garbled code - ";
-                    }
-                    else
-                    {
-                        AString2 = AString2 + "Default - ";
-                    }
-                    if (Char.GetNumericValue(Abite[2]) == 1)
-                    {
-                        AString2 = AString2 + "Mode-3A code not extracted during the last update period.";
-                    }
-                    else
-                    {
-                        AString2 = AString2 + "Mode-3/A code derived from the reply of the transponder.";
-                    }
-                    int h = Convert.ToInt32(AString3, 2);
-                    string g = Convert.ToString(h, 8);
-                    rowFieldsCAT20["Mode-3/A"] = Convert.ToInt32(g);
-                    rowFieldsCAT20["Mode-3/A Info."] = AString2;
-                    n = n + 2;
-                    c = c + 1;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 9)
-                {
-                    string VxString = ConvertToBit(Values[n]);
-                    VxString = VxString + ConvertToBit(Values[n + 1]);
-                    string VyString = ConvertToBit(Values[n + 2]);
-                    VyString = VyString + ConvertToBit(Values[n + 3]);
-                    int Vx = Convert.ToInt32(VxString, 2);
-                    int Vy = Convert.ToInt32(VyString, 2);
-                    if (Vx > 32768)
-                    {
-                        Vx = Vx - 65536;
-                    }
-                    if (Vy > 32768)
-                    {
-                        Vy = Vy - 65536;
-                    }
-                    rowFieldsCAT20["Vx [m/s]"] = Vx * (double)0.25;
-                    rowFieldsCAT20["Vy [m/s]"] = Vy * (double)0.25;
-                    n = n + 4;
-                    c = c + 1;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 10)
-                {
-                    string FLString = ConvertToBit(Values[n]);
-                    FLString = FLString + ConvertToBit(Values[n + 1]);
-                    char[] FLbite = FLString.ToCharArray();
-                    string FLString2;
-                    string FLString3 = null;
-
-                    for (int t = 2; t < 16; t++)
-                    {
-                        FLString3 = FLString3 + Convert.ToString(FLbite[t]);
-                    }
-                    if (Char.GetNumericValue(FLbite[0]) == 1)
-                    {
-                        FLString2 = "Code not validated - ";
-                    }
-                    else
-                    {
-                        FLString2 = "Code Validated - ";
-                    }
-                    if (Char.GetNumericValue(FLbite[1]) == 1)
-                    {
-                        FLString2 = FLString2 + "Garbled code";
-                    }
-                    else
-                    {
-                        FLString2 = FLString2 + "Default";
-                    }
-                    rowFieldsCAT20["Flight Level Info."] = FLString2;
-                    rowFieldsCAT20["Flight Level"] = Convert.ToInt32(FLString3, 2) * (double)0.25;
-                    n = n + 2;
-                    c = c + 1;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 12)
-                {
-                    string TAString = ConvertToBit(Values[n]);
-                    TAString = TAString + ConvertToBit(Values[n + 1]);
-                    TAString = TAString + ConvertToBit(Values[n + 2]);
-                    string TAHex = Convert.ToString(Convert.ToInt32(TAString, 2), 16);
-
-                    rowFieldsCAT20["Target Adress"] = TAHex;
-                    n = n + 3;
-                    c = c + 1;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 13)
-                {
-                    string TIString = null;
-                    string TIBiteString = ConvertToBit(Values[n]);
-                    char[] TIbite = TIBiteString.ToCharArray();
-                    if ((Convert.ToString(TIbite[0]) + Convert.ToString(TIbite[1])).Equals("11") == true)
-                    {
-                        TIString = "Not defined - ";
-                    }
-                    if ((Convert.ToString(TIbite[0]) + Convert.ToString(TIbite[1])).Equals("10") == true)
-                    {
-                        TIString = "Callsign downlinked from transponder";
-                    }
-                    if ((Convert.ToString(TIbite[0]) + Convert.ToString(TIbite[1])).Equals("01") == true)
-                    {
-                        TIString = "Registration downlinked from transponder";
-                    }
-                    if ((Convert.ToString(TIbite[0]) + Convert.ToString(TIbite[1])).Equals("00") == true)
-                    {
-                        TIString = "Callsign or registration not downlinked from transponder.";
-                    }
-                    string TIBiteString2 = ConvertToBit(Values[n + 1]);
-                    TIBiteString2 = TIBiteString2 + ConvertToBit(Values[n + 2]);
-                    TIBiteString2 = TIBiteString2 + ConvertToBit(Values[n + 3]);
-                    TIBiteString2 = TIBiteString2 + ConvertToBit(Values[n + 4]);
-                    TIBiteString2 = TIBiteString2 + ConvertToBit(Values[n + 5]);
-                    TIBiteString2 = TIBiteString2 + ConvertToBit(Values[n + 6]);
-                    char[] TIbite2 = TIBiteString2.ToCharArray();
-                    string TI = null;
-                    int j = 0;
-                    for (int p = 0; p < 8; p++)
-                    {
-                        string g = Convert.ToString(TIbite2[j + 2]) + Convert.ToString(TIbite2[j + 3]) + Convert.ToString(TIbite2[j + 4]) + Convert.ToString(TIbite2[j + 5]);
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 0 && (Char.GetNumericValue(TIbite2[j + 1])) == 0)
-                        {
-                            if (g.Equals("0000"))
-                            {
-                                TI = TI + " ";
-                            }
-                            if (g.Equals("0001"))
-                            {
-                                TI = TI + "A";
-                            }
-                            if (g.Equals("0010"))
-                            {
-                                TI = TI + "B";
-                            }
-                            if (g.Equals("0011"))
-                            {
-                                TI = TI + "C";
-                            }
-                            if (g.Equals("0100"))
-                            {
-                                TI = TI + "D";
-                            }
-                            if (g.Equals("0101"))
-                            {
-                                TI = TI + "E";
-                            }
-                            if (g.Equals("0110"))
-                            {
-                                TI = TI + "F";
-                            }
-                            if (g.Equals("0111"))
-                            {
-                                TI = TI + "G";
-                            }
-                            if (g.Equals("1000"))
-                            {
-                                TI = TI + "H";
-                            }
-                            if (g.Equals("1001"))
-                            {
-                                TI = TI + "I";
-                            }
-                            if (g.Equals("1010"))
-                            {
-                                TI = TI + "J";
-                            }
-                            if (g.Equals("1011"))
-                            {
-                                TI = TI + "K";
-                            }
-                            if (g.Equals("1100"))
-                            {
-                                TI = TI + "L";
-                            }
-                            if (g.Equals("1101"))
-                            {
-                                TI = TI + "M";
-                            }
-                            if (g.Equals("1110"))
-                            {
-                                TI = TI + "N";
-                            }
-                            if (g.Equals("1111"))
-                            {
-                                TI = TI + "O";
-                            }
-                        }
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 0 && (Char.GetNumericValue(TIbite2[j + 1])) == 1)
-                        {
-                            if (g.Equals("0000"))
-                            {
-                                TI = TI + "P";
-                            }
-                            else if (g.Equals("0001"))
-                            {
-                                TI = TI + "Q";
-                            }
-                            else if (g.Equals("0010"))
-                            {
-                                TI = TI + "R";
-                            }
-                            else if (g.Equals("0011"))
-                            {
-                                TI = TI + "S";
-                            }
-                            else if (g.Equals("0100"))
-                            {
-                                TI = TI + "T";
-                            }
-                            else if (g.Equals("0101"))
-                            {
-                                TI = TI + "U";
-                            }
-                            else if (g.Equals("0110"))
-                            {
-                                TI = TI + "V";
-                            }
-                            else if (g.Equals("0111"))
-                            {
-                                TI = TI + "W";
-                            }
-                            else if (g.Equals("1000"))
-                            {
-                                TI = TI + "X";
-                            }
-                            else if (g.Equals("1001"))
-                            {
-                                TI = TI + "Y";
-                            }
-                            else if (g.Equals("1010"))
-                            {
-                                TI = TI + "Z";
-                            }
-                            else
-                            {
-                                TI = TI + " ";
-                            }
-                        }
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 1 && (Char.GetNumericValue(TIbite2[j + 1])) == 0)
-                        {
-                            TI = TI + " ";
-                        }
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 1 && (Char.GetNumericValue(TIbite2[j + 1])) == 1)
-                        {
-                            if (g.Equals("0000"))
-                            {
-                                TI = TI + "0";
-                            }
-                            else if (g.Equals("0001"))
-                            {
-                                TI = TI + "1";
-                            }
-                            else if (g.Equals("0010"))
-                            {
-                                TI = TI + "2";
-                            }
-                            else if (g.Equals("0011"))
-                            {
-                                TI = TI + "3";
-                            }
-                            else if (g.Equals("0100"))
-                            {
-                                TI = TI + "4";
-                            }
-                            else if (g.Equals("0101"))
-                            {
-                                TI = TI + "5";
-                            }
-                            else if (g.Equals("0110"))
-                            {
-                                TI = TI + "6";
-                            }
-                            else if (g.Equals("0111"))
-                            {
-                                TI = TI + "7";
-                            }
-                            else if (g.Equals("1000"))
-                            {
-                                TI = TI + "8";
-                            }
-                            else if (g.Equals("1001"))
-                            {
-                                TI = TI + "9";
-                            }
-                            else
-                            {
-                                TI = TI + " ";
-                            }
-                        }
-                        j = j + 6;
-                    }
-                    rowFieldsCAT20["Target Identification Info."] = TIString;
-                    rowFieldsCAT20["Target Identification"] = TI;
-                    n = n + 7;
-                    c = c + 1;
-                }
-                if (Convert.ToInt32(DataItems[c]) == 19)
-                {
-                    string PABiteString = ConvertToBit(Values[n]);
-                    char[] PAbite = PABiteString.ToCharArray();
-                    c = c + 1;
-                    n = n + 1;
-                    if (Char.GetNumericValue(PAbite[0]) == 1)
-                    {
-                        string DOPxString = ConvertToBit(Values[n]);
-                        DOPxString = DOPxString + ConvertToBit(Values[n + 1]);
-                        string DOPyString = ConvertToBit(Values[n + 2]);
-                        DOPyString = DOPyString + ConvertToBit(Values[n + 3]);
-                        string DOPxyString = ConvertToBit(Values[n + 4]);
-                        DOPxyString = DOPxyString + ConvertToBit(Values[n + 5]);
-                        rowFieldsCAT20["DOP-x [m]"] = Convert.ToInt32(DOPxString, 2) * (double)0.25;
-                        rowFieldsCAT20["DOP-y [m]"] = Convert.ToInt32(DOPyString, 2) * (double)0.25;
-                        rowFieldsCAT20["DOP-xy [m]"] = Convert.ToInt32(DOPxyString, 2) * (double)0.25;
-                        n = n + 6;
-                    }
-                    if (Char.GetNumericValue(PAbite[1]) == 1)
-                    {
-                        string SDxString = ConvertToBit(Values[n]);
-                        SDxString = SDxString + ConvertToBit(Values[n + 1]);
-                        string SDyString = ConvertToBit(Values[n + 2]);
-                        SDyString = SDyString + ConvertToBit(Values[n + 3]);
-                        string CCString = ConvertToBit(Values[n + 4]);
-                        CCString = CCString + ConvertToBit(Values[n + 5]);
-                        rowFieldsCAT20["Standard Deviation of X"] = Convert.ToInt32(SDxString, 2);
-                        rowFieldsCAT20["Standard Deviation of Y"] = Convert.ToInt32(SDyString, 2);
-                        rowFieldsCAT20["Correlation coefficient"] = Convert.ToInt32(CCString, 2);
-                        n = n + 6;
-                    }
-                    if (Char.GetNumericValue(PAbite[2]) == 1)
-                    {
-                        string SDHString = ConvertToBit(Values[n]);
-                        SDHString = SDHString + ConvertToBit(Values[n + 1]);
-                        rowFieldsCAT20["Standard Deviation of Geometric Height"] = Convert.ToInt32(SDHString, 2);
-                        n = n + 2;
-                    }
-                }
-                if (Convert.ToInt32(DataItems[c]) == 20)
-                {
-                    rowFieldsCAT20["Contributing Devices"] = "Por Hacer";
-                }
-                FieldsCAT20.Rows.Add(rowFieldsCAT20);
-            }
-            return FieldsCAT20;
-        }
-
-        public DataTable ReadCAT21(DataTable CAT21, string filename)
-        {
-            DataTable FieldsCAT21 = new DataTable();
-            FieldsCAT21.Columns.Add("SAC", typeof(int));
-            FieldsCAT21.Columns.Add("SIC", typeof(int));
-            FieldsCAT21.Columns.Add("Target Report Descriptor", typeof(string));
-            FieldsCAT21.Columns.Add("Time of Day", typeof(TimeSpan));
-            FieldsCAT21.Columns.Add("Longitude", typeof(double));
-            FieldsCAT21.Columns.Add("Latitude", typeof(double));
-            FieldsCAT21.Columns.Add("Target Adress", typeof(string));
-            FieldsCAT21.Columns.Add("Figure of Merit", typeof(string));
-            FieldsCAT21.Columns.Add("Link Technology Indicator", typeof(string));
-            FieldsCAT21.Columns.Add("Flight Level", typeof(double));
-            FieldsCAT21.Columns.Add("Geometric Vertical Rate [Ft/M]", typeof(double));
-            FieldsCAT21.Columns.Add("Ground Speed[Km/h]", typeof(double));
-            FieldsCAT21.Columns.Add("Track Angle[º]", typeof(int));
-            FieldsCAT21.Columns.Add("Target Identification", typeof(string));
-            FieldsCAT21.Columns.Add("Velocity Accuracy", typeof(int));
-
-            StreamReader file = new StreamReader(filename);
-
-            for (int i = 0; i < CAT21.Rows.Count; i++)
-            {
-                string a = CAT21.Rows[i]["DataFields"].ToString();
-                string[] DataItems = a.Split(' ');
-                int n = Convert.ToInt32(CAT21.Rows[i]["LastPositionFSPEC"].ToString());
-                string line = file.ReadLine();
-                string[] Values = line.Split(' ');
-                DataRow rowFieldsCAT21 = FieldsCAT21.NewRow();
-                int c = 0;
-                if (Convert.ToInt32(DataItems[c]) == 1)
-                {
-                    rowFieldsCAT21["SAC"] = Convert.ToInt32(Values[n]);
-                    rowFieldsCAT21["SIC"] = Convert.ToInt32(Values[n + 1]);
-                    n = n + 2; //Posición del octeto dentro el txt
-                    c = c + 1; //Posición de los dataitems dentro del datagreed "Dataitems"
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 2)
-                {
-                    string TRDString;
-                    string TRDBiteString = ConvertToBit(Values[n]);
-                    TRDBiteString = TRDBiteString + ConvertToBit(Values[n + 1]);
-                    char[] TRDbite = TRDBiteString.ToCharArray();
-                    n = n + 2;
-                    c = c + 1;
-                    if (Char.GetNumericValue(TRDbite[0]) == 1)
-                    {
-                        TRDString = "Differential correction (ADS-B) - ";
-                    }
-                    else
-                    {
-                        TRDString = "No differential correction (ADS-B) - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[1]) == 1)
-                    {
-                        TRDString = TRDString + "Ground Bit set - ";
-                    }
-                    else
-                    {
-                        TRDString = TRDString + "Ground Bit not set - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[2]) == 1)
-                    {
-                        TRDString = TRDString + "Simulated target report - ";
-                    }
-                    else
-                    {
-                        TRDString = TRDString + "Actual target report - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[3]) == 1)
-                    {
-                        TRDString = TRDString + "Test Target - ";
-                    }
-                    else
-                    {
-                        TRDString = TRDString + "Default - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[4]) == 1)
-                    {
-                        TRDString = TRDString + "Report from field monitor (fixed transponder) - ";
-                    }
-                    else
-                    {
-                        TRDString = TRDString + "Report from target transponder - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[5]) == 1)
-                    {
-                        TRDString = TRDString + "Equipement capable to provide Selected Altitude - ";
-                    }
-                    else
-                    {
-                        TRDString = TRDString + "Equipement not capable to provide Selected Altitude - ";
-                    }
-                    if (Char.GetNumericValue(TRDbite[6]) == 1)
-                    {
-                        TRDString = TRDString + "Special Position Identification - ";
-                    }
-                    else
-                    {
-                        TRDString = TRDString + "Absence of SPI - ";
-                    }
-                    bool b = false;
-                    if ((Convert.ToString(TRDbite[8]) + Convert.ToString(TRDbite[9]) + Convert.ToString(TRDbite[10])).Equals("000") == true)
-                    {
-                        TRDString = TRDString + "Non unique address - ";
-                        b = true;
-                    }
-                    if ((Convert.ToString(TRDbite[8]) + Convert.ToString(TRDbite[9]) + Convert.ToString(TRDbite[10])).Equals("001") == true)
-                    {
-                        TRDString = TRDString + "24 - Bit ICAO address - ";
-                        b = true;
-                    }
-                    if ((Convert.ToString(TRDbite[8]) + Convert.ToString(TRDbite[9]) + Convert.ToString(TRDbite[10])).Equals("010") == true)
-                    {
-                        TRDString = TRDString + "Surface vehicle address - ";
-                        b = true;
-                    }
-                    if ((Convert.ToString(TRDbite[8]) + Convert.ToString(TRDbite[9]) + Convert.ToString(TRDbite[10])).Equals("011") == true)
-                    {
-                        TRDString = TRDString + "Anonymous address - ";
-                        b = true;
-                    }
-                    if (b == false)
-                    {
-                        TRDString = TRDString + "Reserved for future use - ";
-                    }
-                    if ((Convert.ToString(TRDbite[11]) + Convert.ToString(TRDbite[12])).Equals("00") == true)
-                    {
-                        TRDString = TRDString + "ARD Unknown";
-                    }
-                    if ((Convert.ToString(TRDbite[11]) + Convert.ToString(TRDbite[12])).Equals("01") == true)
-                    {
-                        TRDString = TRDString + "ARD: 25ft";
-                    }
-                    if ((Convert.ToString(TRDbite[11]) + Convert.ToString(TRDbite[12])).Equals("10") == true)
-                    {
-                        TRDString = TRDString + "ARD: 100ft";
-                    }
-                    rowFieldsCAT21["Target Report Descriptor"] = TRDString;
-
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 3)
-                {
-                    string TimeString = ConvertToBit(Values[n]);
-                    TimeString = TimeString + ConvertToBit(Values[n + 1]);
-                    TimeString = TimeString + ConvertToBit(Values[n + 2]);
-                    int Time = Convert.ToInt32(TimeString, 2);
-                    double Time2 = Time / (double)128;
-                    TimeSpan time = TimeSpan.FromSeconds(Time2);
-                    rowFieldsCAT21["Time of Day"] = time;
-                    n = n + 3;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 4)
-                {
-                    string LatitudeString = ConvertToBit(Values[n]);
-                    LatitudeString = LatitudeString + ConvertToBit(Values[n + 1]);
-                    LatitudeString = LatitudeString + ConvertToBit(Values[n + 2]);
-                    string LongitudeString = ConvertToBit(Values[n + 3]);
-                    LongitudeString = LongitudeString + ConvertToBit(Values[n + 4]);
-                    LongitudeString = LongitudeString + ConvertToBit(Values[n + 6]);
-                    double Latitude = (double)Convert.ToInt32(LatitudeString, 2);
-                    double Longitude = (double)Convert.ToInt32(LongitudeString, 2);
-                    if (Longitude > (double)4194304)
-                    {
-                        Longitude = Longitude - (double)8388608;
-                    }
-                    if (Latitude > (double)8388608)
-                    {
-                        Latitude = Latitude - (double)16777216;
-                    }
-                    double Latitude2 = Latitude * (double)180 / (double)8388608;
-                    double Longitude2 = Longitude * (double)180 / (double)8388608;
-                    rowFieldsCAT21["Latitude"] = Latitude2;
-                    rowFieldsCAT21["Longitude"] = Longitude2;
-                    n = n + 6;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 5)
-                {
-                    string TAString = ConvertToBit(Values[n]);
-                    TAString = TAString + ConvertToBit(Values[n + 1]);
-                    TAString = TAString + ConvertToBit(Values[n + 2]);
-                    string TAHex = Convert.ToString(Convert.ToInt32(TAString, 2), 16);
-
-                    rowFieldsCAT21["Target Adress"] = TAHex;
-                    n = n + 3;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 7)
-                {
-                    string FMString = null;
-                    string FMBiteString = ConvertToBit(Values[n]);
-                    FMBiteString = FMBiteString + ConvertToBit(Values[n + 1]);
-                    char[] FMBite = FMBiteString.ToCharArray();
-
-                    if ((Convert.ToString(FMBite[0]) + Convert.ToString(FMBite[1])).Equals("00") == true)
-                    {
-                        FMString = "AC Unknown - ";
-                    }
-                    if ((Convert.ToString(FMBite[0]) + Convert.ToString(FMBite[1])).Equals("01") == true)
-                    {
-                        FMString = "ACAS not operational - ";
-                    }
-                    if ((Convert.ToString(FMBite[0]) + Convert.ToString(FMBite[1])).Equals("10") == true)
-                    {
-                        FMString = "ACAS operational - ";
-                    }
-                    if ((Convert.ToString(FMBite[0]) + Convert.ToString(FMBite[1])).Equals("11") == true)
-                    {
-                        FMString = "AC invalid - ";
-                    }
-                    if ((Convert.ToString(FMBite[2]) + Convert.ToString(FMBite[3])).Equals("00") == true)
-                    {
-                        FMString = FMString + "MN Unknown - ";
-                    }
-                    if ((Convert.ToString(FMBite[2]) + Convert.ToString(FMBite[3])).Equals("01") == true)
-                    {
-                        FMString = FMString + "Multiple navigational aids not operating - ";
-                    }
-                    if ((Convert.ToString(FMBite[2]) + Convert.ToString(FMBite[3])).Equals("10") == true)
-                    {
-                        FMString = FMString + "Multiple navigational aids operating - ";
-                    }
-                    if ((Convert.ToString(FMBite[2]) + Convert.ToString(FMBite[3])).Equals("11") == true)
-                    {
-                        FMString = FMString + "MN invalid - ";
-                    }
-                    if ((Convert.ToString(FMBite[4]) + Convert.ToString(FMBite[5])).Equals("00") == true)
-                    {
-                        FMString = FMString + "DC Unknown - ";
-                    }
-                    if ((Convert.ToString(FMBite[4]) + Convert.ToString(FMBite[5])).Equals("01") == true)
-                    {
-                        FMString = FMString + "Differential correction - ";
-                    }
-                    if ((Convert.ToString(FMBite[4]) + Convert.ToString(FMBite[5])).Equals("10") == true)
-                    {
-                        FMString = FMString + "No Differential correction - ";
-                    }
-                    if ((Convert.ToString(FMBite[4]) + Convert.ToString(FMBite[5])).Equals("11") == true)
-                    {
-                        FMString = FMString + "DC invalid - ";
-                    }
-                    string pabits = (Convert.ToString(FMBite[12]) + Convert.ToString(FMBite[13]) + Convert.ToString(FMBite[14]) + Convert.ToString(FMBite[15]));
-                    string PA = Convert.ToString(Convert.ToInt32(pabits, 2));
-                    rowFieldsCAT21["Figure of Merit"] = FMString + PA;
-                    n = n + 2;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 8)
-                {
-                    string LTIString;
-                    string LTIBiteString = ConvertToBit(Values[n]);
-                    char[] LTIBite = LTIBiteString.ToCharArray();
-                    if (char.GetNumericValue(LTIBite[3]) == 1)
-                    {
-                        LTIString = "Aircraft equiped with CDTI - ";
-                    }
-                    else
-                    {
-                        LTIString = "Unknown - ";
-                    }
-                    if (char.GetNumericValue(LTIBite[4]) == 1)
-                    {
-                        LTIString = LTIString + "Used - ";
-                    }
-                    else
-                    {
-                        LTIString = LTIString + "Not used - ";
-                    }
-                    if (char.GetNumericValue(LTIBite[5]) == 1)
-                    {
-                        LTIString = LTIString + "Used - ";
-                    }
-                    else
-                    {
-                        LTIString = LTIString + "Not used - ";
-                    }
-                    if (char.GetNumericValue(LTIBite[6]) == 1)
-                    {
-                        LTIString = LTIString + "Used - ";
-                    }
-                    else
-                    {
-                        LTIString = LTIString + "Not used - ";
-                    }
-                    if (char.GetNumericValue(LTIBite[7]) == 1)
-                    {
-                        LTIString = LTIString + "Used";
-                    }
-                    else
-                    {
-                        LTIString = LTIString + "Not used";
-                    }
-                    rowFieldsCAT21["Link Technology Indicator"] = LTIString;
-                    n = n + 1;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 10)
-                {
-                    string FLString = ConvertToBit(Values[n]);
-                    FLString = FLString + ConvertToBit(Values[n + 1]);
-                    int FL = Convert.ToInt32(FLString, 2);
-                    rowFieldsCAT21["Flight Level"] = FL / (double)4;
-                    n = n + 2;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 15)
-                {
-                    string GVRString = ConvertToBit(Values[n]);
-                    GVRString = GVRString + ConvertToBit(Values[n + 1]);
-                    int GVR = Convert.ToInt32(GVRString, 2);
-                    rowFieldsCAT21["Geometric Vertical Rate [Ft/M]"] = GVR * (double)6.25;
-                    n = n + 2;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 16)
-                {
-                    string GVString = ConvertToBit(Values[n]);
-                    GVString = GVString + ConvertToBit(Values[n + 1]);
-                    string TAString = ConvertToBit(Values[n + 2]);
-                    TAString = TAString + ConvertToBit(Values[n + 3]);
-                    double GV = (double)(Convert.ToInt32(GVString, 2));
-                    int TA = Convert.ToInt32(TAString, 2);
-                    if (GV > 32768)
-                    {
-                        GV = GV - (double)655536;
-                    }
-                    rowFieldsCAT21["Ground Speed[Km/h]"] = GV / (double)2.457403408;
-                    rowFieldsCAT21["Track Angle[º]"] = TA * (double)0.0055;
-                    n = n + 4;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 18)
-                {
-                    string TIBiteString = ConvertToBit(Values[n]);
-                    TIBiteString = TIBiteString + ConvertToBit(Values[n + 1]);
-                    TIBiteString = TIBiteString + ConvertToBit(Values[n + 2]);
-                    TIBiteString = TIBiteString + ConvertToBit(Values[n + 3]);
-                    TIBiteString = TIBiteString + ConvertToBit(Values[n + 4]);
-                    TIBiteString = TIBiteString + ConvertToBit(Values[n + 5]);
-                    char[] TIbite2 = TIBiteString.ToCharArray();
-                    string TI = String.Empty;
-                    int j = 0;
-                    for (int p = 0; p < 8; p++)
-                    {
-                        string g = Convert.ToString(TIbite2[j + 2]) + Convert.ToString(TIbite2[j + 3]) + Convert.ToString(TIbite2[j + 4]) + Convert.ToString(TIbite2[j + 5]);
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 0 && (Char.GetNumericValue(TIbite2[j + 1])) == 0)
-                        {
-                            if (g.Equals("0000"))
-                            {
-                                TI += " ";
-                            }
-                            if (g.Equals("0001"))
-                            {
-                                TI = TI + "A";
-                            }
-                            if (g.Equals("0010"))
-                            {
-                                TI = TI + "B";
-                            }
-                            if (g.Equals("0011"))
-                            {
-                                TI = TI + "C";
-                            }
-                            if (g.Equals("0100"))
-                            {
-                                TI = TI + "D";
-                            }
-                            if (g.Equals("0101"))
-                            {
-                                TI = TI + "E";
-                            }
-                            if (g.Equals("0110"))
-                            {
-                                TI = TI + "F";
-                            }
-                            if (g.Equals("0111"))
-                            {
-                                TI = TI + "G";
-                            }
-                            if (g.Equals("1000"))
-                            {
-                                TI = TI + "H";
-                            }
-                            if (g.Equals("1001"))
-                            {
-                                TI = TI + "I";
-                            }
-                            if (g.Equals("1010"))
-                            {
-                                TI = TI + "J";
-                            }
-                            if (g.Equals("1011"))
-                            {
-                                TI = TI + "K";
-                            }
-                            if (g.Equals("1100"))
-                            {
-                                TI = TI + "L";
-                            }
-                            if (g.Equals("1101"))
-                            {
-                                TI = TI + "M";
-                            }
-                            if (g.Equals("1110"))
-                            {
-                                TI = TI + "N";
-                            }
-                            if (g.Equals("1111"))
-                            {
-                                TI = TI + "O";
-                            }
-                        }
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 0 && (Char.GetNumericValue(TIbite2[j + 1])) == 1)
-                        {
-                            if (g.Equals("0000"))
-                            {
-                                TI = TI + "P";
-                            }
-                            else if (g.Equals("0001"))
-                            {
-                                TI = TI + "Q";
-                            }
-                            else if (g.Equals("0010"))
-                            {
-                                TI = TI + "R";
-                            }
-                            else if (g.Equals("0011"))
-                            {
-                                TI = TI + "S";
-                            }
-                            else if (g.Equals("0100"))
-                            {
-                                TI = TI + "T";
-                            }
-                            else if (g.Equals("0101"))
-                            {
-                                TI = TI + "U";
-                            }
-                            else if (g.Equals("0110"))
-                            {
-                                TI = TI + "V";
-                            }
-                            else if (g.Equals("0111"))
-                            {
-                                TI = TI + "W";
-                            }
-                            else if (g.Equals("1000"))
-                            {
-                                TI = TI + "X";
-                            }
-                            else if (g.Equals("1001"))
-                            {
-                                TI = TI + "Y";
-                            }
-                            else if (g.Equals("1010"))
-                            {
-                                TI = TI + "Z";
-                            }
-                            else
-                            {
-                                TI += " ";
-                            }
-                        }
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 1 && (Char.GetNumericValue(TIbite2[j + 1])) == 0)
-                        {
-                            TI += " ";
-                        }
-                        if ((Char.GetNumericValue(TIbite2[j + 0])) == 1 && (Char.GetNumericValue(TIbite2[j + 1])) == 1)
-                        {
-                            if (g.Equals("0000"))
-                            {
-                                TI = TI + "0";
-                            }
-                            else if (g.Equals("0001"))
-                            {
-                                TI = TI + "1";
-                            }
-                            else if (g.Equals("0010"))
-                            {
-                                TI = TI + "2";
-                            }
-                            else if (g.Equals("0011"))
-                            {
-                                TI = TI + "3";
-                            }
-                            else if (g.Equals("0100"))
-                            {
-                                TI = TI + "4";
-                            }
-                            else if (g.Equals("0101"))
-                            {
-                                TI = TI + "5";
-                            }
-                            else if (g.Equals("0110"))
-                            {
-                                TI = TI + "6";
-                            }
-                            else if (g.Equals("0111"))
-                            {
-                                TI = TI + "7";
-                            }
-                            else if (g.Equals("1000"))
-                            {
-                                TI = TI + "8";
-                            }
-                            else if (g.Equals("1001"))
-                            {
-                                TI = TI + "9";
-                            }
-                            else
-                            {
-                                TI = TI + " ";
-                            }
-                        }
-                        j = j + 6;
-                        rowFieldsCAT21["Target Identification"] = TI;
-                    }
-                    n = n + 6;
-                    c = c + 1;
-                }
-                if (c < DataItems.Length && Convert.ToInt32(DataItems[c]) == 19)
-                {
-                    string VAString = ConvertToBit(Values[n]);
-                    int VA = Convert.ToInt32(VAString, 2);
-                    rowFieldsCAT21["Velocity Accuracy"] = VA;
-                    n = n + 1;
-                    c = c + 1;
-                }
-                FieldsCAT21.Rows.Add(rowFieldsCAT21);
-            }
-            return FieldsCAT21;
-        }*/
     }
 }

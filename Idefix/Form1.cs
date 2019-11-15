@@ -17,8 +17,9 @@ namespace Idefix
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
 
-        string mode = null;
-        string mapmode = null;
+        public int[] opcionesMapa = new int[7]();
+
+        int checkedItemsMap = 1;
 
         public Idefix()
         {
@@ -116,14 +117,14 @@ namespace Idefix
             dataGridView1.Refresh();*/
         }
 
-        public void pintarMapaLEBL()
+        public void pintarMapaLEBL(string[] mapasAeropuerto)
         {
             pictureBox2.Visible = true;
 
             Graphics myCanvas = pictureBox2.CreateGraphics();
             Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0), 3);
 
-            string[] mapasAeropuerto = new string[2] { "Aeropuerto_Barcelonanue.map", "BCN_Pistas.map" };
+            //string[] mapasAeropuerto = new string[2] { "Aeropuerto_Barcelonanue.map", "BCN_Pistas.map" };
             //string[] mapasAeropuerto = new string[7] { "Aeropuerto_Barcelona.map", "BCN_Aparcamientos.map", "BCN_CarreterasServicio.map", "BCN_Edificios.map", "BCN_Parterres.map", "BCN_Pistas.map", "BCN_ZonasMovimiento.map" };
 
             int mapa = 0;
@@ -174,7 +175,7 @@ namespace Idefix
                         int numPoints = Convert.ToInt32(lineSplit[1]);
                         double lastN = 0.0;
                         double lastE = 0.0;
-                        while (read < numPoints-1)
+                        while (read < numPoints - 1)
                         {
                             if (read == 0)
                             {
@@ -237,7 +238,7 @@ namespace Idefix
 
                 //Convierto los puntos de coordenadas Llh a XY, donde X=0,Y=0 es el centro de LEBL
                 double leblLatitude = 41.0 + 17.0 / 60.0 + 49.426 / 3600.0;  //41.1749426
-                double leblLongitude = 2.0 + 4.0 / 60.0 + 42.410  / 3600.0; //2.0442410;
+                double leblLongitude = 2.0 + 4.0 / 60.0 + 42.410 / 3600.0; //2.0442410;
 
                 int i = 0;
                 int end = puntos1N.Count;
@@ -246,26 +247,26 @@ namespace Idefix
                 List<double> puntos2x = new List<double>();
                 List<double> puntos2y = new List<double>();
 
-                double constan = Math.PI/2;
+                double constan = Math.PI / 2;
 
                 while (i < end)
                 {
                     double a = 6378137;
                     double b = 6356752.3142;
                     double e_sq = 1 - Math.Pow(b / a, 2);
-                    double tmp = Math.Sqrt(1 - e_sq * Math.Pow(Math.Sin(leblLatitude * (Math.PI / 180.0)+constan), 2));
+                    double tmp = Math.Sqrt(1 - e_sq * Math.Pow(Math.Sin(leblLatitude * (Math.PI / 180.0) + constan), 2));
 
                     double lat1 = puntos1N[i] - leblLatitude;
                     double long1 = puntos1E[i] - leblLongitude;
-                    double x1 = ((a * long1) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0)+constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0)+constan) * lat1);
-                    double y1 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat1 + a * Math.Cos(leblLatitude * (Math.PI / 180.0)+constan) * Math.Sin(leblLatitude * (Math.PI / 180.0)+constan) * (1.5 * e_sq * Math.Pow(lat1, 2) + (Math.Pow(long1, 2) / (2 * tmp)));
+                    double x1 = ((a * long1) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * lat1);
+                    double y1 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat1 + a * Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * (1.5 * e_sq * Math.Pow(lat1, 2) + (Math.Pow(long1, 2) / (2 * tmp)));
                     puntos1x.Add(x1);
                     puntos1y.Add(y1);
 
                     double lat2 = puntos2N[i] - leblLatitude;
                     double long2 = puntos2E[i] - leblLongitude;
-                    double x2 = ((a * long2) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0)+constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0)+constan) * lat2);
-                    double y2 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat2 + a * Math.Cos(leblLatitude * (Math.PI / 180.0)+constan) * Math.Sin(leblLatitude * (Math.PI / 180.0)+constan) * (1.5 * e_sq * Math.Pow(lat2, 2) + (Math.Pow(long2, 2) / (2 * tmp)));
+                    double x2 = ((a * long2) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * lat2);
+                    double y2 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat2 + a * Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * (1.5 * e_sq * Math.Pow(lat2, 2) + (Math.Pow(long2, 2) / (2 * tmp)));
                     puntos2x.Add(x2);
                     puntos2y.Add(y2);
                     i++;
@@ -329,7 +330,8 @@ namespace Idefix
             button6.BackColor = default(Color);
             button7.Visible = true;
             button7.BackColor = default(Color);
-            pintarMapaLEBL();
+            string[] mapasAeropuerto = new string[1] { "Aeropuerto_Barcelonanue.map" };
+            pintarMapaLEBL(mapasAeropuerto);
             label4.Visible = true;
             pictureBox3.Visible = true;
             pictureBox4.Visible = true;
@@ -337,12 +339,12 @@ namespace Idefix
             label5.Visible = true;
             checkedListBox1.Visible = true;
 
-            checkedListBox1.Items.Add("Aparcamientos");
-            checkedListBox1.Items.Add("Carreteras Servicio");
-            checkedListBox1.Items.Add("Edificios");
+            checkedListBox1.Items.Add("Parkings");
+            checkedListBox1.Items.Add("Service Roads");
+            checkedListBox1.Items.Add("Buildings");
             checkedListBox1.Items.Add("Parterres");
-            checkedListBox1.Items.Add("Pistas");
-            checkedListBox1.Items.Add("Zonas Movimiento");
+            checkedListBox1.Items.Add("Runways");
+            checkedListBox1.Items.Add("Movement Areas");
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -373,6 +375,37 @@ namespace Idefix
             button7.BackColor = Color.SteelBlue;
             pintarMapaPeninsula();
             */
+        }
+
+        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (e.NewValue == CheckState.Checked) { ++checkedItemsMap; }
+            if (e.NewValue == CheckState.Unchecked) { --checkedItemsMap; }
+
+            string[] mapasAeropuerto = new string[checkedItemsMap];
+            mapasAeropuerto[0] = "Aeropuerto_Barcelonanue.map";
+
+            for (int i = 0; i < checkedListBox1.Items.Count; i++)
+            {
+                if (checkedListBox1.GetItemChecked(i))
+                {
+                    string selectedItem = (string)checkedListBox1.Items[i];
+                    if (selectedItem == "Parkings" || checkedListBox1.SelectedItem == "Parkings")
+                        mapasAeropuerto[i + 1] = "BCN_Aparcamientos.map";
+                    else if (selectedItem == "Service Roads" || checkedListBox1.SelectedItem == "Service Roads")
+                        mapasAeropuerto[i + 1] = "BCN_CarreterasServicio.map";
+                    else if (selectedItem == "Buildings" || checkedListBox1.SelectedItem == "Buildings")
+                        mapasAeropuerto[i + 1] = "BCN_Edificios.map";
+                    else if (selectedItem == "Parterres" || checkedListBox1.SelectedItem == "Parterres")
+                        mapasAeropuerto[i + 1] = "BCN_Parterres.map";
+                    else if (selectedItem == "Runways" || checkedListBox1.SelectedItem == "Runways")
+                        mapasAeropuerto[i + 1] = "BCN_Pistas.map";
+                    else if (selectedItem == "Movement Areas" || checkedListBox1.SelectedItem == "Movement Areas")
+                        mapasAeropuerto[i + 1] = "BCN_ZonasMovimiento.map";
+                }
+            }
+
+            pintarMapaLEBL(mapasAeropuerto);
         }
     }
 }

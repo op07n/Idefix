@@ -17,7 +17,7 @@ namespace Idefix
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
 
-        public int[] opcionesMapa = new int[7]();
+        public int[] opcionesMapa = new int[7];
 
         int checkedItemsMap = 1;
 

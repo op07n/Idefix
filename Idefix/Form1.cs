@@ -456,11 +456,12 @@ namespace Idefix
                 bool ended = false;
                 while(x < flightList.Count || !ended)
                 {
+                    //myCanvas.FillEllipse(Brushes.Blue, (pictureBox2.Width / 2), (pictureBox2.Height / 2), 5, 5);
                     if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
                     { 
                         myCanvas.FillEllipse(Brushes.Red, 
                             (float)((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2)),
-                            (float)((pictureBox2.Height / 2) + (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2)), 
+                            (float)((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2)), 
                             5, 
                             5);
                     }

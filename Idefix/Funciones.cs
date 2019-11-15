@@ -265,7 +265,7 @@ namespace Idefix
                         StringBuilder rho_BIN = new StringBuilder(rho1);
                         rho_BIN.Append(rho2);
                         string rho_BIN_TOTAL = rho_BIN.ToString();
-                        double rho = (int)Convert.ToInt16(rho_BIN_TOTAL, 10); // in m
+                        double rho = (int)Convert.ToInt64(rho_BIN_TOTAL, 10); // in m
                         string theta1 = Convert2Binary(msgcat10[pos + 2]);
                         string theta2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder theta_BIN = new StringBuilder(theta1);
@@ -1180,9 +1180,11 @@ namespace Idefix
             {
                 foreach (CAT10 flight in cat10)
                 {
-                    listFlights[a].ID = flight.SIC.ToString();
-                    listFlights[a].TimeofDay = flight.TimeofDay;
-                    listFlights[a].CartesianPosition = flight.CartesianPosition;
+                    Flight f = new Flight();
+                    f.ID = flight.SIC.ToString();
+                    f.TimeofDay = flight.TimeofDay;
+                    f.CartesianPosition = flight.CartesianPosition;
+                    listFlights.Add(f);
                     a += 1;
                 }
             }
@@ -1190,9 +1192,11 @@ namespace Idefix
             {
                 foreach (CAT20 flight in cat20)
                 {
-                    listFlights[a].ID = flight.TargetId;
-                    listFlights[a].TimeofDay = flight.TimeofDay;
-                    listFlights[a].CartesianPosition = flight.CartesianPosition;
+                    Flight f = new Flight();
+                    f.ID = flight.SIC.ToString();
+                    f.TimeofDay = flight.TimeofDay;
+                    f.CartesianPosition = flight.CartesianPosition;
+                    listFlights.Add(f);
                     a += 1;
                 }
             }
@@ -1200,14 +1204,16 @@ namespace Idefix
             {
                 foreach (CAT21 flight in cat21)
                 {
-                    listFlights[a].ID = flight.TargetId;
-                    listFlights[a].TimeofDay = flight.TimeofDay;
-                    listFlights[a].CartesianPosition = flight.PositionWGS84;
+                    Flight f = new Flight();
+                    f.ID = flight.SIC.ToString();
+                    f.TimeofDay = flight.TimeofDay;
+                    f.CartesianPosition = flight.PositionWGS84;
+                    listFlights.Add(f);
                     a += 1;
                 }
             }
-            List<Flight> listFlightsFinal = ordenar(listFlights);
-            return listFlightsFinal;
+            //List<Flight> listFlightsFinal = ordenar(listFlights);
+            return listFlights;
         }
 
         public string Convert2Binary(double input)

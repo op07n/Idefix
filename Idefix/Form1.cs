@@ -118,11 +118,24 @@ namespace Idefix
 
             Funciones funcs = new Funciones();
             List<CAT10> objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
-            var source = new BindingSource();
-            List<MyStruct> list = new List<MyStruct> { new MyStruct("fff", "b"), new MyStruct("c", "d") };
-            source.DataSource = objCat10.Take(2);
-            dataGridView1.DataSource = source;
+            List<CAT20> objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20);
+            //var source = new BindingSource();
+            //List<MyStruct> list = new List<MyStruct> { new MyStruct("fff", "b"), new MyStruct("c", "d") };
+            //source.DataSource = objCat10.Take(2);
+            //dataGridView1.DataSource = source;
 
+            if (radioButton1.Checked)
+            {
+                dataGridView1.ColumnCount = 3;//numero de paràmetres que vull mostrar
+                string[] tits = new string[3] {"SIC", "SAC", "MS" };
+                dataGridView1.Rows.Add(tits);
+                dataGridView1.Name = "CAT 10 info";
+
+
+                int f = 0;
+
+
+            }
             /*
             var bindingList = new BindingList<CAT10>(objCat10);
             dataGridView1.DataSource = typeof(List<>);

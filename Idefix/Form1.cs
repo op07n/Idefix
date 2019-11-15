@@ -34,6 +34,9 @@ namespace Idefix
             button5.Visible = false;
             button6.Visible = false;
             button7.Visible = false;
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            radioButton3.Visible = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -100,6 +103,14 @@ namespace Idefix
             pictureBox5.Visible = false;
             label5.Visible = false;
             checkedListBox1.Visible = false;
+            radioButton1.Visible = true;
+            radioButton2.Visible = true;
+            radioButton3.Visible = true;
+            radioButton1.Text = "CAT10";
+            radioButton1.Checked = true;
+            radioButton2.Text = "CAT20";
+            radioButton3.Text = "CAT10 & CAT 20";
+            radioButton3.Enabled = false;//under construction
 
             Funciones funcs = new Funciones();
             List<CAT10> objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);

@@ -1244,26 +1244,15 @@ namespace Idefix
 
         public  string ConvertTime(Int32 tsegundos)
         {
-            double horas = (tsegundos / 3600);
-            double minutos = ((tsegundos - horas * 3600) / 60);
-            double segundos = tsegundos - (horas * 3600 + minutos * 60);
-            if (horas < 10)
-            {
-                horas.ToString();
-                horas = '0' + horas;
-            }
-            if (minutos < 10) 
-            {
-                minutos.ToString();
-                minutos = '0' + minutos;
-            }
-            if (segundos < 10) 
-            {
-                segundos.ToString();
-                segundos = '0' + segundos;
-            }
+            Int32 horas = (tsegundos / 3600);
+            Int32 minutos = ((tsegundos - horas * 3600) / 60);
+            Int32 segundos = tsegundos - (horas * 3600 + minutos * 60);
 
-            return horas.ToString() + ":" + minutos.ToString() + ":" + segundos.ToString();
+            string h = horas.ToString().PadLeft(2, '0');
+            string m = minutos.ToString().PadLeft(2, '0');
+            string s = segundos.ToString().PadLeft(2, '0');
+
+            return h + ":" + m + ":" + s;
         }
 
         public string ConvertToBit(string c)

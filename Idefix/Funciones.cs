@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace Idefix
 {
-    public class Funciones
+    public static class Funciones
     {
         public static Archivo LeerArchivo(string fileName)
         {
@@ -118,83 +118,6 @@ namespace Idefix
             return fspecsList;
         }
 
-        /*public static string[] SepararMensajes(double[] ar, string path, string filename)
-        {
-            string d = path + @"\" + filename + ".txt";
-            string a = path + @"\Cat10-" + filename + ".txt";
-            string b = path + @"\Cat20-" + filename + ".txt";
-            string c = path + @"\Cat21-" + filename + ".txt";
-            string[] archivos = new string[4];
-            archivos[0] = d;
-            archivos[1] = a;
-            archivos[2] = b;
-            archivos[3] = c;
-            if (!File.Exists(path))
-            {
-                using (StreamWriter sa = File.CreateText(a))
-                using (StreamWriter sb = File.CreateText(b))
-                using (StreamWriter sc = File.CreateText(c))
-                using (StreamWriter sd = File.CreateText(d))
-                {
-                    int pos = 0;
-                    int length = (int)ar.Length;
-                    int len = Convert.ToInt32(ar[2]);
-                    int cat = Convert.ToInt32(ar[0]);
-                    while ((pos + 1) < length)
-                    {
-                        if (pos == len)
-                        {
-                            cat = Convert.ToInt32(ar[len]);
-                            len = len + Convert.ToInt32(ar[pos + 2]);
-                        }
-                        string line = null;
-                        while (pos < len)
-                        {
-                            if (pos == len - 1)
-                            {
-                                line = line + Convert.ToString(ar[pos]);
-                            }
-                            else
-                            {
-                                line = line + Convert.ToString(ar[pos] + " ");
-                            }
-                            pos++;
-                        }
-                        if (cat == 10)
-                        {
-                            sa.WriteLine(line);
-                        }
-                        else if (cat == 20)
-                        {
-                            sb.WriteLine(line);
-                        }
-                        else if (cat == 21)
-                        {
-                            sc.WriteLine(line);
-                        }
-                        sd.WriteLine(line);
-                    }
-                }
-
-                FileInfo fa = new FileInfo(a);
-                FileInfo fb = new FileInfo(b);
-                FileInfo fc = new FileInfo(c);
-                if (fa.Length == 0)
-                {
-                    File.Delete(a);
-                }
-                if (fb.Length == 0)
-                {
-                    File.Delete(b);
-                }
-                if (fc.Length == 0)
-                {
-                    File.Delete(c);
-                }
-            }
-            return archivos;
-        }
-        */
         public static List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
             double SAC = 0; double SIC = 0;
@@ -1131,31 +1054,33 @@ namespace Idefix
                                 if (trb.Equals('0')) { TRB = "Default"; }
                                 else { TRB = "In Trouble"; }
 
-                                StringBuilder msg = new StringBuilder(ppm[1]);
-                                msg.Append(ppm[2]);
-                                msg.Append(ppm[3]);
-                                msg.Append(ppm[4]);
-                                msg.Append(ppm[5]);
-                                msg.Append(ppm[6]);
-                                msg.Append(ppm[7]);
+                                StringBuilder msgt = new StringBuilder(ppm[1]);
+                                msgt.Append(ppm[2]);
+                                msgt.Append(ppm[3]);
+                                msgt.Append(ppm[4]);
+                                msgt.Append(ppm[5]);
+                                msgt.Append(ppm[6]);
+                                msgt.Append(ppm[7]);
+
+                                string msg = msgt.ToString();
                                 string MSG = string.Empty;
 
                                 switch (msg)
                                 {
 
-                                    case "1":
+                                    case "0000001":
                                         MSG = "Towing aircraft";
                                         break;
-                                    case "2":
+                                    case "0000010":
                                         MSG = "'Follow me' operations";
                                         break;
-                                    case "3":
+                                    case "0000011":
                                         MSG = "Runway check";
                                         break;
-                                    case "4":
+                                    case "0000100":
                                         MSG = "Emergency operation (fire, medical...)";
                                         break;
-                                    case "5":
+                                    case "0000101":
                                         MSG = "Work in progress (maintenance, birds scarer, sweepers...)";
                                         break;
                                 }
@@ -1253,6 +1178,44 @@ namespace Idefix
             return listCAT20;
         }
 
+        public static List<Flight> DistributeFlights(List<CAT10> cat10, List<CAT20> cat20, List<CAT21> cat21)
+        {
+            List<Flight> listFlights = new List<Flight>();
+            int a = 0;
+            if (cat10 != null)
+            {
+                foreach (CAT10 flight in cat10)
+                {
+                    listFlights[a].ID = flight.SIC.ToString();
+                    listFlights[a].TimeofDay = flight.TimeofDay;
+                    listFlights[a].CartesianPosition = flight.CartesianPosition;
+                    a += 1;
+                }
+            }
+            if (cat20 != null)
+            {
+                foreach (CAT20 flight in cat20)
+                {
+                    listFlights[a].ID = flight.TargetId;
+                    listFlights[a].TimeofDay = flight.TimeofDay;
+                    listFlights[a].CartesianPosition = flight.CartesianPosition;
+                    a += 1;
+                }
+            }
+            if (cat21 != null)
+            {
+                foreach (CAT21 flight in cat21)
+                {
+                    listFlights[a].ID = flight.TargetId;
+                    listFlights[a].TimeofDay = flight.TimeofDay;
+                    listFlights[a].CartesianPosition = flight.PositionWGS84;
+                    a += 1;
+                }
+            }
+            List<Flight> listFlightsFinal = ordenar(listFlights);
+            return listFlightsFinal;
+        }
+
         public static string Convert2Binary(double input)
         {
             int n;
@@ -1303,8 +1266,7 @@ namespace Idefix
             if (Code != null) { 
                 string code = Code.ToString(); 
             
-                if (code.Equals("000001", System.StringComparison))
-                    
+                if (code.Equals("000001"))
                 {
                     letter = 'A';
                 }
@@ -1456,5 +1418,108 @@ namespace Idefix
 
             return letter;
         }
+
+        public static List<Flight> ordenar(List<Flight> vector)
+        {
+            if (vector != null)
+            {
+                for (int x = 0; x < vector.Count - 1; x++)
+                {
+                    for (int k = 0; k < vector.Count - 1 - x; k++)
+                    {
+
+                        if (vector[k].TimeofDay < vector[k + 1].TimeofDay)
+                        {
+                            Flight aux;
+                            aux = vector[k];
+                            vector[k] = vector[k + 1];
+                            vector[k + 1] = aux;
+                        }
+
+                    }
+                }
+            }
+            return vector;
+        }
+
+        
+        /*public static string[] SepararMensajes(double[] ar, string path, string filename)
+        {
+            string d = path + @"\" + filename + ".txt";
+            string a = path + @"\Cat10-" + filename + ".txt";
+            string b = path + @"\Cat20-" + filename + ".txt";
+            string c = path + @"\Cat21-" + filename + ".txt";
+            string[] archivos = new string[4];
+            archivos[0] = d;
+            archivos[1] = a;
+            archivos[2] = b;
+            archivos[3] = c;
+            if (!File.Exists(path))
+            {
+                using (StreamWriter sa = File.CreateText(a))
+                using (StreamWriter sb = File.CreateText(b))
+                using (StreamWriter sc = File.CreateText(c))
+                using (StreamWriter sd = File.CreateText(d))
+                {
+                    int pos = 0;
+                    int length = (int)ar.Length;
+                    int len = Convert.ToInt32(ar[2]);
+                    int cat = Convert.ToInt32(ar[0]);
+                    while ((pos + 1) < length)
+                    {
+                        if (pos == len)
+                        {
+                            cat = Convert.ToInt32(ar[len]);
+                            len = len + Convert.ToInt32(ar[pos + 2]);
+                        }
+                        string line = null;
+                        while (pos < len)
+                        {
+                            if (pos == len - 1)
+                            {
+                                line = line + Convert.ToString(ar[pos]);
+                            }
+                            else
+                            {
+                                line = line + Convert.ToString(ar[pos] + " ");
+                            }
+                            pos++;
+                        }
+                        if (cat == 10)
+                        {
+                            sa.WriteLine(line);
+                        }
+                        else if (cat == 20)
+                        {
+                            sb.WriteLine(line);
+                        }
+                        else if (cat == 21)
+                        {
+                            sc.WriteLine(line);
+                        }
+                        sd.WriteLine(line);
+                    }
+                }
+
+                FileInfo fa = new FileInfo(a);
+                FileInfo fb = new FileInfo(b);
+                FileInfo fc = new FileInfo(c);
+                if (fa.Length == 0)
+                {
+                    File.Delete(a);
+                }
+                if (fb.Length == 0)
+                {
+                    File.Delete(b);
+                }
+                if (fc.Length == 0)
+                {
+                    File.Delete(c);
+                }
+            }
+            return archivos;
+        }
+        */
+
     }
 }

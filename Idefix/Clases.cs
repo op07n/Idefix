@@ -54,9 +54,9 @@ namespace Idefix
         public double SIC;
         public string MessageType;
         //public string[] TargetReportDescriptor;
-        // public TimeSpan TimeofDay;
+        public TimeSpan TimeofDay;
         //public double[] PolarPosition;
-        //public double[] CartesianPosition; //Per plotejar
+        public double[] CartesianPosition; //Per plotejar
         // public double[] PolarTrackVelocity;
         //public double[] CartesianTrackVelocity; //Per plotejar??
         //public string Mode3A;
@@ -611,7 +611,7 @@ namespace Idefix
         public int SIC;
         public string[] TargetReportDescription;
         public TimeSpan TimeofDay;
-        public double[] CartesianPisition;
+        public double[] CartesianPosition;
         public int TrackNumber;
         public string TrackStatus;
         public string Mode3A;
@@ -633,16 +633,16 @@ namespace Idefix
     {
         public int SAC;
         public int SIC;
-        public TimeSpan TimeUTC;
+        public TimeSpan TimeofDay;
         public string TargetReportDescriptor;
         public string TargetAddress;
         public string FigureOfMerit;
         public string VelocityAccurancy;
-        public string PositionWGS84; //LAT i LON
+        public double[] PositionWGS84; //LAT i LON
         public string FlightLevel;
         public string GeometricalVerticalRate;
         public string AirboneGroundVector; //GroundSpeed&TrackAngle
-        public string TargetIdentification;
+        public string TargetId;
         public string LinkTechnologyIndicator;
     }
 

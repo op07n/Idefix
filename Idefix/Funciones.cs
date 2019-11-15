@@ -10,9 +10,9 @@ using System.Collections;
 
 namespace Idefix
 {
-    public static class Funciones
+    public class Funciones
     {
-        public static Archivo LeerArchivo(string fileName)
+        public Archivo LeerArchivo(string fileName)
         {
             Archivo fichero = new Archivo();
 
@@ -84,7 +84,7 @@ namespace Idefix
             return fichero;
         }
 
-        public static List<string[]> GetFSPEC(List<double[]> msgs)
+        public List<string[]> GetFSPEC(List<double[]> msgs)
         {
             List<string[]> fspecsList = new List<string[]>();
             if (msgs != null)
@@ -118,7 +118,7 @@ namespace Idefix
             return fspecsList;
         }
 
-        public static List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
+        public List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
             double SAC = 0; double SIC = 0;
             String MsgType = String.Empty;
@@ -526,7 +526,7 @@ namespace Idefix
             return listCAT10;
         }
 
-        public static List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
+        public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
         {
             int a = 0;
             double SAC = 0; double SIC = 0; double cartesianH; double geometricH; double SIGMA_GH;
@@ -1112,7 +1112,7 @@ namespace Idefix
                                     dopxy_bin.Append(dopxy2);
                                     double DOPxy = (Convert.ToDouble(dopxy_bin)) * 0.25;
 
-                                    DOP = { DOPx, DOPy, DOPxy };
+                                    DOP = new double[3]{ DOPx, DOPy, DOPxy };
                                     pos += 6;
 
                                 }
@@ -1178,7 +1178,7 @@ namespace Idefix
             return listCAT20;
         }
 
-        public static List<Flight> DistributeFlights(List<CAT10> cat10, List<CAT20> cat20, List<CAT21> cat21)
+        public List<Flight> DistributeFlights(List<CAT10> cat10, List<CAT20> cat20, List<CAT21> cat21)
         {
             List<Flight> listFlights = new List<Flight>();
             int a = 0;
@@ -1216,7 +1216,7 @@ namespace Idefix
             return listFlightsFinal;
         }
 
-        public static string Convert2Binary(double input)
+        public string Convert2Binary(double input)
         {
             int n;
             n = Convert.ToInt32(input);
@@ -1234,7 +1234,7 @@ namespace Idefix
             return b;
         }
 
-        public static  String ConvertTime(Int32 tsegundos)
+        public string ConvertTime(Int32 tsegundos)
         {
             Int32 horas = (tsegundos / 3600);
             Int32 minutos = ((tsegundos - horas * 3600) / 60);
@@ -1242,7 +1242,7 @@ namespace Idefix
             return horas.ToString() + ":" + minutos.ToString() + ":" + segundos.ToString();
         }
 
-        public static string ConvertToBit(string c)
+        public string ConvertToBit(string c)
         {
             int n;
             n = Convert.ToInt32(c);
@@ -1260,7 +1260,7 @@ namespace Idefix
             return b;
         }
 
-        public static char ConvertToIA5(StringBuilder Code)
+        public char ConvertToIA5(StringBuilder Code)
         {
             char letter = '\0';
             if (Code != null) { 
@@ -1419,7 +1419,7 @@ namespace Idefix
             return letter;
         }
 
-        public static List<Flight> ordenar(List<Flight> vector)
+        public List<Flight> ordenar(List<Flight> vector)
         {
             if (vector != null)
             {

@@ -124,8 +124,8 @@ namespace Idefix
             String MsgType = String.Empty;
             TimeSpan TimeOfDay= TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = new string[0] ; string[] TS = new string[0]; string[] SS = new string[0];
-            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0];
+            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = Array.Empty<string>();
+            double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>();
 
             List<CAT10> listCAT10 = new List<CAT10>();
             if (msgcat10_T != null && FSPEC_T != null)
@@ -533,8 +533,8 @@ namespace Idefix
             String MsgType = String.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = new string[0]; string[] TS = new string[0]; string[] TID;  string[] SS = new string[0]; string[] PPM; string[] CD; string[] Mode3A; string[] FL_T; string[] ModeC;
-            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0]; double[] DOP = new double[0]; double[] SDEV = new double[0];
+            string[] TRD; string[] TS; string[] TID; string[] PPM; string[] CD; string[] Mode3A; string[] FL_T; string[] ModeC;
+            double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>(); double[] DOP = Array.Empty<double>(); double[] SDEV = Array.Empty<double>();
 
             List<CAT20> listCAT20 = new List<CAT20>();
 
@@ -1234,7 +1234,7 @@ namespace Idefix
             return b;
         }
 
-        public  String ConvertTime(Int32 tsegundos)
+        public  string ConvertTime(Int32 tsegundos)
         {
             Int32 horas = (tsegundos / 3600);
             Int32 minutos = ((tsegundos - horas * 3600) / 60);
@@ -1419,7 +1419,7 @@ namespace Idefix
             return letter;
         }
 
-        public List<Flight> ordenar(List<Flight> vector)
+        public static List<Flight> ordenar(List<Flight> vector)
         {
             if (vector != null)
             {
@@ -1427,7 +1427,6 @@ namespace Idefix
                 {
                     for (int k = 0; k < vector.Count - 1 - x; k++)
                     {
-
                         if (vector[k].TimeofDay < vector[k + 1].TimeofDay)
                         {
                             Flight aux;

@@ -250,6 +250,7 @@
             this.checkedListBox1.Size = new System.Drawing.Size(120, 94);
             this.checkedListBox1.TabIndex = 18;
             this.checkedListBox1.Visible = false;
+            this.checkedListBox1.ItemCheck += this.checkedListBox1_ItemCheck;
             // 
             // radioButton1
             // 

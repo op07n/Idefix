@@ -165,11 +165,13 @@ namespace Idefix
                     if (FSPEC_1[2] == '1')// FRN = 3: Target Report Description
                     {
                         string va = Convert2Binary(msgcat10[pos]);
+                        String TYP = String.Empty; string DCR = String.Empty; string CHN = String.Empty; string GBS = String.Empty; string CRT = String.Empty; string SIM = String.Empty; string TST = String.Empty; string RAB = String.Empty; string LOP = String.Empty; string TOT = String.Empty; string SIP = String.Empty;
+                        
                         StringBuilder val1 = new StringBuilder(va[0]);
                         val1.Append(va[1]);
                         val1.Append(va[2]);
                         string val = val1.ToString();
-                        String TYP = String.Empty;
+                        
                         if (val.Equals("0")) { TYP = "SSR Multilateration"; }
                         else if (val.Equals("1")) { TYP = "Mode S Multilateration"; }
                         else if (val.Equals("10")) { TYP = "ADS-B"; }
@@ -179,72 +181,66 @@ namespace Idefix
                         else if (val.Equals("110")) { TYP = "Not Defined"; }
                         else if (val.Equals("111")) { TYP = "Other types"; }
 
-                        string DCR = String.Empty;
+                        
                         if (va[3].Equals('0')) { DCR = "No differential correction"; }
                         else { DCR = "Differential correction"; }
 
-                        string CHN = String.Empty;
+                        
                         if (va[4].Equals('0')) { CHN = "Chain 1"; }
                         //else { CHN = "Revisar ELSE"; }
 
-                        string GBS = String.Empty;
+                        
                         if (va[5].Equals('0')) { GBS = "Transponder Ground Bit Not Set"; }
                         else { GBS = "Transponder Ground Bit Set"; }
 
-                        string CRT = String.Empty;
+                        
                         if (va[6].Equals('0')) { CRT = "No Corrupted Reply in Multilateration"; }
                         else { CRT = "Corrupted Replies in Multilateration"; }
-                        TRD = new string[5] { TYP, DCR, CHN, GBS, CRT };
                         pos += 1;
 
                         if (va[7].Equals('1'))
                         {
                             string va2 = Convert2Binary(msgcat10[pos]);
 
-                            string SIM = String.Empty;
+                            
                             if (va2[0].Equals('0')) { SIM = "Actual Target Report"; }
                             else { SIM = "Simulated Target Report"; }
 
-                            string TST = String.Empty;
+                            
                             if (va2[1].Equals('0')) { TST = "Default"; }
                             else { TST = "Test Target"; }
 
-                            string RAB = String.Empty;
+                            
                             if (va2[2].Equals('0')) { RAB = "Report from Target Responder"; }
                             else { TST = "Report From Field Monitor (fixed transpoder)"; }
 
                             StringBuilder val2 = new StringBuilder(va2[3]);
                             val2.Append(va2[4]);
-                            string LOP = String.Empty;
                             
+
                             if (val2.ToString().Equals("0")) { LOP = "Undetermined"; }
                             else if (val2.ToString().Equals("1")) { LOP = "Loop Start"; }
                             else if (val2.ToString().Equals("10")) { LOP = "Loop Finish"; }
 
                             StringBuilder val3 = new StringBuilder(va2[5]);
                             val3.Append(va2[6]);
-                            string TOT = String.Empty;
+                            
                             if (val3.Equals("0")) { TOT = "Undetermined"; }
                             else if (val3.ToString().Equals("1")) { TOT = "Aircraft"; }
                             else if (val3.ToString().Equals("10")) { TOT = "Ground Vehicle"; }
                             else if (val3.ToString().Equals("11")) { TOT = "Helicopter"; }
-                            TRD = new string[10] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT };
 
                             pos += 1;
 
                             if (va2[7].Equals('1'))
                             {
-                                string SIP = String.Empty;
                                 string va3 = Convert2Binary(msgcat10[pos]);
                                 if (va3[0].Equals('0')) { SIP = "Absence of SPI"; }
                                 else { SIP = "Special Position Identification"; }
-
-                                TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
                                 pos += 1;
                             }
-
-
                         }
+                        TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
                     }// FRN = 3: Target Report Description
                     if (FSPEC_1[3] == '1') //FRN = 4: Time Of Day
                     {
@@ -520,8 +516,8 @@ namespace Idefix
                             }
                         }
                     }
-                    // CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
-                    CAT10 obj = new CAT10(SIC, SAC, MsgType, TN);
+                    CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
+                    //CAT10 obj = new CAT10(SIC, SAC, MsgType, TN);
                     listCAT10.Add(obj);
                     a += 1;
                 }

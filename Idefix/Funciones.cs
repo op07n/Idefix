@@ -124,8 +124,8 @@ namespace Idefix
             String MsgType = String.Empty;
             TimeSpan TimeOfDay= TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = Array.Empty<string>();
-            double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>();
+            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = new string[5] {"","","","",""};
+            double[] PP = new double[2] {0,0}; double[] CP = new double[2] { 0, 0 }; double[] PTV = new double[2] { 0, 0 }; double[] CTV = new double[2] { 0, 0 }; double[] TSO = new double[3] {0,0,0}; double[] CA = new double[2] {0, 0};
 
             List<CAT10> listCAT10 = new List<CAT10>();
             if (msgcat10_T != null && FSPEC_T != null)
@@ -165,11 +165,13 @@ namespace Idefix
                     if (FSPEC_1[2] == '1')// FRN = 3: Target Report Description
                     {
                         string va = Convert2Binary(msgcat10[pos]);
+                        String TYP = String.Empty; string DCR = String.Empty; string CHN = String.Empty; string GBS = String.Empty; string CRT = String.Empty; string SIM = String.Empty; string TST = String.Empty; string RAB = String.Empty; string LOP = String.Empty; string TOT = String.Empty; string SIP = String.Empty;
+                        
                         StringBuilder val1 = new StringBuilder(va[0]);
                         val1.Append(va[1]);
                         val1.Append(va[2]);
                         string val = val1.ToString();
-                        String TYP = String.Empty;
+                        
                         if (val.Equals("0")) { TYP = "SSR Multilateration"; }
                         else if (val.Equals("1")) { TYP = "Mode S Multilateration"; }
                         else if (val.Equals("10")) { TYP = "ADS-B"; }
@@ -179,72 +181,66 @@ namespace Idefix
                         else if (val.Equals("110")) { TYP = "Not Defined"; }
                         else if (val.Equals("111")) { TYP = "Other types"; }
 
-                        string DCR = String.Empty;
+                        
                         if (va[3].Equals('0')) { DCR = "No differential correction"; }
                         else { DCR = "Differential correction"; }
 
-                        string CHN = String.Empty;
+                        
                         if (va[4].Equals('0')) { CHN = "Chain 1"; }
                         //else { CHN = "Revisar ELSE"; }
 
-                        string GBS = String.Empty;
+                        
                         if (va[5].Equals('0')) { GBS = "Transponder Ground Bit Not Set"; }
                         else { GBS = "Transponder Ground Bit Set"; }
 
-                        string CRT = String.Empty;
+                        
                         if (va[6].Equals('0')) { CRT = "No Corrupted Reply in Multilateration"; }
                         else { CRT = "Corrupted Replies in Multilateration"; }
-                        TRD = new string[5] { TYP, DCR, CHN, GBS, CRT };
                         pos += 1;
 
                         if (va[7].Equals('1'))
                         {
                             string va2 = Convert2Binary(msgcat10[pos]);
 
-                            string SIM = String.Empty;
+                            
                             if (va2[0].Equals('0')) { SIM = "Actual Target Report"; }
                             else { SIM = "Simulated Target Report"; }
 
-                            string TST = String.Empty;
+                            
                             if (va2[1].Equals('0')) { TST = "Default"; }
                             else { TST = "Test Target"; }
 
-                            string RAB = String.Empty;
+                            
                             if (va2[2].Equals('0')) { RAB = "Report from Target Responder"; }
                             else { TST = "Report From Field Monitor (fixed transpoder)"; }
 
                             StringBuilder val2 = new StringBuilder(va2[3]);
                             val2.Append(va2[4]);
-                            string LOP = String.Empty;
                             
+
                             if (val2.ToString().Equals("0")) { LOP = "Undetermined"; }
                             else if (val2.ToString().Equals("1")) { LOP = "Loop Start"; }
                             else if (val2.ToString().Equals("10")) { LOP = "Loop Finish"; }
 
                             StringBuilder val3 = new StringBuilder(va2[5]);
                             val3.Append(va2[6]);
-                            string TOT = String.Empty;
+                            
                             if (val3.Equals("0")) { TOT = "Undetermined"; }
                             else if (val3.ToString().Equals("1")) { TOT = "Aircraft"; }
                             else if (val3.ToString().Equals("10")) { TOT = "Ground Vehicle"; }
                             else if (val3.ToString().Equals("11")) { TOT = "Helicopter"; }
-                            TRD = new string[10] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT };
 
                             pos += 1;
 
                             if (va2[7].Equals('1'))
                             {
-                                string SIP = String.Empty;
                                 string va3 = Convert2Binary(msgcat10[pos]);
                                 if (va3[0].Equals('0')) { SIP = "Absence of SPI"; }
                                 else { SIP = "Special Position Identification"; }
-
-                                TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
                                 pos += 1;
                             }
-
-
                         }
+                        TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
                     }// FRN = 3: Target Report Description
                     if (FSPEC_1[3] == '1') //FRN = 4: Time Of Day
                     {
@@ -269,7 +265,7 @@ namespace Idefix
                         StringBuilder rho_BIN = new StringBuilder(rho1);
                         rho_BIN.Append(rho2);
                         string rho_BIN_TOTAL = rho_BIN.ToString();
-                        double rho = (int)Convert.ToInt64(rho_BIN_TOTAL, 10); // in m
+                        double rho = (int)Convert.ToInt16(rho_BIN_TOTAL, 10); // in m
                         string theta1 = Convert2Binary(msgcat10[pos + 2]);
                         string theta2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder theta_BIN = new StringBuilder(theta1);
@@ -286,13 +282,13 @@ namespace Idefix
                         StringBuilder x_BIN = new StringBuilder(x1);
                         x_BIN.Append(x2);
                         string x_BIN_TOTAL = x_BIN.ToString();
-                        double x = (int)Convert.ToInt64(x_BIN_TOTAL, 2); // in m
+                        double x = (int)Convert.ToInt16(x_BIN_TOTAL, 2); // in m
                         string y1 = Convert2Binary(msgcat10[pos + 2]);
                         string y2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder y_BIN = new StringBuilder(y1);
                         y_BIN.Append(y2);
                         string y_BIN_TOTAL = y_BIN.ToString();
-                        double y = ((int)Convert.ToInt64(y_BIN_TOTAL, 2)); // in degrees
+                        double y = ((int)Convert.ToInt16(y_BIN_TOTAL, 2)); // in degrees
                         CP = new double[2] { x, y };
                         pos += 4;
                     }// FRN = 7: Cartesian Position
@@ -309,13 +305,13 @@ namespace Idefix
                             StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
                             ground_speed_BIN.Append(ground_speed2);
                             string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
-                            double ground_speed = ((int)Convert.ToInt64(ground_speed_BIN_TOTAL, 2)) * 0.22; // in m
+                            double ground_speed = ((int)Convert.ToInt16(ground_speed_BIN_TOTAL, 2)) * 0.22; // in m
                             string track_angle1 = Convert2Binary(msgcat10[pos + 2]);
                             string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
                             StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
                             track_angle_BIN.Append(track_angle2);
                             string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
-                            double track_angle = ((int)Convert.ToInt64(track_angle_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
+                            double track_angle = ((int)Convert.ToInt16(track_angle_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
                             PTV = new double[2] { ground_speed, track_angle };
                             pos += 4;
                         }// FRN = 8: Polar Track Velocity
@@ -326,13 +322,13 @@ namespace Idefix
                             StringBuilder Vx_BIN = new StringBuilder(Vx1);
                             Vx_BIN.Append(Vx2);
                             string Vx_BIN_TOTAL = Vx_BIN.ToString();
-                            double Vx = (int)Convert.ToInt64(Vx_BIN_TOTAL, 2); // in m
+                            double Vx = (int)Convert.ToInt16(Vx_BIN_TOTAL, 2); // in m
                             string Vy1 = Convert2Binary(msgcat10[pos + 2]);
                             string Vy2 = Convert2Binary(msgcat10[pos + 3]);
                             StringBuilder Vy_BIN = new StringBuilder(Vy1);
                             Vy_BIN.Append(Vy2);
                             string Vy_BIN_TOTAL = Vy_BIN.ToString();
-                            double Vy = ((int)Convert.ToInt64(Vy_BIN_TOTAL, 2)); // in degrees
+                            double Vy = ((int)Convert.ToInt16(Vy_BIN_TOTAL, 2)); // in degrees
                             CTV = new double[2] { Vx, Vy };
                             pos += 4;
                         }// FRN = 9: Cartesian Track Velocity
@@ -352,35 +348,28 @@ namespace Idefix
                         if (FSPEC_2[3] == '1') // FRN = 11: Track Status
                         {
                             string ts = Convert2Binary(msgcat10[pos]);
-                            string CNF = String.Empty;
+                            string CNF = String.Empty; string TRE = String.Empty; string CST = String.Empty; string MAH = String.Empty; string TCC = String.Empty; string STH = String.Empty; string TOM = string.Empty; String DOU = String.Empty; string MRS = string.Empty; string GHO = String.Empty;
                             if (ts[0].Equals('1')) { CNF = "Track initialization phase"; }
                             else { CNF = "Confirmed Track"; }
 
-                            string TRE = String.Empty;
                             if (ts[1].Equals('1')) { TRE = "Last report of track"; }
                             else { TRE = "Default"; }
 
                             StringBuilder cst = new StringBuilder(ts[2]);
                             cst.Append(ts[3]);
-                            string CST = string.Empty;
                             if (cst.ToString().Equals("0")) { CST = "No Extrapolation"; }
                             else if (cst.ToString().Equals("1")) { CST = "Predictable extrapolation due to sensor refresh period"; }
                             else if (cst.ToString().Equals("10")) { CST = "Predictable extrapolation in masked area"; }
                             else if (cst.ToString().Equals("11")) { CST = "Extrapolation due to unpredictable absence of detection"; }
 
-                            string MAH = String.Empty;
                             if (ts[4].Equals('1')) { MAH = "Horizontal manoeuvre"; }
                             else { MAH = "Default"; }
 
-                            string TCC = String.Empty;
                             if (ts[5].Equals('1')) { TCC = "Slant range correction and a suitable projection technique are used to track in a 2D.reference plane, tangential to the earth model at the Sensor Site co-ordinates."; }
                             else { TCC = "Tracking performed in 'Sensor Plane', i.e. neither slant range correction nor projection was applied"; }
 
-                            string STH = String.Empty;
                             if (ts[6].Equals('1')) { STH = "Smoothed position"; }
                             else { STH = "Measured position"; }
-
-                            TS = new string[6] { CNF, TRE, CST, MAH, TCC, STH };
                             pos += 1;
 
                             if (ts[7].Equals(0)) { }
@@ -389,7 +378,6 @@ namespace Idefix
                                 string ts_1 = Convert2Binary(msgcat10[pos]);
                                 StringBuilder tom = new StringBuilder(ts_1[0]);
                                 cst.Append(ts_1[1]);
-                                string TOM = string.Empty;
                                 if (tom.ToString().Equals("0")) { TOM = "Unknown type of movement "; }
                                 else if (tom.ToString().Equals("1")) { TOM = "Taking-off "; }
                                 else if (tom.ToString().Equals("10")) { TOM = "Landing"; }
@@ -398,7 +386,6 @@ namespace Idefix
                                 StringBuilder dou = new StringBuilder(ts_1[2]);
                                 dou.Append(ts_1[3]);
                                 dou.Append(ts_1[4]);
-                                String DOU = String.Empty;
                                 if (dou.ToString().Equals("0")) { DOU = "No doubt "; }
                                 else if (dou.ToString().Equals("01")) { DOU = "Doubtful correlation (undetermined reason)"; }
                                 else if (dou.ToString().Equals("10")) { DOU = "Doubtful correlation in clutter"; }
@@ -410,25 +397,22 @@ namespace Idefix
 
                                 StringBuilder mrs = new StringBuilder(ts_1[5]);
                                 mrs.Append(ts_1[6]);
-                                string MRS = string.Empty;
                                 if (mrs.ToString().Equals("0")) { MRS = "Merge or split indication undetermined"; }
                                 else if (mrs.ToString().Equals("1")) { MRS = "Track merged by association to plot"; }
                                 else if (mrs.ToString().Equals("10")) { MRS = "Track merged by non-association to plot"; }
                                 else if (mrs.ToString().Equals("11")) { MRS = "Split track"; }
-                                TS = new string[9] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS };
                                 pos += 1;
 
                                 if (ts_1[7].Equals('0')) { }
                                 else
                                 {
                                     string ts_2 = Convert2Binary(msgcat10[pos]);
-                                    string GHO = String.Empty;
                                     if (ts_2[4].Equals('1')) { GHO = "Default"; }
                                     else { GHO = "Ghost track"; }
-                                    TS = new string[10] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS, GHO };
                                     pos += 1;
                                 }
                             }
+                            TS = new string[10] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS, GHO };
                         }// FRN = 11; Track Status
                          //some more shit shit here
                         if (FSPEC_2[7] == '0') { }
@@ -509,10 +493,12 @@ namespace Idefix
                                 if (FSPEC_4[3] == '1') // FRN = 25; Calculated acceleration
                                 {
                                     string ax1 = Convert2Binary(msgcat10[pos]);
-                                    double ax = (int)Convert.ToInt64(ax1, 2);
+                                    string ax11 = ax1[0].ToString() + ax1[0].ToString() + ax1[0].ToString() + ax1[0].ToString() + ax1[0].ToString() + ax1[0].ToString() + ax1[0].ToString() + ax1[0].ToString() + ax1;
+                                    double ax = (int)Convert.ToInt16(ax11, 2);
                                     ax /= 4;//m/s^2
                                     string ay1 = Convert2Binary(msgcat10[pos + 1]);
-                                    double ay = ((int)Convert.ToInt64(ay1, 2));
+                                    string ay11 = ay1[0].ToString() + ay1[0].ToString() + ay1[0].ToString() + ay1[0].ToString() + ay1[0].ToString() + ay1[0].ToString() + ay1[0].ToString() + ay1[0].ToString() + ay1;
+                                    double ay = ((int)Convert.ToInt16(ay11, 2));
                                     ay /= 4;//m/s^2
                                     CA = new double[2] { ax, ay };
                                     pos += 2;
@@ -521,6 +507,7 @@ namespace Idefix
                         }
                     }
                     CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
+                    //CAT10 obj = new CAT10(SIC, SAC, MsgType, TN);
                     listCAT10.Add(obj);
                     a += 1;
                 }
@@ -1193,11 +1180,9 @@ namespace Idefix
             {
                 foreach (CAT10 flight in cat10)
                 {
-                    Flight f = new Flight();
-                    f.ID = flight.SIC.ToString();
-                    f.TimeofDay = flight.TimeofDay;
-                    f.CartesianPosition = flight.CartesianPosition;
-                    listFlights.Add(f);
+                    listFlights[a].ID = flight.SIC.ToString();
+                    listFlights[a].TimeofDay = flight.TimeofDay;
+                    listFlights[a].CartesianPosition = flight.CartesianPosition;
                     a += 1;
                 }
             }
@@ -1205,11 +1190,9 @@ namespace Idefix
             {
                 foreach (CAT20 flight in cat20)
                 {
-                    Flight f = new Flight();
-                    f.ID = flight.SIC.ToString();
-                    f.TimeofDay = flight.TimeofDay;
-                    f.CartesianPosition = flight.CartesianPosition;
-                    listFlights.Add(f);
+                    listFlights[a].ID = flight.TargetId;
+                    listFlights[a].TimeofDay = flight.TimeofDay;
+                    listFlights[a].CartesianPosition = flight.CartesianPosition;
                     a += 1;
                 }
             }
@@ -1217,17 +1200,14 @@ namespace Idefix
             {
                 foreach (CAT21 flight in cat21)
                 {
-                    Flight f = new Flight();
-                    f.ID = flight.SIC.ToString();
-                    f.TimeofDay = flight.TimeofDay;
-                    f.CartesianPosition = flight.PositionWGS84;
-                    listFlights.Add(f);
+                    listFlights[a].ID = flight.TargetId;
+                    listFlights[a].TimeofDay = flight.TimeofDay;
+                    listFlights[a].CartesianPosition = flight.PositionWGS84;
                     a += 1;
                 }
             }
-            //List<Flight> listFlightsFinal = listFlights.OrderBy(o => o.TimeofDay).ToList();
-            //List<Flight> listFlightsFinal = ordenar(listFlights);
-            return listFlights;
+            List<Flight> listFlightsFinal = ordenar(listFlights);
+            return listFlightsFinal;
         }
 
         public string Convert2Binary(double input)
@@ -1259,6 +1239,11 @@ namespace Idefix
             string s = segundos.ToString().PadLeft(2, '0');
 
             return h + ":" + m + ":" + s;
+        }
+
+        public void Complenta2 (byte input)
+        {
+
         }
 
         public string ConvertToBit(string c)

@@ -124,8 +124,8 @@ namespace Idefix
             String MsgType = String.Empty;
             TimeSpan TimeOfDay= TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = new string[0] ; string[] TS = new string[0]; string[] SS = new string[0];
-            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0];
+            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = Array.Empty<string>();
+            double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>();
 
             List<CAT10> listCAT10 = new List<CAT10>();
             if (msgcat10_T != null && FSPEC_T != null)
@@ -135,7 +135,7 @@ namespace Idefix
                     string FSPEC_1 = FSPEC_T[a][0];
                     double[] msgcat10 = msgcat10_T[a];
                     // int n = 0;
-                    int pos = FSPEC_T[a].Length; // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
+                    int pos = FSPEC_T[a].Length-1; // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
                     if (FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                     {
                         SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
@@ -523,7 +523,7 @@ namespace Idefix
                     a += 1;
                 }
             }
-            return listCAT10;
+          return listCAT10;
         }
 
         public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
@@ -533,8 +533,8 @@ namespace Idefix
             String MsgType = String.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = new string[0]; string[] TS = new string[0]; string[] TID;  string[] SS = new string[0]; string[] PPM; string[] CD; string[] Mode3A; string[] FL_T; string[] ModeC;
-            double[] PP = new double[0]; double[] CP = new double[0]; double[] PTV = new double[0]; double[] CTV = new double[0]; double[] TSO = new double[0]; double[] CA = new double[0]; double[] DOP = new double[0]; double[] SDEV = new double[0];
+            string[] TRD; string[] TS; string[] TID; string[] PPM; string[] CD; string[] Mode3A; string[] FL_T; string[] ModeC;
+            double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>(); double[] DOP = Array.Empty<double>(); double[] SDEV = Array.Empty<double>();
 
             List<CAT20> listCAT20 = new List<CAT20>();
 
@@ -545,7 +545,7 @@ namespace Idefix
                     string FSPEC_1 = FSPEC_T[a][0];
                     double[] msgcat20 = msgcat20_T[a];
                     // int n = 0;
-                    int pos = FSPEC_T[a].Length; // posició de byte en el missatge rebut de categoria 20 SENSE cat,lenght,Fspec.
+                    int pos = FSPEC_T[a].Length-1; // posició de byte en el missatge rebut de categoria 20 SENSE cat,lenght,Fspec.
                     if (FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                     {
                         SAC = msgcat20[pos];
@@ -1112,7 +1112,7 @@ namespace Idefix
                                     dopxy_bin.Append(dopxy2);
                                     double DOPxy = (Convert.ToDouble(dopxy_bin)) * 0.25;
 
-                                    DOP = new double[3]{ DOPx, DOPy, DOPxy };
+                                    DOP = new double[3]{DOPx, DOPy, DOPxy };
                                     pos += 6;
 
                                 }
@@ -1234,7 +1234,7 @@ namespace Idefix
             return b;
         }
 
-        public string ConvertTime(Int32 tsegundos)
+        public  string ConvertTime(Int32 tsegundos)
         {
             Int32 horas = (tsegundos / 3600);
             Int32 minutos = ((tsegundos - horas * 3600) / 60);
@@ -1419,7 +1419,7 @@ namespace Idefix
             return letter;
         }
 
-        public List<Flight> ordenar(List<Flight> vector)
+        public static List<Flight> ordenar(List<Flight> vector)
         {
             if (vector != null)
             {
@@ -1427,7 +1427,6 @@ namespace Idefix
                 {
                     for (int k = 0; k < vector.Count - 1 - x; k++)
                     {
-
                         if (vector[k].TimeofDay < vector[k + 1].TimeofDay)
                         {
                             Flight aux;

@@ -49,7 +49,6 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
@@ -178,6 +177,7 @@
             this.pictureBox4.TabIndex = 14;
             this.pictureBox4.TabStop = false;
             this.pictureBox4.Visible = false;
+            this.pictureBox4.Click += new System.EventHandler(this.pictureBox4_Click);
             // 
             // pictureBox3
             // 
@@ -189,6 +189,7 @@
             this.pictureBox3.TabIndex = 13;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Visible = false;
+            this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
             // 
             // pictureBox1
             // 
@@ -218,6 +219,7 @@
             this.pictureBox5.TabIndex = 15;
             this.pictureBox5.TabStop = false;
             this.pictureBox5.Visible = false;
+            this.pictureBox5.Click += new System.EventHandler(this.pictureBox5_Click);
             // 
             // label4
             // 
@@ -240,17 +242,6 @@
             this.label5.TabIndex = 17;
             this.label5.Text = "x1";
             this.label5.Visible = false;
-            // 
-            // checkedListBox1
-            // 
-            this.checkedListBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(932, 284);
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(120, 94);
-            this.checkedListBox1.TabIndex = 18;
-            this.checkedListBox1.Visible = false;
-            this.checkedListBox1.ItemCheck += this.checkedListBox1_ItemCheck;
             // 
             // radioButton1
             // 
@@ -294,7 +285,6 @@
             this.Controls.Add(this.radioButton3);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
-            this.Controls.Add(this.checkedListBox1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.pictureBox5);
@@ -352,7 +342,6 @@
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton3;

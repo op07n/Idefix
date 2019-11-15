@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Timers;
 using System.Windows.Forms;
 
 namespace Idefix
@@ -17,9 +18,13 @@ namespace Idefix
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
 
-        public int[] opcionesMapa = new int[7];
+        public Graphics myCanvas;
+        public bool[] opcionesMapa = new bool[7] { true, false, false, false, false, false, false };
+        public int mapSelected = 0;
 
-        int checkedItemsMap = 1;
+        public int simSpeed = 1;
+        public System.Timers.Timer myTimer = new System.Timers.Timer();
+        public int simTime = 0;
 
         public Idefix()
         {
@@ -73,7 +78,6 @@ namespace Idefix
                 pictureBox4.Visible = false;
                 pictureBox5.Visible = false;
                 label5.Visible = false;
-                checkedListBox1.Visible = false;
             }
         }
 
@@ -103,7 +107,6 @@ namespace Idefix
             pictureBox4.Visible = false;
             pictureBox5.Visible = false;
             label5.Visible = false;
-            checkedListBox1.Visible = false;
             radioButton1.Visible = true;
             radioButton2.Visible = true;
             radioButton3.Visible = true;
@@ -128,185 +131,189 @@ namespace Idefix
             dataGridView1.Refresh();*/
         }
 
-        public void pintarMapaLEBL(string[] mapasAeropuerto)
+        public void pintarMapaLEBL()
         {
             pictureBox2.Visible = true;
 
-            Graphics myCanvas = pictureBox2.CreateGraphics();
+            myCanvas.Clear(Control.DefaultBackColor);
             Pen pen = new Pen(Color.FromArgb(255, 0, 0, 0), 3);
 
-            //string[] mapasAeropuerto = new string[2] { "Aeropuerto_Barcelonanue.map", "BCN_Pistas.map" };
-            //string[] mapasAeropuerto = new string[7] { "Aeropuerto_Barcelona.map", "BCN_Aparcamientos.map", "BCN_CarreterasServicio.map", "BCN_Edificios.map", "BCN_Parterres.map", "BCN_Pistas.map", "BCN_ZonasMovimiento.map" };
+            string[] mapasAeropuerto = new string[7] { "Aeropuerto_Barcelona.map", "BCN_Aparcamientos.map", "BCN_CarreterasServicio.map", "BCN_Edificios.map", "BCN_Parterres.map", "BCN_Pistas.map", "BCN_ZonasMovimiento.map" };
 
             int mapa = 0;
             int numMapas = mapasAeropuerto.Length;
             while (mapa < numMapas)
             {
-                // Leo los puntos del archivo en coordenadas Llh
-                List<double> puntos1N = new List<double>();
-                List<double> puntos1E = new List<double>();
-                List<double> puntos2N = new List<double>();
-                List<double> puntos2E = new List<double>();
-
-                string line;
-                System.IO.StreamReader file = new System.IO.StreamReader("../../maps/" + mapasAeropuerto[mapa]);
-                while ((line = file.ReadLine()) != null)
+                // Si el mapa en cuestion no esta activado, no lo pintamos
+                if (opcionesMapa[mapa])
                 {
-                    string[] lineSplit = line.Split(' ');
-                    if (lineSplit[0] == "Linea")
+
+                    // Leo los puntos del archivo en coordenadas Llh
+                    List<double> puntos1N = new List<double>();
+                    List<double> puntos1E = new List<double>();
+                    List<double> puntos2N = new List<double>();
+                    List<double> puntos2E = new List<double>();
+
+                    string line;
+                    System.IO.StreamReader file = new System.IO.StreamReader("../../maps/" + mapasAeropuerto[mapa]);
+                    while ((line = file.ReadLine()) != null)
                     {
-                        int deg1N = Convert.ToInt16(lineSplit[1].Substring(0, 2));
-                        int min1N = Convert.ToInt16(lineSplit[1].Substring(2, 2));
-                        double sec1N = Convert.ToDouble(lineSplit[1].Substring(4, 5)) / 1000.0;
-                        double decimal1N = deg1N + (double)min1N / 60.0 + sec1N / 3600.0;
-
-                        int deg1E = Convert.ToInt16(lineSplit[2].Substring(0, 3));
-                        int min1E = Convert.ToInt16(lineSplit[2].Substring(3, 2));
-                        double sec1E = Convert.ToDouble(lineSplit[2].Substring(5, 5)) / 1000.0;
-                        double decimal1E = deg1E + (double)min1E / 60.0 + sec1E / 3600.0;
-
-                        int deg2N = Convert.ToInt16(lineSplit[3].Substring(0, 2));
-                        int min2N = Convert.ToInt16(lineSplit[3].Substring(2, 2));
-                        double sec2N = Convert.ToDouble(lineSplit[3].Substring(4, 5)) / 1000.0;
-                        double decimal2N = deg2N + (double)min2N / 60.0 + sec2N / 3600.0;
-
-                        int deg2E = Convert.ToInt16(lineSplit[4].Substring(0, 3));
-                        int min2E = Convert.ToInt16(lineSplit[4].Substring(3, 2));
-                        double sec2E = Convert.ToDouble(lineSplit[4].Substring(5, 5)) / 1000.0;
-                        double decimal2E = deg2E + (double)min2E / 60.0 + sec2E / 3600.0;
-
-                        puntos1N.Add(decimal1N);
-                        puntos1E.Add(decimal1E);
-                        puntos2N.Add(decimal2N);
-                        puntos2E.Add(decimal2E);
-                    }
-                    else if (lineSplit[0] == "Polilinea")
-                    {
-                        int read = 0;
-                        int numPoints = Convert.ToInt32(lineSplit[1]);
-                        double lastN = 0.0;
-                        double lastE = 0.0;
-                        while (read < numPoints - 1)
+                        string[] lineSplit = line.Split(' ');
+                        if (lineSplit[0] == "Linea")
                         {
-                            if (read == 0)
+                            int deg1N = Convert.ToInt16(lineSplit[1].Substring(0, 2));
+                            int min1N = Convert.ToInt16(lineSplit[1].Substring(2, 2));
+                            double sec1N = Convert.ToDouble(lineSplit[1].Substring(4, 5)) / 1000.0;
+                            double decimal1N = deg1N + (double)min1N / 60.0 + sec1N / 3600.0;
+
+                            int deg1E = Convert.ToInt16(lineSplit[2].Substring(0, 3));
+                            int min1E = Convert.ToInt16(lineSplit[2].Substring(3, 2));
+                            double sec1E = Convert.ToDouble(lineSplit[2].Substring(5, 5)) / 1000.0;
+                            double decimal1E = deg1E + (double)min1E / 60.0 + sec1E / 3600.0;
+
+                            int deg2N = Convert.ToInt16(lineSplit[3].Substring(0, 2));
+                            int min2N = Convert.ToInt16(lineSplit[3].Substring(2, 2));
+                            double sec2N = Convert.ToDouble(lineSplit[3].Substring(4, 5)) / 1000.0;
+                            double decimal2N = deg2N + (double)min2N / 60.0 + sec2N / 3600.0;
+
+                            int deg2E = Convert.ToInt16(lineSplit[4].Substring(0, 3));
+                            int min2E = Convert.ToInt16(lineSplit[4].Substring(3, 2));
+                            double sec2E = Convert.ToDouble(lineSplit[4].Substring(5, 5)) / 1000.0;
+                            double decimal2E = deg2E + (double)min2E / 60.0 + sec2E / 3600.0;
+
+                            puntos1N.Add(decimal1N);
+                            puntos1E.Add(decimal1E);
+                            puntos2N.Add(decimal2N);
+                            puntos2E.Add(decimal2E);
+                        }
+                        else if (lineSplit[0] == "Polilinea")
+                        {
+                            int read = 0;
+                            int numPoints = Convert.ToInt32(lineSplit[1]);
+                            double lastN = 0.0;
+                            double lastE = 0.0;
+                            while (read < numPoints - 1)
                             {
-                                line = file.ReadLine();
-                                int deg1N = Convert.ToInt16(line.Split(' ')[0].Substring(0, 2));
-                                int min1N = Convert.ToInt16(line.Split(' ')[0].Substring(2, 2));
-                                double sec1N = Convert.ToDouble(line.Split(' ')[0].Substring(4, 5)) / 1000.0;
-                                double decimal1N = deg1N + (double)min1N / 60.0 + sec1N / 3600.0;
+                                if (read == 0)
+                                {
+                                    line = file.ReadLine();
+                                    int deg1N = Convert.ToInt16(line.Split(' ')[0].Substring(0, 2));
+                                    int min1N = Convert.ToInt16(line.Split(' ')[0].Substring(2, 2));
+                                    double sec1N = Convert.ToDouble(line.Split(' ')[0].Substring(4, 5)) / 1000.0;
+                                    double decimal1N = deg1N + (double)min1N / 60.0 + sec1N / 3600.0;
 
-                                int deg1E = Convert.ToInt16(line.Split(' ')[1].Substring(0, 3));
-                                int min1E = Convert.ToInt16(line.Split(' ')[1].Substring(3, 2));
-                                double sec1E = Convert.ToDouble(line.Split(' ')[1].Substring(5, 5)) / 1000.0;
-                                double decimal1E = deg1E + (double)min1E / 60.0 + sec1E / 3600.0;
+                                    int deg1E = Convert.ToInt16(line.Split(' ')[1].Substring(0, 3));
+                                    int min1E = Convert.ToInt16(line.Split(' ')[1].Substring(3, 2));
+                                    double sec1E = Convert.ToDouble(line.Split(' ')[1].Substring(5, 5)) / 1000.0;
+                                    double decimal1E = deg1E + (double)min1E / 60.0 + sec1E / 3600.0;
 
-                                puntos1N.Add(decimal1N);
-                                puntos1E.Add(decimal1E);
+                                    puntos1N.Add(decimal1N);
+                                    puntos1E.Add(decimal1E);
 
-                                line = file.ReadLine();
+                                    line = file.ReadLine();
 
-                                int deg2N = Convert.ToInt16(line.Split(' ')[0].Substring(0, 2));
-                                int min2N = Convert.ToInt16(line.Split(' ')[0].Substring(2, 2));
-                                double sec2N = Convert.ToDouble(line.Split(' ')[0].Substring(4, 5)) / 1000.0;
-                                double decimal2N = deg2N + (double)min2N / 60.0 + sec2N / 3600.0;
+                                    int deg2N = Convert.ToInt16(line.Split(' ')[0].Substring(0, 2));
+                                    int min2N = Convert.ToInt16(line.Split(' ')[0].Substring(2, 2));
+                                    double sec2N = Convert.ToDouble(line.Split(' ')[0].Substring(4, 5)) / 1000.0;
+                                    double decimal2N = deg2N + (double)min2N / 60.0 + sec2N / 3600.0;
 
-                                int deg2E = Convert.ToInt16(line.Split(' ')[1].Substring(0, 3));
-                                int min2E = Convert.ToInt16(line.Split(' ')[1].Substring(3, 2));
-                                double sec2E = Convert.ToDouble(line.Split(' ')[1].Substring(5, 5)) / 1000.0;
-                                double decimal2E = deg2E + (double)min2E / 60.0 + sec2E / 3600.0;
+                                    int deg2E = Convert.ToInt16(line.Split(' ')[1].Substring(0, 3));
+                                    int min2E = Convert.ToInt16(line.Split(' ')[1].Substring(3, 2));
+                                    double sec2E = Convert.ToDouble(line.Split(' ')[1].Substring(5, 5)) / 1000.0;
+                                    double decimal2E = deg2E + (double)min2E / 60.0 + sec2E / 3600.0;
 
-                                lastN = decimal2N;
-                                lastE = decimal2E;
-                                puntos2N.Add(lastN);
-                                puntos2E.Add(lastE);
+                                    lastN = decimal2N;
+                                    lastE = decimal2E;
+                                    puntos2N.Add(lastN);
+                                    puntos2E.Add(lastE);
+                                }
+                                else
+                                {
+                                    puntos1N.Add(lastN);
+                                    puntos1E.Add(lastE);
+                                    line = file.ReadLine();
+
+                                    int deg2N = Convert.ToInt16(line.Split(' ')[0].Substring(0, 2));
+                                    int min2N = Convert.ToInt16(line.Split(' ')[0].Substring(2, 2));
+                                    double sec2N = Convert.ToDouble(line.Split(' ')[0].Substring(4, 5)) / 1000.0;
+                                    double decimal2N = deg2N + (double)min2N / 60.0 + sec2N / 3600.0;
+
+                                    int deg2E = Convert.ToInt16(line.Split(' ')[1].Substring(0, 3));
+                                    int min2E = Convert.ToInt16(line.Split(' ')[1].Substring(3, 2));
+                                    double sec2E = Convert.ToDouble(line.Split(' ')[1].Substring(5, 5)) / 1000.0;
+                                    double decimal2E = deg2E + (double)min2E / 60.0 + sec2E / 3600.0;
+
+                                    lastN = decimal2N;
+                                    lastE = decimal2E;
+                                    puntos2N.Add(lastN);
+                                    puntos2E.Add(lastE);
+                                }
+                                read++;
                             }
-                            else
-                            {
-                                puntos1N.Add(lastN);
-                                puntos1E.Add(lastE);
-                                line = file.ReadLine();
-
-                                int deg2N = Convert.ToInt16(line.Split(' ')[0].Substring(0, 2));
-                                int min2N = Convert.ToInt16(line.Split(' ')[0].Substring(2, 2));
-                                double sec2N = Convert.ToDouble(line.Split(' ')[0].Substring(4, 5)) / 1000.0;
-                                double decimal2N = deg2N + (double)min2N / 60.0 + sec2N / 3600.0;
-
-                                int deg2E = Convert.ToInt16(line.Split(' ')[1].Substring(0, 3));
-                                int min2E = Convert.ToInt16(line.Split(' ')[1].Substring(3, 2));
-                                double sec2E = Convert.ToDouble(line.Split(' ')[1].Substring(5, 5)) / 1000.0;
-                                double decimal2E = deg2E + (double)min2E / 60.0 + sec2E / 3600.0;
-
-                                lastN = decimal2N;
-                                lastE = decimal2E;
-                                puntos2N.Add(lastN);
-                                puntos2E.Add(lastE);
-                            }
-                            read++;
                         }
                     }
-                }
 
-                //Convierto los puntos de coordenadas Llh a XY, donde X=0,Y=0 es el centro de LEBL
-                double leblLatitude = 41.0 + 17.0 / 60.0 + 49.426 / 3600.0;  //41.1749426
-                double leblLongitude = 2.0 + 4.0 / 60.0 + 42.410 / 3600.0; //2.0442410;
+                    //Convierto los puntos de coordenadas Llh a XY, donde X=0,Y=0 es el centro de LEBL
+                    double leblLatitude = 41.0 + 17.0 / 60.0 + 49.426 / 3600.0;  //41.1749426
+                    double leblLongitude = 2.0 + 4.0 / 60.0 + 42.410 / 3600.0; //2.0442410;
 
-                int i = 0;
-                int end = puntos1N.Count;
-                List<double> puntos1x = new List<double>();
-                List<double> puntos1y = new List<double>();
-                List<double> puntos2x = new List<double>();
-                List<double> puntos2y = new List<double>();
+                    int i = 0;
+                    int end = puntos1N.Count;
+                    List<double> puntos1x = new List<double>();
+                    List<double> puntos1y = new List<double>();
+                    List<double> puntos2x = new List<double>();
+                    List<double> puntos2y = new List<double>();
 
-                double constan = Math.PI / 2;
+                    double constan = Math.PI / 2;
 
-                while (i < end)
-                {
-                    double a = 6378137;
-                    double b = 6356752.3142;
-                    double e_sq = 1 - Math.Pow(b / a, 2);
-                    double tmp = Math.Sqrt(1 - e_sq * Math.Pow(Math.Sin(leblLatitude * (Math.PI / 180.0) + constan), 2));
-
-                    double lat1 = puntos1N[i] - leblLatitude;
-                    double long1 = puntos1E[i] - leblLongitude;
-                    double x1 = ((a * long1) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * lat1);
-                    double y1 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat1 + a * Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * (1.5 * e_sq * Math.Pow(lat1, 2) + (Math.Pow(long1, 2) / (2 * tmp)));
-                    puntos1x.Add(x1);
-                    puntos1y.Add(y1);
-
-                    double lat2 = puntos2N[i] - leblLatitude;
-                    double long2 = puntos2E[i] - leblLongitude;
-                    double x2 = ((a * long2) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * lat2);
-                    double y2 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat2 + a * Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * (1.5 * e_sq * Math.Pow(lat2, 2) + (Math.Pow(long2, 2) / (2 * tmp)));
-                    puntos2x.Add(x2);
-                    puntos2y.Add(y2);
-                    i++;
-                }
-
-                if (puntos1x.Count > 0)
-                {
-                    //Normalizo las coordenadas X e Y, y grafico sobre el canvas
-                    double maxCoord1X = puntos1x.Select(Math.Abs).Max<double>();
-                    double maxCoord1Y = puntos1y.Select(Math.Abs).Max<double>();
-                    double maxCoord2X = puntos2x.Select(Math.Abs).Max<double>();
-                    double maxCoord2Y = puntos2y.Select(Math.Abs).Max<double>();
-                    double maxCoordX = Math.Max(puntos1x.Select(Math.Abs).Max<double>(), puntos2x.Select(Math.Abs).Max<double>());
-                    double maxCoordY = Math.Max(puntos1y.Select(Math.Abs).Max<double>(), puntos2y.Select(Math.Abs).Max<double>());
-
-                    i = 0;
-                    end = puntos1N.Count;
                     while (i < end)
                     {
-                        puntos1x[i] = (pictureBox2.Width / 2) - (puntos1x[i] / maxCoordX) * (pictureBox2.Width / 2);
-                        puntos1y[i] = (pictureBox2.Height / 2) - (puntos1y[i] / maxCoordY) * (pictureBox2.Height / 2);
-                        puntos2x[i] = (pictureBox2.Width / 2) - (puntos2x[i] / maxCoordX) * (pictureBox2.Width / 2);
-                        puntos2y[i] = (pictureBox2.Height / 2) - (puntos2y[i] / maxCoordY) * (pictureBox2.Height / 2);
-                        myCanvas.DrawLine(pen, (float)puntos1x[i], (float)puntos1y[i], (float)puntos2x[i], (float)puntos2y[i]);
+                        double a = 6378137;
+                        double b = 6356752.3142;
+                        double e_sq = 1 - Math.Pow(b / a, 2);
+                        double tmp = Math.Sqrt(1 - e_sq * Math.Pow(Math.Sin(leblLatitude * (Math.PI / 180.0) + constan), 2));
+
+                        double lat1 = puntos1N[i] - leblLatitude;
+                        double long1 = puntos1E[i] - leblLongitude;
+                        double x1 = ((a * long1) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * lat1);
+                        double y1 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat1 + a * Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * (1.5 * e_sq * Math.Pow(lat1, 2) + (Math.Pow(long1, 2) / (2 * tmp)));
+                        puntos1x.Add(x1);
+                        puntos1y.Add(y1);
+
+                        double lat2 = puntos2N[i] - leblLatitude;
+                        double long2 = puntos2E[i] - leblLongitude;
+                        double x2 = ((a * long2) / tmp) * (Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) - ((1 - e_sq) / Math.Pow(tmp, 2)) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * lat2);
+                        double y2 = ((a * (1 - e_sq)) / Math.Pow(tmp, 3)) * lat2 + a * Math.Cos(leblLatitude * (Math.PI / 180.0) + constan) * Math.Sin(leblLatitude * (Math.PI / 180.0) + constan) * (1.5 * e_sq * Math.Pow(lat2, 2) + (Math.Pow(long2, 2) / (2 * tmp)));
+                        puntos2x.Add(x2);
+                        puntos2y.Add(y2);
                         i++;
                     }
+
+                    if (puntos1x.Count > 0)
+                    {
+                        //Normalizo las coordenadas X e Y, y grafico sobre el canvas
+                        double maxCoord1X = puntos1x.Select(Math.Abs).Max<double>();
+                        double maxCoord1Y = puntos1y.Select(Math.Abs).Max<double>();
+                        double maxCoord2X = puntos2x.Select(Math.Abs).Max<double>();
+                        double maxCoord2Y = puntos2y.Select(Math.Abs).Max<double>();
+                        double maxCoordX = Math.Max(puntos1x.Select(Math.Abs).Max<double>(), puntos2x.Select(Math.Abs).Max<double>());
+                        double maxCoordY = Math.Max(puntos1y.Select(Math.Abs).Max<double>(), puntos2y.Select(Math.Abs).Max<double>());
+
+                        i = 0;
+                        end = puntos1N.Count;
+                        while (i < end)
+                        {
+                            puntos1x[i] = (pictureBox2.Width / 2) - (puntos1x[i] / maxCoordX) * (pictureBox2.Width / 2);
+                            puntos1y[i] = (pictureBox2.Height / 2) - (puntos1y[i] / maxCoordY) * (pictureBox2.Height / 2);
+                            puntos2x[i] = (pictureBox2.Width / 2) - (puntos2x[i] / maxCoordX) * (pictureBox2.Width / 2);
+                            puntos2y[i] = (pictureBox2.Height / 2) - (puntos2y[i] / maxCoordY) * (pictureBox2.Height / 2);
+                            myCanvas.DrawLine(pen, (float)puntos1x[i], (float)puntos1y[i], (float)puntos2x[i], (float)puntos2y[i]);
+                            i++;
+                        }
+                    }
+                    //Paso a pintar el siguiente mapa
+                    file.Close();
                 }
-                //Paso a pintar el siguiente mapa
-                file.Close();
                 mapa++;
             }
         }
@@ -342,20 +349,13 @@ namespace Idefix
             button7.Visible = true;
             button7.BackColor = default(Color);
             string[] mapasAeropuerto = new string[1] { "Aeropuerto_Barcelonanue.map" };
-            pintarMapaLEBL(mapasAeropuerto);
+            myCanvas = pictureBox2.CreateGraphics();
+            pintarMapaLEBL();
             label4.Visible = true;
             pictureBox3.Visible = true;
             pictureBox4.Visible = true;
             pictureBox5.Visible = true;
             label5.Visible = true;
-            checkedListBox1.Visible = true;
-
-            checkedListBox1.Items.Add("Parkings");
-            checkedListBox1.Items.Add("Service Roads");
-            checkedListBox1.Items.Add("Buildings");
-            checkedListBox1.Items.Add("Parterres");
-            checkedListBox1.Items.Add("Runways");
-            checkedListBox1.Items.Add("Movement Areas");
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -388,35 +388,40 @@ namespace Idefix
             */
         }
 
-        private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        private void pictureBox5_Click(object sender, EventArgs e)
         {
-            if (e.NewValue == CheckState.Checked) { ++checkedItemsMap; }
-            if (e.NewValue == CheckState.Unchecked) { --checkedItemsMap; }
+            simSpeed = (simSpeed + 1) % 7;
+            if (simSpeed == 0)
+                simSpeed = 1;
+            label5.Text = "x" + simSpeed.ToString();
+            if(myTimer.Enabled)
+                myTimer.Elapsed -= new ElapsedEventHandler(simulationStep);
+                myTimer.Stop();
+                pictureBox3_Click(null, null);
+        }
 
-            string[] mapasAeropuerto = new string[checkedItemsMap];
-            mapasAeropuerto[0] = "Aeropuerto_Barcelonanue.map";
+        public void simulationStep(object source, ElapsedEventArgs e)
+        {
+            simTime++;
+            Funciones funcs = new Funciones();
+            string horaSim = funcs.ConvertTime(simTime);
 
-            for (int i = 0; i < checkedListBox1.Items.Count; i++)
-            {
-                if (checkedListBox1.GetItemChecked(i))
-                {
-                    string selectedItem = (string)checkedListBox1.Items[i];
-                    if (selectedItem == "Parkings" || checkedListBox1.SelectedItem == "Parkings")
-                        mapasAeropuerto[i + 1] = "BCN_Aparcamientos.map";
-                    else if (selectedItem == "Service Roads" || checkedListBox1.SelectedItem == "Service Roads")
-                        mapasAeropuerto[i + 1] = "BCN_CarreterasServicio.map";
-                    else if (selectedItem == "Buildings" || checkedListBox1.SelectedItem == "Buildings")
-                        mapasAeropuerto[i + 1] = "BCN_Edificios.map";
-                    else if (selectedItem == "Parterres" || checkedListBox1.SelectedItem == "Parterres")
-                        mapasAeropuerto[i + 1] = "BCN_Parterres.map";
-                    else if (selectedItem == "Runways" || checkedListBox1.SelectedItem == "Runways")
-                        mapasAeropuerto[i + 1] = "BCN_Pistas.map";
-                    else if (selectedItem == "Movement Areas" || checkedListBox1.SelectedItem == "Movement Areas")
-                        mapasAeropuerto[i + 1] = "BCN_ZonasMovimiento.map";
-                }
-            }
+            this.Invoke((MethodInvoker)delegate {
+                label4.Text = horaSim; // runs on UI thread
+            });
+        }
 
-            pintarMapaLEBL(mapasAeropuerto);
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            myTimer.Elapsed += new ElapsedEventHandler(simulationStep);
+            myTimer.Interval = 1000.0/(double)simSpeed; // 1000 ms is one second
+            myTimer.Start();
+        }
+
+        private void pictureBox4_Click(object sender, EventArgs e)
+        {
+            myTimer.Elapsed -= new ElapsedEventHandler(simulationStep);
+            myTimer.Stop();
         }
     }
 }

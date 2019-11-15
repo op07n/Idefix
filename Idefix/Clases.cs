@@ -53,21 +53,21 @@ namespace Idefix
         public double SAC;
         public double SIC;
         public string MessageType;
-        //public string[] TargetReportDescriptor;
+        public string[] TargetReportDescriptor;
         public TimeSpan TimeofDay;
-        //public double[] PolarPosition;
+        public double[] PolarPosition;
         public double[] CartesianPosition; //Per plotejar
-        // public double[] PolarTrackVelocity;
-        //public double[] CartesianTrackVelocity; //Per plotejar??
-        //public string Mode3A;
-        //public string FlightLevel;
+        public double[] PolarTrackVelocity;
+        public double[] CartesianTrackVelocity; //Per plotejar??
+        public string Mode3A;
+        public string FlightLevel;
         public int TrackNumber;
-        //public string[] TrackStatus;
-        //public string[] TargetAddress;
-        //public string TargetIdentification;
-        //public double[] TargetSizeAndOrientation;
-        //public string[] SystemStatus;
-        //      public double[] CalculatedAcceleration;
+        public string[] TrackStatus;
+        public string[] TargetAddress;
+        public string TargetIdentification;
+        public double[] TargetSizeAndOrientation;
+        public string[] SystemStatus;
+        public double[] CalculatedAcceleration;
 
         public double GetSAC(string Octet)
         {
@@ -83,7 +83,7 @@ namespace Idefix
         }
 
 
-        /* public CAT10(double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
+        public CAT10(double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
          {
              this.SIC = SIC;
              this.SAC = SAC;
@@ -100,20 +100,7 @@ namespace Idefix
              this.SystemStatus = SystemStatus;
              this.CalculatedAcceleration = CalculatedAcceleration;
          }
-         */
-
-        public CAT10(double SIC, double SAC, String MsgType, int TrackNumber)
-        {
-            this.SIC = SIC;
-            this.SAC = SAC;
-            this.MessageType = MsgType;
-            // this.TimeofDay = TimeofDay;
-            this.TrackNumber = TrackNumber;
-
-        }
-
-
-
+         
         /*public string[] GetCartesianCoordinates(int X, int Y)
         {
             string[] CartesianCoordinates = new string[2];

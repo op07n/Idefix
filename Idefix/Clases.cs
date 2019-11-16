@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,12 +59,21 @@ namespace Idefix
         public double[] CartesianPosition; //Per plotejar
         public double[] PolarTrackVelocity;
         public double[] CartesianTrackVelocity; //Per plotejar??
+<<<<<<< Updated upstream
         public string Mode3A;
         public string FlightLevel;
         public int TrackNumber;
         public string[] TrackStatus;
         public string[] TargetAddress;
         public string TargetIdentification;
+=======
+        public int TrackNumber;
+        public string[] TrackStatus;
+        public string Mode3A;
+        public string[] TargetAddress;
+        public string TargetIdentification;
+        public string FlightLevel;
+>>>>>>> Stashed changes
         public double[] TargetSizeAndOrientation;
         public string[] SystemStatus;
         public double[] CalculatedAcceleration;
@@ -101,6 +110,22 @@ namespace Idefix
              this.CalculatedAcceleration = CalculatedAcceleration;
          }
          
+<<<<<<< Updated upstream
+=======
+
+        /*public CAT10(double SIC, double SAC, String MsgType, int TrackNumber)
+        {
+            this.SIC = SIC;
+            this.SAC = SAC;
+            this.MessageType = MsgType;
+            // this.TimeofDay = TimeofDay;
+            this.TrackNumber = TrackNumber;
+
+        }*/
+
+
+
+>>>>>>> Stashed changes
         /*public string[] GetCartesianCoordinates(int X, int Y)
         {
             string[] CartesianCoordinates = new string[2];

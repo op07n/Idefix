@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -210,9 +210,15 @@ namespace Idefix
                             if (va2[1].Equals('0')) { TST = "Default"; }
                             else { TST = "Test Target"; }
 
+<<<<<<< Updated upstream
                             
                             if (va2[2].Equals('0')) { RAB = "Report from Target Responder"; }
                             else { TST = "Report From Field Monitor (fixed transpoder)"; }
+=======
+                            string RAB = String.Empty;
+                            if (va2[2].Equals("0")) { RAB = "Report from Target Responder"; }
+                            else { RAB = "Report From Field Monitor (fixed transpoder)"; }
+>>>>>>> Stashed changes
 
                             StringBuilder val2 = new StringBuilder(va2[3]);
                             val2.Append(va2[4]);
@@ -485,7 +491,7 @@ namespace Idefix
 
                                 SS = new string[5] { NOGO, OVL, TSV, DIV, TTF };
                                 pos += 1;
-                            }//FRN = 20; SYSTEM STATUS
+                            }//SS = 20; SYSTEM STATUS
                             if (FSPEC_3[7] == '0') { }
                             else
                             {

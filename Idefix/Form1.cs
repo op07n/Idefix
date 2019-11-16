@@ -123,7 +123,12 @@ namespace Idefix
             //List<MyStruct> list = new List<MyStruct> { new MyStruct("fff", "b"), new MyStruct("c", "d") };
             //source.DataSource = objCat10.Take(2);
             //dataGridView1.DataSource = source;
+            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+            // or even better, use .DisableResizing. Most time consuming enum is DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders
 
+            // set it to false if not needed
+            dataGridView1.RowHeadersVisible = false;
+            dataGridView1.ColumnHeadersVisible = false;
             if (radioButton1.Checked)
             {
                 dataGridView1.ColumnCount = 44;//numero de paràmetres que vull mostrar

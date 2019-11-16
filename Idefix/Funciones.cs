@@ -262,10 +262,10 @@ namespace Idefix
                     {
                         string rho1 = Convert2Binary(msgcat10[pos]);
                         string rho2 = Convert2Binary(msgcat10[pos + 1]);
-                        StringBuilder rho_BIN = new StringBuilder(rho1);
+                        StringBuilder rho_BIN = new StringBuilder(rho1);  
                         rho_BIN.Append(rho2);
                         string rho_BIN_TOTAL = rho_BIN.ToString();
-                        double rho = (int)Convert.ToInt16(rho_BIN_TOTAL, 10); // in m
+                        double rho = (int)Convert.ToInt64(rho_BIN_TOTAL, 10); // in m
                         string theta1 = Convert2Binary(msgcat10[pos + 2]);
                         string theta2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder theta_BIN = new StringBuilder(theta1);

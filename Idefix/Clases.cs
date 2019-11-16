@@ -59,37 +59,16 @@ namespace Idefix
         public double[] CartesianPosition; //Per plotejar
         public double[] PolarTrackVelocity;
         public double[] CartesianTrackVelocity; //Per plotejar??
-<<<<<<< Updated upstream
-        public string Mode3A;
-        public string FlightLevel;
-        public int TrackNumber;
-        public string[] TrackStatus;
-        public string[] TargetAddress;
-        public string TargetIdentification;
-=======
         public int TrackNumber;
         public string[] TrackStatus;
         public string Mode3A;
         public string[] TargetAddress;
         public string TargetIdentification;
         public string FlightLevel;
->>>>>>> Stashed changes
         public double[] TargetSizeAndOrientation;
         public string[] SystemStatus;
         public double[] CalculatedAcceleration;
 
-        public double GetSAC(string Octet)
-        {
-            this.SAC = Convert.ToInt32(Octet);
-            //string SAC = Convert.ToString(Hex, 2);
-            return SAC;
-        }
-        public double GetSIC(string Octet)
-        {
-            this.SIC = Convert.ToInt32(Octet);
-            //string SIC = Convert.ToString(Hex, 2);
-            return SIC;
-        }
 
 
         public CAT10(double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)

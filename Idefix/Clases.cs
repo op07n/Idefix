@@ -604,36 +604,47 @@ namespace Idefix
         public TimeSpan TimeofDay;
         public double[] CartesianPosition;
         public int TrackNumber;
-        public string TrackStatus;
-        public string Mode3A;
+        public string[] TrackStatus;
+        public string[] Mode3A;
         public double[] CartesianTrackVelocity;
-        public string[] FlightLevel;
+        public double[] FlightLevel;
         public string[] modeC;
         public string TargetAddress;
-        public string TargetId;
+        public string[] TargetId;
         public double CartesianHeight;
         public double GeometricHeight;
         public double[] CalculatedAcceleration;
         public string VehicleFleetId;
-        public string PreprogrammedMessage;
+        public string[] PreprogrammedMessage;
         public double[] DOPofPosition;
         public double[] StandardDeviationofPosition;
-        public double[] StandardDeviationofHeigh;
+        public double StandardDeviationofHeigh;
+        public string[] ContributingDevices;
 
-
-        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string TrackStatus, double[] TargetSizeAndOrientation, string[] SystemStatus, double[] CalculatedAcceleration)
+        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, double[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
         {
             this.SIC = SIC;
             this.SAC = SAC;
             this.TargetReportDescriptor = TargetReportDescriptor;
             this.TimeofDay = TimeofDay;
             this.CartesianPosition = CartesianPosition;
-            this.CartesianTrackVelocity = CartesianTrackVelocity;
             this.TrackNumber = TrackNumber;
             this.TrackStatus = TrackStatus;
-            this.TargetSizeAndOrientation = TargetSizeAndOrientation;
-            this.SystemStatus = SystemStatus;
-            this.CalculatedAcceleration = CalculatedAcceleration;
+            this.Mode3A = Mode3A;
+            this.CartesianTrackVelocity = CTV;
+            this.FlightLevel = FlightLevel;
+            this.modeC = modeC;
+            this.TargetAddress = ICAO_Addr;
+            this.TargetId = TargetID;
+            this.CartesianHeight = cartesianH;
+            this.GeometricHeight = geometricH;
+            this.CalculatedAcceleration = CalculatedAcc;
+            this.VehicleFleetId = VFId;
+            this.PreprogrammedMessage = PPM;
+            this.DOPofPosition = DOP;
+            this.StandardDeviationofPosition = SDEV;
+            this.StandardDeviationofHeigh = S_GH;
+            this.ContributingDevices = CD;
         }
     }
 

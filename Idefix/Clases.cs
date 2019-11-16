@@ -71,7 +71,7 @@ namespace Idefix
 
 
 
-        public CAT10(int SIC, int SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
+        public CAT10(int SIC, int SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, string[] Mode3A, string ICAO_Address, string[] TargetID, string[] FL, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
          {
             this.SIC = SIC;
             this.SAC = SAC;
@@ -85,7 +85,7 @@ namespace Idefix
             this.TrackNumber = TrackNumber;
             this.TrackStatus = TrackStatus;
             this.Mode3A = Mode3A;
-            this.TargetAddress = TargetAddress;
+            this.TargetAddress = ICAO_Address;
             this.TargetIdentification = TargetID;
             this.FlightLevel = FL;
             this.TargetSizeAndOrientation = TargetSizeAndOrientation;

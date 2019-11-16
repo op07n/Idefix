@@ -670,8 +670,8 @@ namespace Idefix
                             }
                         }
                     }
-                    CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, TSO, SS, CA);
-                    //CAT10 obj = new CAT10(SIC, SAC, MsgType, TN);
+                    CAT10 obj = new CAT10(SIC, SAC, MsgType, TRD, TimeOfDay, PP, CP, PTV, CTV, TN, TS, Mode3A,ICAO_Address,TID,FL_T, TSO, SS, CA);
+
                     listCAT10.Add(obj);
                     a += 1;
                 }

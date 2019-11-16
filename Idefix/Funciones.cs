@@ -1180,9 +1180,11 @@ namespace Idefix
             {
                 foreach (CAT10 flight in cat10)
                 {
-                    listFlights[a].ID = flight.SIC.ToString();
-                    listFlights[a].TimeofDay = flight.TimeofDay;
-                    listFlights[a].CartesianPosition = flight.CartesianPosition;
+                    Flight f = new Flight();
+                    f.ID = flight.SIC.ToString();
+                    f.TimeofDay = flight.TimeofDay;
+                    f.CartesianPosition = flight.CartesianPosition;
+                    listFlights.Add(f);
                     a += 1;
                 }
             }
@@ -1190,9 +1192,11 @@ namespace Idefix
             {
                 foreach (CAT20 flight in cat20)
                 {
-                    listFlights[a].ID = flight.TargetId;
-                    listFlights[a].TimeofDay = flight.TimeofDay;
-                    listFlights[a].CartesianPosition = flight.CartesianPosition;
+                    Flight f = new Flight();
+                    f.ID = flight.SIC.ToString();
+                    f.TimeofDay = flight.TimeofDay;
+                    f.CartesianPosition = flight.CartesianPosition;
+                    listFlights.Add(f);
                     a += 1;
                 }
             }
@@ -1200,14 +1204,16 @@ namespace Idefix
             {
                 foreach (CAT21 flight in cat21)
                 {
-                    listFlights[a].ID = flight.TargetId;
-                    listFlights[a].TimeofDay = flight.TimeofDay;
-                    listFlights[a].CartesianPosition = flight.PositionWGS84;
+                    Flight f = new Flight();
+                    f.ID = flight.SIC.ToString();
+                    f.TimeofDay = flight.TimeofDay;
+                    f.CartesianPosition = flight.PositionWGS84;
+                    listFlights.Add(f);
                     a += 1;
                 }
             }
-            List<Flight> listFlightsFinal = ordenar(listFlights);
-            return listFlightsFinal;
+            //List<Flight> listFlightsFinal = ordenar(listFlights);
+            return listFlights;
         }
 
         public string Convert2Binary(double input)

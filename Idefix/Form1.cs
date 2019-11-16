@@ -17,10 +17,21 @@ namespace Idefix
         public List<string[]> fspecsCat19 = new List<string[]>();
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
+        public List<CAT10> objCat10 = new List<CAT10>();
+        //public List<CAT19> objCat19 = new List<CAT19>();
+        public List<CAT20> objCat20 = new List<CAT20>();
+        public List<CAT21> objCat21 = new List<CAT21>();
+        public List<Flight> flightList = new List<Flight>();
+
+        public Funciones funcs = new Funciones();
 
         public Graphics myCanvas;
         public bool[] opcionesMapa = new bool[7] { true, false, false, false, false, false, false };
         public int mapSelected = 0;
+        public double maxCoordX;
+        public double maxCoordY;
+        public double flightsXmax = 0;
+        public double flightsYmax = 0;
 
         public int simSpeed = 1;
         public System.Timers.Timer myTimer = new System.Timers.Timer();
@@ -62,6 +73,25 @@ namespace Idefix
                 this.fspecsCat19 = funcs.GetFSPEC(this.msgsCat19);
                 this.fspecsCat20 = funcs.GetFSPEC(this.msgsCat20);
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
+                this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
+                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20);
+                this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
+                this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
+                label4.Text = this.flightList[0].TimeofDay.ToString();
+
+                int cnt = 0;
+                while (cnt < this.flightList.Count)
+                {
+                    if (Math.Abs(this.flightList[cnt].CartesianPosition[0]) > flightsXmax)
+                    {
+                        flightsXmax = Math.Abs(this.flightList[cnt].CartesianPosition[0]);
+                    }
+                    if (Math.Abs(this.flightList[cnt].CartesianPosition[1]) > flightsYmax)
+                    {
+                        flightsYmax = Math.Abs(this.flightList[cnt].CartesianPosition[1]);
+                    }
+                    cnt++;
+                }
 
                 label2.Visible = true;
                 dataGridView1.Visible = false;
@@ -78,19 +108,6 @@ namespace Idefix
                 pictureBox4.Visible = false;
                 pictureBox5.Visible = false;
                 label5.Visible = false;
-            }
-        }
-
-        class MyStruct
-        {
-            public string Name { get; set; }
-            public string Adres { get; set; }
-
-
-            public MyStruct(string name, string adress)
-            {
-                Name = name;
-                Adres = adress;
             }
         }
 
@@ -116,9 +133,6 @@ namespace Idefix
             radioButton3.Text = "CAT10 & CAT 20";
             radioButton3.Enabled = false;//under construction
 
-            Funciones funcs = new Funciones();
-            List<CAT10> objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
-            List<CAT20> objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20);
             //var source = new BindingSource();
             //List<MyStruct> list = new List<MyStruct> { new MyStruct("fff", "b"), new MyStruct("c", "d") };
             //source.DataSource = objCat10.Take(2);
@@ -322,8 +336,8 @@ namespace Idefix
                         double maxCoord1Y = puntos1y.Select(Math.Abs).Max<double>();
                         double maxCoord2X = puntos2x.Select(Math.Abs).Max<double>();
                         double maxCoord2Y = puntos2y.Select(Math.Abs).Max<double>();
-                        double maxCoordX = Math.Max(puntos1x.Select(Math.Abs).Max<double>(), puntos2x.Select(Math.Abs).Max<double>());
-                        double maxCoordY = Math.Max(puntos1y.Select(Math.Abs).Max<double>(), puntos2y.Select(Math.Abs).Max<double>());
+                        maxCoordX = Math.Max(puntos1x.Select(Math.Abs).Max<double>(), puntos2x.Select(Math.Abs).Max<double>());
+                        maxCoordY = Math.Max(puntos1y.Select(Math.Abs).Max<double>(), puntos2y.Select(Math.Abs).Max<double>());
 
                         i = 0;
                         end = puntos1N.Count;
@@ -416,7 +430,17 @@ namespace Idefix
 
         private void pictureBox5_Click(object sender, EventArgs e)
         {
-            simSpeed = (simSpeed + 1) % 7;
+            if (simSpeed == 6)
+                simSpeed = 10;
+            else if (simSpeed == 10)
+                simSpeed = 15;
+            else if (simSpeed == 15)
+                simSpeed = 30;
+            else if (simSpeed == 30)
+                simSpeed = 1;
+            else
+                simSpeed = (simSpeed + 1) % 7;
+
             if (simSpeed == 0)
                 simSpeed = 1;
             label5.Text = "x" + simSpeed.ToString();
@@ -428,26 +452,52 @@ namespace Idefix
 
         public void simulationStep(object source, ElapsedEventArgs e)
         {
-            simTime++;
             Funciones funcs = new Funciones();
             string horaSim = funcs.ConvertTime(simTime);
 
             this.Invoke((MethodInvoker)delegate {
                 label4.Text = horaSim; // runs on UI thread
+                int x = 0;
+                bool ended = false;
+                while(x < flightList.Count || !ended)
+                {
+                    //myCanvas.FillEllipse(Brushes.Blue, (pictureBox2.Width / 2), (pictureBox2.Height / 2), 5, 5);
+                    if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
+                    { 
+                        myCanvas.FillEllipse(Brushes.Red, 
+                            (float)((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2)),
+                            (float)((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2)), 
+                            5, 
+                            5);
+                    }
+                    else if ((int)flightList[x].TimeofDay.TotalSeconds > Convert.ToInt32(simTime))
+                    {
+                        ended = true;
+                    }
+                       
+                    x++;
+                }
             });
+            simTime++;
         }
 
         private void pictureBox3_Click(object sender, EventArgs e)
         {
-            myTimer.Elapsed += new ElapsedEventHandler(simulationStep);
-            myTimer.Interval = 1000.0/(double)simSpeed; // 1000 ms is one second
-            myTimer.Start();
+            if (!myTimer.Enabled)
+            {
+                myTimer.Elapsed += new ElapsedEventHandler(simulationStep);
+                myTimer.Interval = 1000.0 / (double)simSpeed; // 1000 ms is one second
+                myTimer.Start();
+            }
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
         {
-            myTimer.Elapsed -= new ElapsedEventHandler(simulationStep);
-            myTimer.Stop();
+            if (myTimer.Enabled)
+            {
+                myTimer.Elapsed -= new ElapsedEventHandler(simulationStep);
+                myTimer.Stop();
+            }
         }
     }
 }

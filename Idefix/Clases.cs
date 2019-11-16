@@ -101,19 +101,6 @@ namespace Idefix
              this.CalculatedAcceleration = CalculatedAcceleration;
          }
          
-        /*
-      public CAT10(double SIC, double SAC, String MsgType, int TrackNumber)
-      {
-          this.SIC = SIC;
-          this.SAC = SAC;
-          this.MessageType = MsgType;
-          // this.TimeofDay = TimeofDay;
-          this.TrackNumber = TrackNumber;
-
-      }
-      */
-
-
         /*public string[] GetCartesianCoordinates(int X, int Y)
         {
             string[] CartesianCoordinates = new string[2];

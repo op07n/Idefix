@@ -574,45 +574,37 @@ namespace Idefix
                         if (va[6].Equals('0')) { OT = "No UAT multilateration"; }
                         else { OT = "UAT multilateration"; }
 
-                        TRD = new string[7] { SSR, MS, HF, VDL4, UAT, DME, OT };
-
+                        string RAB = String.Empty; string SPI = String.Empty; string CHN = String.Empty; string GBS = String.Empty; string CRT = String.Empty; string SIM = String.Empty; string TST = String.Empty;
                         if (va[7].Equals('0')) { pos += 1; }
                         else
                         {
                             pos += 1;
                             string va2 = Convert2Binary(msgcat20[pos]);
-
-                            string RAB = String.Empty;
+                            
                             if (va2[0].Equals('0')) { RAB = "Report from Target Responder"; }
                             else { RAB = "Report From Field Monitor (fixed transpoder)"; }
-
-                            string SPI = String.Empty;
+                           
                             if (va2[1].Equals('0')) { SPI = "Absence of SPI"; }
                             else { SPI = "Special Position Identification"; }
-
-                            string CHN = String.Empty;
+                            
                             if (va2[2].Equals('0')) { CHN = "Chain 1"; }
                             else { CHN = "Chain 2"; }
-
-                            string GBS = String.Empty;
+                            
                             if (va2[3].Equals('0')) { GBS = "Transponder Ground Bit Not Set"; }
                             else { GBS = "Transponder Ground Bit Set"; }
-
-                            string CRT = String.Empty;
+                            
                             if (va2[4].Equals('0')) { CRT = "No Corrupted replies in multilateration"; }
                             else { CRT = "Corrupted replies in multilateration"; }
-
-                            string SIM = String.Empty;
+                           
                             if (va2[5].Equals('0')) { SIM = "Actual Target Report"; }
                             else { SIM = "Simulated Target Report"; }
-
-                            string TST = String.Empty;
+                            
                             if (va2[6].Equals('0')) { TST = "Default"; }
                             else { TST = "Test Target"; }
-
-                            TRD = new string[14] { SSR, MS, HF, VDL4, UAT, DME, OT, RAB, SPI, CHN, GBS, CRT, SIM, TST };
+                            
                             pos += 1;
                         }
+                        TRD = new string[14] { SSR, MS, HF, VDL4, UAT, DME, OT, RAB, SPI, CHN, GBS, CRT, SIM, TST };
 
                     }// FRN = 2: Target Report Description
 
@@ -699,36 +691,32 @@ namespace Idefix
                         string STH = String.Empty;
                         if (ts[6].Equals('1')) { STH = "Smoothed position"; }
                         else { STH = "Measured position"; }
-
-                        TS = new string[6] { CNF, TRE, CST, CDM, MAH, STH };
-
+                        
+                        string GHO = string.Empty;
 
                         if (ts[7].Equals('0')) { pos += 1; }
                         else
                         {
                             string ts_1 = Convert2Binary(msgcat20[pos]);
-                            string GHO = string.Empty;
+                            
                             if (ts_1[0].Equals('1')) { GHO = "Ghost track"; }
                             else { GHO = "Default"; }
 
-                            TS = new string[7] { CNF, TRE, CST, CDM, MAH, STH, GHO };
                             pos += 1;
-
                         }
+                        TS = new string[7] { CNF, TRE, CST, CDM, MAH, STH, GHO };
                     }// FRN = 7; Track Status
 
-                    string error = FSPEC_1;
-                    char error_in = FSPEC_1[7];
                     if (FSPEC_1[7] == '0') { }
                     else
                     {
                         string FSPEC_2 = FSPEC_T[a][1];
                         if (FSPEC_2[0] == '1') // FRN = 8: Mode-3A
                         {
-                            string V = "";
-                            string G = "";
-                            string L = "";
-                            string Response = "";
+                            string V = string.Empty;
+                            string G = string.Empty;
+                            string L = string.Empty;
+                            string Response = string.Empty;
 
                             string mode3A = Convert2Binary(msgcat20[pos]);
                             string mode3A_2 = Convert2Binary(msgcat20[pos + 1]);
@@ -738,8 +726,6 @@ namespace Idefix
                             else G = "Garbled code";
                             if (mode3A[2].Equals('0')) L = "Mode-3/A code derived from the reply of the transponder";
                             else L = "Mode-3/A code not extracted during the last update period";
-
-
 
                             StringBuilder resp = new StringBuilder(mode3A[4]);
                             resp.Append(mode3A[5]);
@@ -1166,7 +1152,7 @@ namespace Idefix
                             }//FRN = 20: Contributing devices
                         }
                     }
-                    // CAT20 obj = new CAT20(SIC, SAC, TRD, TimeOfDay, CP, TN, TS, Mode3A, CTV, FL_T, ModeC, ICAO_Address, TID, cartesianH, geometricH, CA, VFI, PPM, DOP, SDEV, SIGMA_GH, CD);
+                    //CAT20 obj = new CAT20(SIC, SAC, TRD, TimeOfDay, CP, TN, TS, Mode3A, CTV, FL_T, ModeC, ICAO_Address, TID, cartesianH, geometricH, CA, VFI, PPM, DOP, SDEV, SIGMA_GH, CD);
                 }
             }
             return listCAT20;

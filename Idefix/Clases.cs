@@ -50,8 +50,8 @@ namespace Idefix
     public class CAT10
     {
         // el SAC y el SIC son el DataSourceIdentifier
-        public double SAC;
-        public double SIC;
+        public int SAC;
+        public int SIC;
         public string MessageType;
         public string[] TargetReportDescriptor;
         public TimeSpan TimeofDay;
@@ -83,7 +83,7 @@ namespace Idefix
         }
 
 
-        public CAT10(double SIC, double SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
+        public CAT10(int SIC, int SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
          {
              this.SIC = SIC;
              this.SAC = SAC;
@@ -596,7 +596,7 @@ namespace Idefix
     {
         public int SAC;
         public int SIC;
-        public string[] TargetReportDescription;
+        public string[] TargetReportDescriptor;
         public TimeSpan TimeofDay;
         public double[] CartesianPosition;
         public int TrackNumber;
@@ -615,7 +615,26 @@ namespace Idefix
         public double[] DOPofPosition;
         public double[] StandardDeviationofPosition;
         public double[] StandardDeviationofHeigh;
+
+
+        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string TrackStatus, double[] TargetSizeAndOrientation, string[] SystemStatus, double[] CalculatedAcceleration)
+        {
+            this.SIC = SIC;
+            this.SAC = SAC;
+            this.TargetReportDescriptor = TargetReportDescriptor;
+            this.TimeofDay = TimeofDay;
+            this.CartesianPosition = CartesianPosition;
+            this.CartesianTrackVelocity = CartesianTrackVelocity;
+            this.TrackNumber = TrackNumber;
+            this.TrackStatus = TrackStatus;
+            this.TargetSizeAndOrientation = TargetSizeAndOrientation;
+            this.SystemStatus = SystemStatus;
+            this.CalculatedAcceleration = CalculatedAcceleration;
+        }
     }
+
+
+ 
     public class CAT21
     {
         public int SAC;

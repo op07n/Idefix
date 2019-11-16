@@ -120,7 +120,7 @@ namespace Idefix
 
         public List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
-            double SAC = 0; double SIC = 0;
+            int SAC = 0; int SIC = 0;
             string MsgType = string.Empty;
             string ICAO_Address = string.Empty;
             TimeSpan TimeOfDay= TimeSpan.Zero;
@@ -139,8 +139,8 @@ namespace Idefix
                     int pos = FSPEC_T[a].Length; // posició de byte en el missatge rebut de categoria 10 SENSE cat,lenght,Fspec.
                     if (FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                     {
-                        SAC = msgcat10[pos]; // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
-                        SIC = msgcat10[pos + 1];
+                        SAC = Convert.ToInt32(msgcat10[pos]); // assumim que es un vector de double on cada posició és el valor decimal del byte corresponent
+                        SIC = Convert.ToInt32(msgcat10[pos + 1]);
                         pos = pos + 2;
                     }// FRN = 1: Data Source ID
                     if (FSPEC_1[1] == '1')// FRN = 2: Message Type
@@ -415,7 +415,7 @@ namespace Idefix
                             }
                             TS = new string[10] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS, GHO };
                         }// FRN = 11; Track Status
-                        if (FSPEC_2[0] == '1') // FRN = 12: Mode-3A
+                        if (FSPEC_2[4] == '1') // FRN = 12: Mode-3A
                         {
                             string V = "";
                             string G = "";
@@ -447,7 +447,7 @@ namespace Idefix
                             Mode3A = new string[4] { V, G, L, Response };
                             pos += 2;
                         }// FRN = 12: Mode-3A
-                        if (FSPEC_2[4] == '1') // FRN = 13: ICAO address
+                        if (FSPEC_2[5] == '1') // FRN = 13: ICAO address
                         {
                             string ICAO1 = Convert2Binary(msgcat10[pos]);
                             string ICAO2 = Convert2Binary(msgcat10[pos + 1]);
@@ -459,7 +459,7 @@ namespace Idefix
 
                             pos += 4;
                         }// FRN = 13: ICAO address
-                        if (FSPEC_2[5] == '1') // FRN = 14: Target Identification
+                        if (FSPEC_2[6] == '1') // FRN = 14: Target Identification
                         {
                             string sti1 = Convert2Binary(msgcat10[pos]);
                             StringBuilder sti = new StringBuilder(sti1[0]);
@@ -546,7 +546,6 @@ namespace Idefix
                             TID = new string[2] { STI, TID_T };
                             pos += 7;
                         }// FRN = 14: Target Identification
-                         //some more shit shit here
                         if (FSPEC_2[7] == '0') { }
                         else
                         {

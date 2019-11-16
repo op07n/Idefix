@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,28 +59,16 @@ namespace Idefix
         public double[] CartesianPosition; //Per plotejar
         public double[] PolarTrackVelocity;
         public double[] CartesianTrackVelocity; //Per plotejar??
-        public string Mode3A;
-        public string FlightLevel;
         public int TrackNumber;
         public string[] TrackStatus;
+        public string Mode3A;
         public string[] TargetAddress;
         public string TargetIdentification;
+        public string FlightLevel;
         public double[] TargetSizeAndOrientation;
         public string[] SystemStatus;
         public double[] CalculatedAcceleration;
 
-        public double GetSAC(string Octet)
-        {
-            this.SAC = Convert.ToInt32(Octet);
-            //string SAC = Convert.ToString(Hex, 2);
-            return SAC;
-        }
-        public double GetSIC(string Octet)
-        {
-            this.SIC = Convert.ToInt32(Octet);
-            //string SIC = Convert.ToString(Hex, 2);
-            return SIC;
-        }
 
 
         public CAT10(int SIC, int SAC, String MsgType, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] PolarPosition, double[] CartesianPosition, double[] PolarTrackVelocity,double[] CartesianTrackVelocity, int TrackNumber, string[] TrackStatus, double[] TargetSizeAndOrientation, string [] SystemStatus, double[] CalculatedAcceleration)
@@ -101,6 +89,22 @@ namespace Idefix
              this.CalculatedAcceleration = CalculatedAcceleration;
          }
          
+<<<<<<< Updated upstream
+=======
+
+        /*public CAT10(double SIC, double SAC, String MsgType, int TrackNumber)
+        {
+            this.SIC = SIC;
+            this.SAC = SAC;
+            this.MessageType = MsgType;
+            // this.TimeofDay = TimeofDay;
+            this.TrackNumber = TrackNumber;
+
+        }*/
+
+
+
+>>>>>>> Stashed changes
         /*public string[] GetCartesianCoordinates(int X, int Y)
         {
             string[] CartesianCoordinates = new string[2];

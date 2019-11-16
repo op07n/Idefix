@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -121,10 +121,11 @@ namespace Idefix
         public List<CAT10> ReadCat10(List<double[]> msgcat10_T, List<string[]> FSPEC_T) {
             int a = 0;
             double SAC = 0; double SIC = 0;
-            String MsgType = String.Empty;
+            string MsgType = string.Empty;
+            string ICAO_Address = string.Empty;
             TimeSpan TimeOfDay= TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = new string[5] {"","","","",""};
+            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = new string[5] {"","","","",""}; string[] Mode3A = Array.Empty<string>(); string[] TID = Array.Empty<string>(); string[] FL_T = Array.Empty<string>();
             double[] PP = new double[2] {0,0}; double[] CP = new double[2] { 0, 0 }; double[] PTV = new double[2] { 0, 0 }; double[] CTV = new double[2] { 0, 0 }; double[] TSO = new double[3] {0,0,0}; double[] CA = new double[2] {0, 0};
 
             List<CAT10> listCAT10 = new List<CAT10>();
@@ -187,7 +188,7 @@ namespace Idefix
 
                         
                         if (va[4].Equals('0')) { CHN = "Chain 1"; }
-                        //else { CHN = "Revisar ELSE"; }
+                        else { CHN = "Chain 2"; }
 
                         
                         if (va[5].Equals('0')) { GBS = "Transponder Ground Bit Not Set"; }
@@ -210,9 +211,9 @@ namespace Idefix
                             if (va2[1].Equals('0')) { TST = "Default"; }
                             else { TST = "Test Target"; }
 
-                            
                             if (va2[2].Equals('0')) { RAB = "Report from Target Responder"; }
                             else { TST = "Report From Field Monitor (fixed transpoder)"; }
+
 
                             StringBuilder val2 = new StringBuilder(va2[3]);
                             val2.Append(va2[4]);
@@ -414,11 +415,175 @@ namespace Idefix
                             }
                             TS = new string[10] { CNF, TRE, CST, MAH, TCC, STH, TOM, DOU, MRS, GHO };
                         }// FRN = 11; Track Status
+                        if (FSPEC_2[0] == '1') // FRN = 12: Mode-3A
+                        {
+                            string V = "";
+                            string G = "";
+                            string L = "";
+                            string Response = "";
+
+                            string mode3A = Convert2Binary(msgcat10[pos]);
+                            string mode3A_2 = Convert2Binary(msgcat10[pos + 1]);
+                            if (mode3A[0].Equals('0')) V = "Code validated";
+                            else V = "Code not validated";
+                            if (mode3A[1].Equals('0')) G = "Default";
+                            else G = "Garbled code";
+                            if (mode3A[2].Equals('0')) L = "Mode-3/A code derived from the reply of the transponder";
+                            else L = "Mode-3/A code not extracted during the last update period";
+
+
+
+                            StringBuilder resp = new StringBuilder(mode3A[4]);
+                            resp.Append(mode3A[5]);
+                            resp.Append(mode3A[6]);
+                            resp.Append(mode3A[7]);
+                            resp.Append(mode3A_2);
+
+                            string resp1 = resp.ToString();
+                            int resp2 = (int)Convert.ToInt32(resp1, 2);
+
+                            Response = Convert.ToString(resp2, 8);
+
+                            Mode3A = new string[4] { V, G, L, Response };
+                            pos += 2;
+                        }// FRN = 12: Mode-3A
+                        if (FSPEC_2[4] == '1') // FRN = 13: ICAO address
+                        {
+                            string ICAO1 = Convert2Binary(msgcat10[pos]);
+                            string ICAO2 = Convert2Binary(msgcat10[pos + 1]);
+                            string ICAO3 = Convert2Binary(msgcat10[pos + 2]);
+                            StringBuilder ICAO = new StringBuilder(ICAO1);
+                            ICAO.Append(ICAO2);
+                            ICAO.Append(ICAO3);
+                            ICAO_Address = ICAO.ToString();
+
+                            pos += 4;
+                        }// FRN = 13: ICAO address
+                        if (FSPEC_2[5] == '1') // FRN = 14: Target Identification
+                        {
+                            string sti1 = Convert2Binary(msgcat10[pos]);
+                            StringBuilder sti = new StringBuilder(sti1[0]);
+                            sti.Append(sti1[1]);
+                            string STI = string.Empty;
+
+                            if (sti.ToString().Equals("0")) { STI = "Callsign or registration not downlinked from transponder"; }
+                            else if (sti.ToString().Equals("1")) { STI = "Registration downlinked from transponder"; }
+                            else if (sti.ToString().Equals("10")) { STI = "Callsign downlinked from transponder"; }
+                            else if (sti.ToString().Equals("11")) { STI = "Not defined"; }
+
+
+                            string byte2 = Convert2Binary(msgcat10[pos + 1]);
+                            StringBuilder tid1 = new StringBuilder(byte2[0]);
+                            tid1.Append(byte2[0]);
+                            tid1.Append(byte2[1]);
+                            tid1.Append(byte2[2]);
+                            tid1.Append(byte2[3]);
+                            tid1.Append(byte2[4]);
+                            char TID1 = ConvertToIA5(tid1);
+
+                            string byte3 = Convert2Binary(msgcat10[pos + 2]);
+                            StringBuilder tid2 = new StringBuilder(byte2[6]);
+                            tid2.Append(byte2[7]);
+                            tid2.Append(byte3[0]);
+                            tid2.Append(byte3[1]);
+                            tid2.Append(byte3[2]);
+                            tid2.Append(byte3[3]);
+                            char TID2 = ConvertToIA5(tid2);
+
+                            string byte4 = Convert2Binary(msgcat10[pos + 3]);
+                            StringBuilder tid3 = new StringBuilder(byte3[4]);
+                            tid3.Append(byte3[5]);
+                            tid3.Append(byte3[6]);
+                            tid3.Append(byte3[7]);
+                            tid3.Append(byte4[0]);
+                            tid3.Append(byte4[1]);
+                            char TID3 = ConvertToIA5(tid3);
+
+                            StringBuilder tid4 = new StringBuilder(byte4[2]);
+                            tid4.Append(byte4[3]);
+                            tid4.Append(byte4[4]);
+                            tid4.Append(byte4[5]);
+                            tid4.Append(byte4[6]);
+                            tid4.Append(byte4[7]);
+                            char TID4 = ConvertToIA5(tid4);
+
+                            string byte5 = Convert2Binary(msgcat10[pos + 4]);
+                            StringBuilder tid5 = new StringBuilder(byte5[0]);
+                            tid5.Append(byte5[1]);
+                            tid5.Append(byte5[2]);
+                            tid5.Append(byte5[3]);
+                            tid5.Append(byte5[4]);
+                            tid5.Append(byte5[5]);
+                            char TID5 = ConvertToIA5(tid5);
+
+                            string byte6 = Convert2Binary(msgcat10[pos + 5]);
+                            StringBuilder tid6 = new StringBuilder(byte5[6]);
+                            tid6.Append(byte5[7]);
+                            tid6.Append(byte6[0]);
+                            tid6.Append(byte6[1]);
+                            tid6.Append(byte6[2]);
+                            tid6.Append(byte6[3]);
+                            char TID6 = ConvertToIA5(tid6);
+
+                            string byte7 = Convert2Binary(msgcat10[pos + 6]);
+                            StringBuilder tid7 = new StringBuilder(byte6[4]);
+                            tid7.Append(byte6[5]);
+                            tid7.Append(byte6[6]);
+                            tid7.Append(byte6[7]);
+                            tid7.Append(byte7[0]);
+                            tid7.Append(byte7[1]);
+                            char TID7 = ConvertToIA5(tid7);
+
+                            StringBuilder tid8 = new StringBuilder(byte7[2]);
+                            tid8.Append(byte7[3]);
+                            tid8.Append(byte7[4]);
+                            tid8.Append(byte7[5]);
+                            tid8.Append(byte7[6]);
+                            tid8.Append(byte7[7]);
+                            char TID8 = ConvertToIA5(tid8);
+
+                            string TID_T = string.Concat(TID1, TID2, TID3, TID4, TID5, TID6, TID7, TID8);
+                            TID = new string[2] { STI, TID_T };
+                            pos += 7;
+                        }// FRN = 14: Target Identification
                          //some more shit shit here
                         if (FSPEC_2[7] == '0') { }
                         else
                         {
                             string FSPEC_3 = FSPEC_T[a][2];
+                            if (FSPEC_3[2] == '1') // FRN = 17: Flight Level
+                            {
+
+                                string V = "";
+                                string G = "";
+                                long FL = 0;
+
+                                string fl = Convert2Binary(msgcat10[pos]);
+                                string fl_2 = Convert2Binary(msgcat10[pos + 1]);
+                                if (fl[0].Equals('0')) V = "Code validated";
+                                else V = "Code not validated";
+                                if (fl[1].Equals('0')) G = "Default";
+                                else G = "Garbled code";
+
+
+                                StringBuilder resp = new StringBuilder(fl[2]);
+                                resp.Append(fl[3]);
+                                resp.Append(fl[4]);
+                                resp.Append(fl[5]);
+                                resp.Append(fl[6]);
+                                resp.Append(fl[7]);
+                                resp.Append(fl_2);
+
+                                int resp1 = Convert.ToInt32(resp.ToString());
+
+                                string FL1 = Convert2Binary(Convert.ToDouble(resp1));
+                                FL = Convert.ToInt64(FL1, 2);
+                                FL /= 4;
+
+                                FL_T = new string[3] { V, G, FL.ToString() };
+                                pos += 2;
+
+                            }// FRN = 17: Flight Level
                             if (FSPEC_3[4] == '1') //FRN = 19; Target Size and Orientation --> TSO
                             {
                                 double LEN; double ORI = 0; double WID = 0;
@@ -485,7 +650,7 @@ namespace Idefix
 
                                 SS = new string[5] { NOGO, OVL, TSV, DIV, TTF };
                                 pos += 1;
-                            }//FRN = 20; SYSTEM STATUS
+                            }//SS = 20; SYSTEM STATUS
                             if (FSPEC_3[7] == '0') { }
                             else
                             {

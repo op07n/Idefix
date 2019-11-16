@@ -682,7 +682,7 @@ namespace Idefix
         public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
         {
             int a = 0;
-            double SAC = 0; double SIC = 0; double cartesianH; double geometricH; double SIGMA_GH;
+            int SAC = 0; int SIC = 0; double cartesianH; double geometricH; double SIGMA_GH;
             String MsgType = String.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
@@ -701,8 +701,8 @@ namespace Idefix
                     int pos = FSPEC_T[a].Length; // posició de byte en el missatge rebut de categoria 20 SENSE cat,lenght,Fspec.
                     if (FSPEC_1[0] == '1')// FRN = 1: Data Source ID
                     {
-                        SAC = msgcat20[pos];
-                        SIC = msgcat20[pos + 1];
+                        SAC = Convert.ToInt32(msgcat20[pos]);
+                        SIC = Convert.ToInt32(msgcat20[pos + 1]);
                         pos = pos + 2;
                     }// FRN = 1: Data Source ID
 

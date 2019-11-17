@@ -1187,6 +1187,7 @@ namespace Idefix
                                         VFI = "Flyco (follow me)";
                                         break;
                                 }
+                                pos += 1; 
                             } // FRN = 17: Vehicle Fleet Identification
 
                             if (FSPEC_3[3] == '1') // FRN = 18: Pre-programmed message
@@ -1291,7 +1292,7 @@ namespace Idefix
                                     StringBuilder sigmaGH = new StringBuilder(sigmaGH1);
                                     sigmaGH.Append(sigmaGH2);
 
-                                    SIGMA_GH = (Convert.ToDouble(sigmaGH)) * 0.5;
+                                    SIGMA_GH = (Convert.ToDouble(sigmaGH.ToString())) * 0.5;
                                     pos += 2;
                                 }
 
@@ -1303,7 +1304,7 @@ namespace Idefix
                                 string[] CTRU = new string[8];
                                 string TRx = msgcat20[pos + 1].ToString(); 
                                 int n = 0;
-                                while(n < 8)
+                                while(n < TRx.Length)
                                 {
                                     if (TRx[n].Equals('1'))
                                         CTRU[n] = "TUx/RUx number " + n + " has contributed to the target detection";
@@ -1316,7 +1317,9 @@ namespace Idefix
                             }//FRN = 20: Contributing devices
                         }
                     }
+                    a += 1;
                     CAT20 obj = new CAT20(SIC, SAC, TRD, TimeOfDay, CP, TN, TS, Mode3A, CTV, FL_T, ModeC, ICAO_Address, TID, cartesianH, geometricH, CA, VFI, PPM, DOP, SDEV, SIGMA_GH, CD);
+                    listCAT20.Add(obj);
                 }
             }
             return listCAT20;
@@ -1372,14 +1375,19 @@ namespace Idefix
             n = Convert.ToInt32(input);
             int[] a = new int[8];
             string b = null;
-            for (int i = 0; i <= 7; i++)
+            if (input == 0)
+                b = "00000000";
+            else
             {
-                a[7 - i] = n % 2;
-                n = n / 2;
-            }
-            for (int i = 0; i <= 7; i++)
-            {
-                b = b + Convert.ToString(a[i]);
+                for (int i = 0; i <= 7; i++)
+                {
+                    a[7 - i] = n % 2;
+                    n = n / 2;
+                }
+                for (int i = 0; i <= 7; i++)
+                {
+                    b = b + Convert.ToString(a[i]);
+                }
             }
             return b;
         }

@@ -157,15 +157,17 @@ namespace Idefix
             if (radioButton2.Checked)
             {
                 dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
-                string[] tits = new string[21] { "SIC", "SAC", "TRD", "Time of Day", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
+                string[] tits = new string[23] {"CAT", "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
                 dataGridView1.Rows.Add(tits);
 
                 foreach (CAT20 a in objCat20.Take(50))
                 {
-                    string[] vs = new string[21] { a.SIC.ToString(), a.SAC.ToString(), "More Information", a.TimeofDay.ToString(), "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
+                    string[] vs = new string[23] {a.CAT ,a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), a.MessageType, "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
                     dataGridView1.Rows.Add(vs);
                 }
             }
+
+
             DataGridViewCellStyle style = new DataGridViewCellStyle();
             style.BackColor = Color.CadetBlue;
             style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
@@ -179,6 +181,19 @@ namespace Idefix
             dataGridView1.DataSource = bindingList;
             dataGridView1.AutoResizeColumns();
             dataGridView1.Refresh();*/
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if(radioButton2.Checked)
+            {
+                if (dataGridView1.CurrentCell.ColumnIndex.Equals(2) && e.RowIndex != -1)
+                {
+                    if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
+                        MessageBox.Show("SSR = " + objCat20[e.RowIndex].TargetReportDescriptor[0] + "\n MS =" + objCat20[e.RowIndex].TargetReportDescriptor[1]);
+                }
+            }
         }
 
         public void pintarMapaLEBL()

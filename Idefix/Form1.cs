@@ -140,47 +140,39 @@ namespace Idefix
             dataGridView1.ColumnHeadersVisible = false;
             dataGridView1.ReadOnly = true;
 
-            if (radioButton1.Checked == true)
+            if (radioButton1.Checked)
             {
                 dataGridView1.ColumnCount = 44;//numero de paràmetres que vull mostrar
                 string[] tits = new string[44] { "SIC", "SAC", "Message Type", "Time of Day", "TYP", "DCR", "CHN", "GBS", "CRT", "SIM", "TST", "RAB", "LOP", "TOT", "SIP", "rho", "theta", "x", "y", "ground speed", "track angle", "vx", "vy", "Track Number", "CNF", "TRT", "CST", "MAH", "TCC", "STH", "TOM", "DOU", "MRS", "GHO", "Length", "Orientation", "Width", "NOGO", "OVL", "TSV", "DIV", "TTF", "ax", "ay" };
                 dataGridView1.Rows.Add(tits);
-                DataGridViewCellStyle style = new DataGridViewCellStyle();
-                style.BackColor = Color.CadetBlue;
-                style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
-                dataGridView1.Rows[0].DefaultCellStyle = style;
+
                 foreach (CAT10 a in objCat10.Take(50))
                 {
                     string[] vs = new string[44] { a.SIC.ToString(), a.SAC.ToString(), a.MessageType, a.TimeofDay.ToString(), a.TargetReportDescriptor[0], a.TargetReportDescriptor[1], a.TargetReportDescriptor[2], a.TargetReportDescriptor[3], a.TargetReportDescriptor[4], a.TargetReportDescriptor[5], a.TargetReportDescriptor[6], a.TargetReportDescriptor[7], a.TargetReportDescriptor[8], a.TargetReportDescriptor[9], a.TargetReportDescriptor[10], a.PolarPosition[0].ToString(), a.PolarPosition[1].ToString(), a.CartesianPosition[0].ToString(), a.CartesianPosition[1].ToString(), a.PolarTrackVelocity[0].ToString(), a.PolarTrackVelocity[1].ToString(), a.CartesianTrackVelocity[0].ToString(), a.CartesianTrackVelocity[1].ToString(), a.TrackNumber.ToString(), a.TrackStatus[0], a.TrackStatus[1], a.TrackStatus[2], a.TrackStatus[3], a.TrackStatus[4], a.TrackStatus[5], a.TrackStatus[6], a.TrackStatus[7], a.TrackStatus[8], a.TrackStatus[9], a.TargetSizeAndOrientation[0].ToString(), a.TargetSizeAndOrientation[1].ToString(), a.TargetSizeAndOrientation[2].ToString(), a.SystemStatus[0], a.SystemStatus[1], a.SystemStatus[2], a.SystemStatus[3], a.SystemStatus[4], a.CalculatedAcceleration[0].ToString(), a.CalculatedAcceleration[1].ToString() };
                     dataGridView1.Rows.Add(vs);
                 }
-                dataGridView1.Name = "CAT 10 info";
-                dataGridView1.AutoResizeColumnHeadersHeight();
-                dataGridView1.CurrentRow.Selected = false;
+
             }
 
             if (radioButton2.Checked)
             {
-
-=======
-            if (radioButton1.Checked)
-            {
-                dataGridView1.ColumnCount = 3;//numero de paràmetres que vull mostrar
-                string[] tits = new string[44]{"SIC", "SAC", "Message Type", "Time of Day", "TYP", "DCR", "CHN", "GBS", "CRT", "SIM","TST", "RAB", "LOP", "TOT", "SIP", "rho","theta", "x","y","ground speed","track angle", "vx", "vy","Track Number", "CNF", "TRT", "CST", "MAH", "TCC", "STH", "TOM", "DOU", "MRS", "GHO", "Length", "Orientation", "Width", "NOGO", "OVL", "TSV", "DIV", "TTF", "ax", "ay"};
+                dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
+                string[] tits = new string[21] { "SIC", "SAC", "TRD", "Time of Day", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
                 dataGridView1.Rows.Add(tits);
 
-                foreach(CAT10 a in objCat10)
+                foreach (CAT20 a in objCat20.Take(50))
                 {
-                    string[] vs = new string[44]{a.SIC.ToString(), a.SAC.ToString(), a.MessageType, a.TimeofDay.ToString(), a.TargetReportDescriptor[0], a.TargetReportDescriptor[1], a.TargetReportDescriptor[2]], a.TargetReportDescriptor[3], a.TargetReportDescriptor[4], a.TargetReportDescriptor[5], a.TargetReportDescriptor[6], a.TargetReportDescriptor[7], a.TargetReportDescriptor[8], a.TargetReportDescriptor[9], a.TargetReportDescriptor[10], a.PolarPosition[0].ToString(), a.PolarPosition[1].ToString(), a.CartesianPosition[0].ToString(), a.CartesianPosition[1].ToString(), a.PolarTrackVelocity[0].ToString(), a.PolarTrackVelocity[1].ToString(), a.CartesianTrackVelocity[0].ToString(), a.CartesianTrackVelocity[1].ToString(), a.TrackNumber.ToString(), a.TrackStatus[0], a.TrackStatus[1], a.TrackStatus[2], a.TrackStatus[3], a.TrackStatus[4], a.TrackStatus[5], a.TrackStatus[6], a.TrackStatus[7], a.TrackStatus[8], a.TrackStatus[9], a.TargetSizeAndOrientation[0].ToString(), a.TargetSizeAndOrientation[1].ToString(), a.TargetSizeAndOrientation[2].ToString(), a.SystemStatus[0], a.SystemStatus[1], a.SystemStatus[2], a.SystemStatus[3], a.SystemStatus[4], a.CalculatedAcceleration[0].ToString(), a.CalculatedAcceleration[1].ToString() };
+                    string[] vs = new string[21] { a.SIC.ToString(), a.SAC.ToString(), "More Information", a.TimeofDay.ToString(), "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
+                    dataGridView1.Rows.Add(vs);
+                }
             }
+            DataGridViewCellStyle style = new DataGridViewCellStyle();
+            style.BackColor = Color.CadetBlue;
+            style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
+            dataGridView1.Rows[0].DefaultCellStyle = style;
             dataGridView1.Name = "CAT 10 info";
-                dataGridView1.AutoResizeColumnHeadersHeight();
-
-                int f = 0;
-
-              
->>>>>>> Stashed changes
-            }
+            dataGridView1.AutoResizeColumnHeadersHeight();
+            dataGridView1.CurrentRow.Selected = false;
             /*
             var bindingList = new BindingList<CAT10>(objCat10);
             dataGridView1.DataSource = typeof(List<>);

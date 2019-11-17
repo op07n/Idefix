@@ -106,7 +106,7 @@ namespace Idefix
         public string[] TrackStatus;
         public string[] Mode3A;
         public double[] CartesianTrackVelocity;
-        public double[] FlightLevel;
+        public string[] FlightLevel;
         public string[] modeC;
         public string TargetAddress;
         public string[] TargetId;
@@ -120,7 +120,7 @@ namespace Idefix
         public double StandardDeviationofHeigh;
         public string[] ContributingDevices;
 
-        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, double[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
+        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, string[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
         {
             this.SIC = SIC;
             this.SAC = SAC;

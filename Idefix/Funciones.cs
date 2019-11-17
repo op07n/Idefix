@@ -682,11 +682,11 @@ namespace Idefix
         public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_T)
         {
             int a = 0;
-            int SAC = 0; int SIC = 0; double cartesianH; double geometricH; double SIGMA_GH;
-            String MsgType = String.Empty;
+            int SAC = 0; int SIC = 0; double cartesianH = 0; double geometricH = 0; double SIGMA_GH = 0;
+            string ICAO_Address = string.Empty; string VFI = string.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
-            string[] TRD; string[] TS; string[] TID; string[] PPM; string[] CD; string[] Mode3A; string[] FL_T; string[] ModeC;
+            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] TID = Array.Empty<string>(); string[] PPM = Array.Empty<string>(); string[] CD = Array.Empty<string>(); string[] Mode3A = Array.Empty<string>(); string[] FL_T = Array.Empty<string>(); string[] ModeC = Array.Empty<string>();
             double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>(); double[] DOP = Array.Empty<double>(); double[] SDEV = Array.Empty<double>();
 
             List<CAT20> listCAT20 = new List<CAT20>();
@@ -998,7 +998,7 @@ namespace Idefix
                             StringBuilder ICAO = new StringBuilder(ICAO1);
                             ICAO.Append(ICAO2);
                             ICAO.Append(ICAO3);
-                            string ICAO_Address = ICAO.ToString();
+                            ICAO_Address = ICAO.ToString();
 
                             pos += 4;
                         }// FRN = 12: ICAO address
@@ -1132,7 +1132,6 @@ namespace Idefix
                             if (FSPEC_3[2] == '1') // FRN = 17: Vehicle Fleet Identification
                             {
                                 string vfi = msgcat20[pos].ToString();
-                                string VFI = string.Empty;
                                 switch (vfi)
                                 {
 
@@ -1310,13 +1309,14 @@ namespace Idefix
                                         CTRU[n] = "TUx/RUx number " + n + " has contributed to the target detection";
                                     else
                                         CTRU[n] = "TUx/RUx number " + n + " has NOT contributed to the target detection";
+                                    n += 1; 
                                 }
                                 pos += 2;
                                 CD = new string[2] { REP, TRx };
                             }//FRN = 20: Contributing devices
                         }
                     }
-                    //CAT20 obj = new CAT20(SIC, SAC, TRD, TimeOfDay, CP, TN, TS, Mode3A, CTV, FL_T, ModeC, ICAO_Address, TID, cartesianH, geometricH, CA, VFI, PPM, DOP, SDEV, SIGMA_GH, CD);
+                    CAT20 obj = new CAT20(SIC, SAC, TRD, TimeOfDay, CP, TN, TS, Mode3A, CTV, FL_T, ModeC, ICAO_Address, TID, cartesianH, geometricH, CA, VFI, PPM, DOP, SDEV, SIGMA_GH, CD);
                 }
             }
             return listCAT20;

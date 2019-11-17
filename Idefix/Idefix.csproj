@@ -120,6 +120,12 @@
   <ItemGroup>
     <None Include="obj\fast-forward.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="obj\up-arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obj\down-arrow.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

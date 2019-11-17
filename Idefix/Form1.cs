@@ -40,6 +40,11 @@ namespace Idefix
         public System.Timers.Timer myTimer = new System.Timers.Timer();
         public int simTime = 0;
 
+        public int whereIAm = 0;
+        public int theActualPageCat10 = 0;
+        public int theActualPageCat20 = 0;
+        public int theActualPageCat1020 = 0;
+
         public Idefix()
         {
             InitializeComponent();
@@ -61,6 +66,9 @@ namespace Idefix
             radioButton2.Visible = false;
             radioButton3.Visible = false;
             dataGridView1.Visible = false;
+            pictureBox6.Visible = false;
+            pictureBox7.Visible = false;
+            label6.Visible = false;
 
             label2.Visible = true;
             button2.Enabled = false;
@@ -102,6 +110,9 @@ namespace Idefix
             radioButton2.Visible = false;
             radioButton3.Visible = false;
             dataGridView1.Visible = false;
+            pictureBox6.Visible = false;
+            pictureBox7.Visible = false;
+            label6.Visible = false;
 
             label2.Visible = true;
 
@@ -209,25 +220,34 @@ namespace Idefix
 
             if (radioButton1.Checked)
             {
+                this.whereIAm = 10;
                 dataGridView1.ColumnCount = 44;//numero de paràmetres que vull mostrar
                 string[] tits = new string[44] { "SIC", "SAC", "Message Type", "Time of Day", "TYP", "DCR", "CHN", "GBS", "CRT", "SIM", "TST", "RAB", "LOP", "TOT", "SIP", "rho", "theta", "x", "y", "ground speed", "track angle", "vx", "vy", "Track Number", "CNF", "TRT", "CST", "MAH", "TCC", "STH", "TOM", "DOU", "MRS", "GHO", "Length", "Orientation", "Width", "NOGO", "OVL", "TSV", "DIV", "TTF", "ax", "ay" };
+                dataGridView1.Rows.Clear();
+                dataGridView1.Refresh();
                 dataGridView1.Rows.Add(tits);
-
-                foreach (CAT10 a in objCat10.Take(50))
+                foreach (CAT10 a in objCat10.Skip((theActualPageCat10 - 1) * 50).Take(50))
                 {
                     string[] vs = new string[44] { a.SIC.ToString(), a.SAC.ToString(), a.MessageType, a.TimeofDay.ToString(), a.TargetReportDescriptor[0], a.TargetReportDescriptor[1], a.TargetReportDescriptor[2], a.TargetReportDescriptor[3], a.TargetReportDescriptor[4], a.TargetReportDescriptor[5], a.TargetReportDescriptor[6], a.TargetReportDescriptor[7], a.TargetReportDescriptor[8], a.TargetReportDescriptor[9], a.TargetReportDescriptor[10], a.PolarPosition[0].ToString(), a.PolarPosition[1].ToString(), a.CartesianPosition[0].ToString(), a.CartesianPosition[1].ToString(), a.PolarTrackVelocity[0].ToString(), a.PolarTrackVelocity[1].ToString(), a.CartesianTrackVelocity[0].ToString(), a.CartesianTrackVelocity[1].ToString(), a.TrackNumber.ToString(), a.TrackStatus[0], a.TrackStatus[1], a.TrackStatus[2], a.TrackStatus[3], a.TrackStatus[4], a.TrackStatus[5], a.TrackStatus[6], a.TrackStatus[7], a.TrackStatus[8], a.TrackStatus[9], a.TargetSizeAndOrientation[0].ToString(), a.TargetSizeAndOrientation[1].ToString(), a.TargetSizeAndOrientation[2].ToString(), a.SystemStatus[0], a.SystemStatus[1], a.SystemStatus[2], a.SystemStatus[3], a.SystemStatus[4], a.CalculatedAcceleration[0].ToString(), a.CalculatedAcceleration[1].ToString() };
                     dataGridView1.Rows.Add(vs);
                 }
 
+                pictureBox6.Visible = true;
+                pictureBox7.Visible = true;
+                label6.Text = this.theActualPageCat10 + "/" + Math.Ceiling((double) objCat10.Count / 50).ToString();
+                label6.Visible = true;
+
             }
 
             if (radioButton2.Checked)
             {
+                this.whereIAm = 20;
                 dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
                 string[] tits = new string[23] {"CAT", "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
+                dataGridView1.Rows.Clear();
+                dataGridView1.Refresh();
                 dataGridView1.Rows.Add(tits);
-
-                foreach (CAT20 a in objCat20.Take(50))
+                foreach (CAT20 a in objCat20.Skip((theActualPageCat20 - 1) * 50).Take(50))
                 {
                     string[] vs;
                     if (a.CAT.Equals("20"))
@@ -247,6 +267,11 @@ namespace Idefix
                 TRD.UseColumnTextForButtonValue = true;
                 dataGridView1.Columns.Add(TRD);
                 dataGridView1.CellClick += new DataGridViewCellEventHandler(dataGridView1_CellClick);
+
+                pictureBox6.Visible = true;
+                pictureBox7.Visible = true;
+                label6.Text = this.theActualPageCat20 + "/" + Math.Ceiling((double) objCat10.Count/50).ToString();
+                label6.Visible = true;
             }
 
 
@@ -643,6 +668,31 @@ namespace Idefix
             MouseEventArgs me = (MouseEventArgs)e;
             Point coordinates = me.Location;
             MessageBox.Show("X: " + coordinates.X + " Y: " + coordinates.Y);
+        }
+
+        private void pictureBox6_Click(object sender, EventArgs e)
+        {
+            if (this.whereIAm == 10)
+                if (this.theActualPageCat10 != 0)
+                    this.theActualPageCat10 -= 1;
+            else if(this.whereIAm == 20)
+                if (this.theActualPageCat20 != 0)
+                    this.theActualPageCat20 -= 1;
+            else if(this.whereIAm == 1020)
+                if (this.theActualPageCat1020 != 0)
+                    this.theActualPageCat1020 -= 1;
+            button2_Click(null, null);
+        }
+
+        private void pictureBox7_Click(object sender, EventArgs e)
+        {
+            if (this.whereIAm == 10)
+                this.theActualPageCat10 += 1;
+            else if (this.whereIAm == 20)
+                this.theActualPageCat20 += 1;
+            else if (this.whereIAm == 1020)
+                this.theActualPageCat1020 += 1;
+            button2_Click(null, null);
         }
     }
 }

@@ -263,7 +263,7 @@ namespace Idefix
                 }
                  pictureBox6.Visible = true;
                 pictureBox7.Visible = true;
-                label6.Text = this.theActualPageCat20 + "/" + Math.Ceiling((double) objCat10.Count/50).ToString();
+                label6.Text = this.theActualPageCat20 + "/" + Math.Ceiling((double) objCat20.Count/50).ToString();
                 label6.Visible = true;
             }
 

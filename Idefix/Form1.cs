@@ -222,9 +222,15 @@ namespace Idefix
             radioButton1.Text = "CAT10";
             radioButton2.Text = "CAT20";
             radioButton3.Text = "CAT21";
-            radioButton3.Enabled = false;//under construction
-            if (firsttimebutton2 && objCat10.Count > 0) { radioButton1.Checked = true; firsttimebutton2 = false; }
+            radioButton1.Enabled = false;
+            radioButton2.Enabled = false;
+            radioButton3.Enabled = false;
+            if (objCat10.Count > 0) { radioButton1.Enabled = true; }
+            if (objCat20.Count > 0) { radioButton2.Enabled = true; }
+            if (objCat21.Count > 0) { radioButton3.Enabled = true; }
+            if (firsttimebutton2 && objCat10.Count > 0) { radioButton1.Checked = true; }
             else if (firsttimebutton2 && objCat20.Count > 0) { radioButton2.Checked = true; firsttimebutton2 = false; }
+            else if (firsttimebutton2 && objCat21.Count > 0) { radioButton3.Checked = true; firsttimebutton2 = false; }
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
             dataGridView1.RowHeadersVisible = false;
             dataGridView1.ColumnHeadersVisible = false;

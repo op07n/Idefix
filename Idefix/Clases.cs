@@ -11,13 +11,13 @@ namespace Idefix
         public List<double[]> MensajesCAT10 = new List<double[]>();
         public List<double[]> MensajesCAT20 = new List<double[]>();
         public List<double[]> MensajesCAT21 = new List<double[]>();
-        public int[] CAT1920;
+        public List<int> CAT1920 = new List<int>();
 
         public void SetMsgCat10(List<double> msgCat10)
         {
             this.MensajesCAT10.Add(msgCat10.ToArray());
         }
-        public void SetMsgCat20(List<double> msgCat20, int[] CAT1920)
+        public void SetMsgCat20(List<double> msgCat20, List<int> CAT1920)
         {
             this.MensajesCAT20.Add(msgCat20.ToArray());
             this.CAT1920 = CAT1920;
@@ -35,7 +35,7 @@ namespace Idefix
         {
             return this.MensajesCAT20;
         }
-        public int[] GetCAT1920()
+        public List<int> GetCAT1920()
         {
             return this.CAT1920;
         }

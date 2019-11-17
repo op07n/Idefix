@@ -21,7 +21,7 @@ namespace Idefix
                 List<double> msgCAT10 = new List<double>();
                 List<double> msgCAT20 = new List<double>();
                 List<double> msgCAT21 = new List<double>();
-                int[] CAT1920 = Array.Empty<int>();
+                List<int> CAT1920 = new List<int>();
 
                 int pos = 0;
                 int end = (int)read.BaseStream.Length;
@@ -44,15 +44,9 @@ namespace Idefix
                     else
                     {
                         while (lengthMsg != 0)
-                        {
-                            int n = 0;
+                        {                           
                             if (category == 10) msgCAT10.Add(read.BaseStream.ReadByte());
-                            else if (category == 19 || category == 20)
-                            {
-                                msgCAT20.Add(read.BaseStream.ReadByte());
-                                if (category == 19) CAT1920[n] = 1;
-                                else CAT1920[n] = 0;
-                            }
+                            else if (category == 19||category == 20) msgCAT20.Add(read.BaseStream.ReadByte());
                             else if (category == 21) msgCAT21.Add(read.BaseStream.ReadByte());
                             lengthMsg--;
                             pos++;
@@ -63,8 +57,15 @@ namespace Idefix
                             fichero.SetMsgCat10(msgCAT10);
                             msgCAT10.Clear();
                         }
+                        else if (category == 19)
+                        {
+                            CAT1920.Add(1);
+                            fichero.SetMsgCat20(msgCAT20, CAT1920);
+                            msgCAT20.Clear();
+                        }
                         else if (category == 20)
                         {
+                            CAT1920.Add(0);
                             fichero.SetMsgCat20(msgCAT20, CAT1920);
                             msgCAT20.Clear();
                         }
@@ -173,8 +174,8 @@ namespace Idefix
                         val1.Append(va[2]);
                         string val = val1.ToString();
 
-                        if (val.Equals("00")) { TYP = "SSR Multilateration"; }
-                        else if (val.Equals("01")) { TYP = "Mode S Multilateration"; }
+                        if (val.Equals("0")) { TYP = "SSR Multilateration"; }
+                        else if (val.Equals("1")) { TYP = "Mode S Multilateration"; }
                         else if (val.Equals("10")) { TYP = "ADS-B"; }
                         else if (val.Equals("11")) { TYP = "PSR"; }
                         else if (val.Equals("100")) { TYP = "Magnetic Loop System"; }
@@ -466,8 +467,8 @@ namespace Idefix
                             sti.Append(sti1[1]);
                             string STI = string.Empty;
 
-                            if (sti.ToString().Equals("00")) { STI = "Callsign or registration not downlinked from transponder"; }
-                            else if (sti.ToString().Equals("01")) { STI = "Registration downlinked from transponder"; }
+                            if (sti.ToString().Equals("0")) { STI = "Callsign or registration not downlinked from transponder"; }
+                            else if (sti.ToString().Equals("1")) { STI = "Registration downlinked from transponder"; }
                             else if (sti.ToString().Equals("10")) { STI = "Callsign downlinked from transponder"; }
                             else if (sti.ToString().Equals("11")) { STI = "Not defined"; }
 
@@ -679,22 +680,22 @@ namespace Idefix
             return listCAT10;
         }
 
-        public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_20T, int[] CAT1920)
+        public List<CAT20> ReadCat20(List<double[]> msgcat20_T, List<string[]> FSPEC_20T, List<int> CAT1920)
         {
             int a = 0;
-            int SAC = 0; int SIC = 0; double cartesianH = 0; double geometricH = 0; double SIGMA_GH = 0;
-            string ICAO_Address = string.Empty; string VFI = string.Empty; string MsgType = string.Empty; string CAT = string.Empty;
-            TimeSpan TimeOfDay = TimeSpan.Zero;
-            int TN = 0;
-            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] TID = Array.Empty<string>(); string[] PPM = Array.Empty<string>(); string[] CD = Array.Empty<string>(); string[] Mode3A = Array.Empty<string>(); string[] FL_T = Array.Empty<string>(); string[] ModeC = Array.Empty<string>();
-            double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>(); double[] DOP = Array.Empty<double>(); double[] SDEV = Array.Empty<double>();
-
             List<CAT20> listCAT20 = new List<CAT20>();
 
             if (msgcat20_T != null && FSPEC_20T != null && CAT1920 != null)
             {
                 while (a < msgcat20_T.Count)
                 {
+                    int SAC = 0; int SIC = 0; double cartesianH = 0; double geometricH = 0; double SIGMA_GH = 0;
+                    string ICAO_Address = string.Empty; string VFI = string.Empty; string MsgType = string.Empty; string CAT = string.Empty;
+                    TimeSpan TimeOfDay = TimeSpan.Zero;
+                    int TN = 0;
+                    string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] TID = Array.Empty<string>(); string[] PPM = Array.Empty<string>(); string[] CD = Array.Empty<string>(); string[] Mode3A = Array.Empty<string>(); string[] FL_T = Array.Empty<string>(); string[] ModeC = Array.Empty<string>();
+                    double[] PP = Array.Empty<double>(); double[] CP = Array.Empty<double>(); double[] PTV = Array.Empty<double>(); double[] CTV = Array.Empty<double>(); double[] TSO = Array.Empty<double>(); double[] CA = Array.Empty<double>(); double[] DOP = Array.Empty<double>(); double[] SDEV = Array.Empty<double>();
+
                     string FSPEC_1 = FSPEC_20T[a][0];
                     double[] msgcat20 = msgcat20_T[a];
                     // int n = 0;
@@ -1004,7 +1005,7 @@ namespace Idefix
                                 ICAO.Append(ICAO3);
                                 ICAO_Address = ICAO.ToString();
 
-                                pos += 4;
+                                pos += 3;
                             }// FRN = 12: ICAO address
 
                             if (FSPEC_2[5] == '1') // FRN = 13: Target Identification
@@ -1308,7 +1309,7 @@ namespace Idefix
                                     string[] CTRU = new string[8];
                                     string TRx = msgcat20[pos + 1].ToString();
                                     int n = 0;
-                                    while (n < 8)
+                                    while (n < TRx.Length)
                                     {
                                         if (TRx[n].Equals('1'))
                                             CTRU[n] = "TUx/RUx number " + n + " has contributed to the target detection";
@@ -1377,6 +1378,7 @@ namespace Idefix
             }
             return listCAT20;
         }
+
         public List<Flight> DistributeFlights(List<CAT10> cat10, List<CAT20> cat20, List<CAT21> cat21)
         {
             List<Flight> listFlights = new List<Flight>();
@@ -1397,12 +1399,14 @@ namespace Idefix
             {
                 foreach (CAT20 flight in cat20)
                 {
-                    Flight f = new Flight();
-                    f.ID = flight.SIC.ToString();
-                    f.TimeofDay = flight.TimeofDay;
-                    f.CartesianPosition = flight.CartesianPosition;
-                    listFlights.Add(f);
-                    a += 1;
+                    if (flight.CAT.Equals("20")) { 
+                        Flight f = new Flight();
+                        f.ID = flight.SIC.ToString();
+                        f.TimeofDay = flight.TimeofDay;
+                        f.CartesianPosition = flight.CartesianPosition;
+                        listFlights.Add(f);
+                        a += 1;
+                    }
                 }
             }
             if (cat21 != null)
@@ -1450,7 +1454,6 @@ namespace Idefix
             Int32 minutos = ((tsegundos - horas * 3600) / 60);
             Int32 segundos = tsegundos - (horas * 3600 + minutos * 60);
             horas = horas % 24;
-
             string h = horas.ToString().PadLeft(2, '0');
             string m = minutos.ToString().PadLeft(2, '0');
             string s = segundos.ToString().PadLeft(2, '0');

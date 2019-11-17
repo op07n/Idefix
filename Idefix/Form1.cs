@@ -154,8 +154,10 @@ namespace Idefix
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
                 this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
+                this.objCat21 = funcs.ReadCat21(msgsCat21, fspecsCat21);
                 this.objCat10 = this.objCat10.OrderBy(o => o.TimeofDay).ToList();
                 this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
+                this.objCat21 = this.objCat21.OrderBy(o => o.TimeofDay).ToList();
 
                 this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;

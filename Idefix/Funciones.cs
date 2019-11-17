@@ -174,8 +174,8 @@ namespace Idefix
                         val1.Append(va[2]);
                         string val = val1.ToString();
 
-                        if (val.Equals("0")) { TYP = "SSR Multilateration"; }
-                        else if (val.Equals("1")) { TYP = "Mode S Multilateration"; }
+                        if (val.Equals("00")) { TYP = "SSR Multilateration"; }
+                        else if (val.Equals("01")) { TYP = "Mode S Multilateration"; }
                         else if (val.Equals("10")) { TYP = "ADS-B"; }
                         else if (val.Equals("11")) { TYP = "PSR"; }
                         else if (val.Equals("100")) { TYP = "Magnetic Loop System"; }
@@ -213,7 +213,7 @@ namespace Idefix
                             else { TST = "Test Target"; }
 
                             if (va2[2].Equals('0')) { RAB = "Report from Target Responder"; }
-                            else { TST = "Report From Field Monitor (fixed transpoder)"; }
+                            else { RAB = "Report From Field Monitor (fixed transpoder)"; }
 
 
                             StringBuilder val2 = new StringBuilder(va2[3]);
@@ -227,8 +227,8 @@ namespace Idefix
                             StringBuilder val3 = new StringBuilder(va2[5]);
                             val3.Append(va2[6]);
 
-                            if (val3.Equals("0")) { TOT = "Undetermined"; }
-                            else if (val3.ToString().Equals("1")) { TOT = "Aircraft"; }
+                            if (val3.Equals("00")) { TOT = "Undetermined"; }
+                            else if (val3.ToString().Equals("01")) { TOT = "Aircraft"; }
                             else if (val3.ToString().Equals("10")) { TOT = "Ground Vehicle"; }
                             else if (val3.ToString().Equals("11")) { TOT = "Helicopter"; }
 
@@ -241,6 +241,8 @@ namespace Idefix
                                 else { SIP = "Special Position Identification"; }
                                 pos += 1;
                             }
+                            else { SIP = "Null"; }
+
                         }
                         TRD = new string[11] { TYP, DCR, CHN, GBS, CRT, SIM, TST, RAB, LOP, TOT, SIP };
                     }// FRN = 3: Target Report Description
@@ -1383,7 +1385,7 @@ namespace Idefix
         {
             int a = 0;
             int SAC = 0; int SIC = 0;
-            double GH;
+            double GH = 0.0;
             string ICAO_Address = string.Empty; string FL_T = string.Empty; string TID = string.Empty; string VA = string.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             string[] TRD = Array.Empty<string>(); string[] FOM = Array.Empty<string>(); string[] LTI = Array.Empty<string>();
@@ -1592,7 +1594,6 @@ namespace Idefix
                     {
                         string FSPEC_2 = FSPEC_21T[a][1];
 
-                        //HACER!!
                         if (FSPEC_2[0] == '1')
                         {
                             string lti = Convert2Binary(msgcat21[pos]);

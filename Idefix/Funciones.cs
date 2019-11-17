@@ -1600,7 +1600,7 @@ namespace Idefix
                     {
                         string FSPEC_2 = FSPEC_21T[a][1];
 
-                        if (FSPEC_2[0] == '1')
+                        if (FSPEC_2[0] == '1') // FRN = 8: Link Technology Indicator
                         {
                             string lti = Convert2Binary(msgcat21[pos]);
                             string DTI; string MDS; string UAT; string VDL; string OTR;

@@ -94,7 +94,6 @@ namespace Idefix
          }
          
     }
-
     public class CAT20
     {
         public int SAC;
@@ -103,8 +102,8 @@ namespace Idefix
         public TimeSpan TimeofDay;
         public double[] CartesianPosition;
         public int TrackNumber;
-        public string[] TrackStatus;
-        public string[] Mode3A;
+        public string TrackStatus;
+        public string Mode3A;
         public double[] CartesianTrackVelocity;
         public string[] FlightLevel;
         public string[] modeC;
@@ -114,41 +113,43 @@ namespace Idefix
         public double GeometricHeight;
         public double[] CalculatedAcceleration;
         public string VehicleFleetId;
-        public string[] PreprogrammedMessage;
+        public string PreprogrammedMessage;
         public double[] DOPofPosition;
         public double[] StandardDeviationofPosition;
-        public double StandardDeviationofHeigh;
+        public double[] StandardDeviationofHeigh;
         public string[] ContributingDevices;
 
+<<<<<<< Updated upstream
         public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, string[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
+=======
+
+        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string TrackStatus,string Mode3A, double[] CartesianTrackVelocity, string[] FlightLevel, string[] modeC, string TargetAddress, string[] TargetID, double CartesianH, double GeometricH, double[] CalculatedAcceleration, string VehicleFleetId, string PreprogrammedMessage, double[] DOPofPosition, double[] StandardDeviationofPosition, double[] StandardDeviationofHeigh, string[] CD)
+>>>>>>> Stashed changes
         {
-            this.SIC = SIC;
             this.SAC = SAC;
+            this.SIC=SIC;
             this.TargetReportDescriptor = TargetReportDescriptor;
             this.TimeofDay = TimeofDay;
-            this.CartesianPosition = CartesianPosition;
+            this.CartesianPosition =CartesianPosition;
             this.TrackNumber = TrackNumber;
             this.TrackStatus = TrackStatus;
             this.Mode3A = Mode3A;
-            this.CartesianTrackVelocity = CTV;
+            this.CartesianTrackVelocity = CartesianTrackVelocity;
             this.FlightLevel = FlightLevel;
             this.modeC = modeC;
-            this.TargetAddress = ICAO_Addr;
+            this.TargetAddress = TargetAddress;
             this.TargetId = TargetID;
-            this.CartesianHeight = cartesianH;
-            this.GeometricHeight = geometricH;
-            this.CalculatedAcceleration = CalculatedAcc;
-            this.VehicleFleetId = VFId;
-            this.PreprogrammedMessage = PPM;
-            this.DOPofPosition = DOP;
-            this.StandardDeviationofPosition = SDEV;
-            this.StandardDeviationofHeigh = S_GH;
+            this.CartesianHeight = CartesianH;
+            this.GeometricHeight = GeometricH;
+            this.CalculatedAcceleration = CalculatedAcceleration;
+            this.VehicleFleetId = VehicleFleetId;
+            this.PreprogrammedMessage = PreprogrammedMessage;
+            this.DOPofPosition = DOPofPosition;
+            this.StandardDeviationofPosition = StandardDeviationofPosition;
+            this.StandardDeviationofHeigh = StandardDeviationofHeigh;
             this.ContributingDevices = CD;
         }
     }
-
-
- 
     public class CAT21
     {
         public int SAC;

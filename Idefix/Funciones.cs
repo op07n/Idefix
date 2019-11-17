@@ -1397,11 +1397,6 @@ namespace Idefix
             return h + ":" + m + ":" + s;
         }
 
-        public void Complenta2 (byte input)
-        {
-
-        }
-
         public string ConvertToBit(string c)
         {
             int n;
@@ -1579,29 +1574,7 @@ namespace Idefix
             return letter;
         }
 
-        public static List<Flight> ordenar(List<Flight> vector)
-        {
-            if (vector != null)
-            {
-                for (int x = 0; x < vector.Count - 1; x++)
-                {
-                    for (int k = 0; k < vector.Count - 1 - x; k++)
-                    {
-                        if (vector[k].TimeofDay < vector[k + 1].TimeofDay)
-                        {
-                            Flight aux;
-                            aux = vector[k];
-                            vector[k] = vector[k + 1];
-                            vector[k + 1] = aux;
-                        }
-
-                    }
-                }
-            }
-            return vector;
-        }
-
-        
+      
         /*public static string[] SepararMensajes(double[] ar, string path, string filename)
         {
             string d = path + @"\" + filename + ".txt";

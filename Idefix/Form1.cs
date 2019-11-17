@@ -163,9 +163,12 @@ namespace Idefix
                 this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
                 this.objCat21 = this.objCat21.OrderBy(o => o.TimeofDay).ToList();
 
-                this.flightList = funcs.DistributeFlights(objCat10disorder, null, null);
-                this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
-                label4.Text = this.flightList[0].TimeofDay.ToString();
+                if (this.objCat10disorder.Count != 0)
+                {
+                    this.flightList = funcs.DistributeFlights(objCat10disorder, null, null);
+                    this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
+                    label4.Text = this.flightList[0].TimeofDay.ToString();
+                }
 
                 int cnt = 0;
                 while (cnt < this.flightList.Count)
@@ -323,7 +326,7 @@ namespace Idefix
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
+            if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null && e.RowIndex > 0)
             {
                 if (radioButton2.Checked && objCat20[e.RowIndex - 1].CAT.Equals("20"))
                 {
@@ -333,7 +336,7 @@ namespace Idefix
                     {
                         if (pos.Equals(5) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show(" SSR = " + a.TargetReportDescriptor[0] + "\n MS = " + a.TargetReportDescriptor[1] + "\n HF = " + a.TargetReportDescriptor[2] + "\n VDL4 = " + a.TargetReportDescriptor[3] + "\n UAT = " + a.TargetReportDescriptor[4] + "\n DME = " + a.TargetReportDescriptor[5] + "\n OT = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n SPI = " + a.TargetReportDescriptor[8] + "\n CHN = " + a.TargetReportDescriptor[9] + "\n GBS = " + a.TargetReportDescriptor[10] + "\n CRT = " + a.TargetReportDescriptor[11] + "\n SIM = " + a.TargetReportDescriptor[12] + "\n TST = " + a.TargetReportDescriptor[13], "TARGET REPORT DESCRIPTOR INFORMATION"); }
                         else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show(" x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
-                        else if (pos.Equals(8) && a.TrackStatus.Length < 0) { MessageBox.Show(" CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
+                        else if (pos.Equals(8) && a.TrackStatus.Length > 0) { MessageBox.Show(" CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
                         else if (pos.Equals(9) && a.Mode3A.Length > 0) { MessageBox.Show(" V = " + a.Mode3A[0] + "\n G = " + a.Mode3A[1] + "\n L = " + a.Mode3A[2] + "\n Response = " + a.Mode3A[3], "MODE 3A INFORMATION"); }
                         else if (pos.Equals(10) && a.CartesianTrackVelocity.Length > 0) { MessageBox.Show("Vx = " + a.CartesianTrackVelocity[0].ToString() + "\n Vy = " + a.CartesianTrackVelocity[1].ToString(), "CARTESIAN TRACK VELOCITY INFORMATION"); }
                         else if (pos.Equals(11) && a.FlightLevel.Length > 0) { MessageBox.Show(" V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }

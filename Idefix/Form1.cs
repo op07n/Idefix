@@ -224,13 +224,13 @@ namespace Idefix
             {
                 this.whereIAm = 10;
                 dataGridView1.ColumnCount = 18;//numero de paràmetres que vull mostrar
-                string[] tits = new string[18] { "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Polar Position", "Cartesian Position", "Polar Track Velocity", "Cartesian Track Velocity", "Track Number", "Track Status", "Mode 3A", "Target Address", "Target ID", "Flight Level", "Size and Orientation", "System Status", "Calculated Acceleration"};
+                string[] tits = new string[18] { "SAC", "SIC", "Time of Day", "Message Type", "TRD", "Polar Position", "Cartesian Position", "Polar Track Velocity", "Cartesian Track Velocity", "Track Number", "Track Status", "Mode 3A", "Target Address", "Target ID", "Flight Level", "Size and Orientation", "System Status", "Calculated Acceleration"};
                 dataGridView1.Rows.Clear();
                 dataGridView1.Refresh();
                 dataGridView1.Rows.Add(tits);
                 foreach (CAT10 a in objCat10.Skip((theActualPageCat10 - 1) * 50).Take(50))
                 {
-                    string[] vs = new string[18] {a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), a.MessageType, "More Information", "More Information", "More Information", "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information",a.TargetAddress, "More Information", "More Information", "More Information", "More Information", "More Information" };
+                    string[] vs = new string[18] {a.SAC.ToString(), a.SIC.ToString(), a.TimeofDay.ToString(), a.MessageType, "More Information", "More Information", "More Information", "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information",a.TargetAddress, "More Information", "More Information", "More Information", "More Information", "More Information" };
                     dataGridView1.Rows.Add(vs);
                 }
 
@@ -241,11 +241,11 @@ namespace Idefix
 
             }
 
-            if (radioButton2.Checked)
+            else if (radioButton2.Checked)
             {
                 this.whereIAm = 20;
-                dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
-                string[] tits = new string[23] {"CAT", "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
+                dataGridView1.ColumnCount = 23;//numero de paràmetres que vull mostrar
+                string[] tits = new string[23] {"CAT", "SAC", "SIC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
                 dataGridView1.Rows.Clear();
                 dataGridView1.Refresh();
                 dataGridView1.Rows.Add(tits);
@@ -254,11 +254,11 @@ namespace Idefix
                     string[] vs;
                     if (a.CAT.Equals("20"))
                     {
-                        vs = new string[23] { a.CAT, a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), "--", "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
+                        vs = new string[23] { a.CAT, a.SAC.ToString(), a.SIC.ToString(), a.TimeofDay.ToString(), "--", "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
                     }
                     else
                     {
-                        vs = new string[23] { a.CAT, a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), a.MessageType, "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"};
+                        vs = new string[23] { a.CAT, a.SAC.ToString(), a.SIC.ToString(), a.TimeofDay.ToString(), a.MessageType, "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"};
                     }
                     dataGridView1.Rows.Add(vs);
                 }
@@ -267,6 +267,29 @@ namespace Idefix
                 label6.Text = this.theActualPageCat20 + "/" + Math.Ceiling((double) objCat20.Count/50).ToString();
                 label6.Visible = true;
             }
+
+            if (radioButton3.Checked)
+            {
+                this.whereIAm = 21;
+                dataGridView1.ColumnCount = 13;//numero de paràmetres que vull mostrar
+                string[] tits = new string[13] { "SAC", "SIC", "Time of Day", "TRD", "Target Address", "Figure Of Merit", "Velocity Accuracy", "Position in WGS84",  "Flight Level", "Geometrical Vertical Rate", "Airbone Ground Vector", "Target ID", "Link Technology Indicator"};
+                dataGridView1.Rows.Clear();
+                dataGridView1.Refresh();
+                dataGridView1.Rows.Add(tits);
+                foreach (CAT21 a in objCat21.Skip((theActualPageCat10 - 1) * 50).Take(50))
+                {
+                    string[] vs = new string[13] { a.SAC.ToString(), a.SIC.ToString(), a.TimeofDay.ToString(), "More Information", a.TargetAddress, "More Information", a.VelocityAccuracy, "More Information", a.FlightLevel.ToString(), a.GeometricalVerticalRate.ToString(), "More Information", a.TargetId, "More Information"};
+                    dataGridView1.Rows.Add(vs);
+                }
+
+                pictureBox6.Visible = true;
+                pictureBox7.Visible = true;
+                label6.Text = this.theActualPageCat10 + "/" + Math.Ceiling((double)objCat21.Count / 50).ToString();
+                label6.Visible = true;
+
+            }
+
+
 
 
             DataGridViewCellStyle style = new DataGridViewCellStyle();
@@ -292,20 +315,20 @@ namespace Idefix
                     int pos = dataGridView1.CurrentCell.ColumnIndex;
                     if(pos.Equals(5) || pos.Equals(6) || pos.Equals(8) || pos.Equals(9) || pos.Equals(10) || pos.Equals(11) || pos.Equals(12) || pos.Equals(14) || pos.Equals(15) || pos.Equals(16) || pos.Equals(18) || pos.Equals(19) || pos.Equals(20) || pos.Equals(22))
                     {
-                        if (pos.Equals(5) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show("SSR = " + a.TargetReportDescriptor[0] + "\n MS = " + a.TargetReportDescriptor[1] + "\n HF = " + a.TargetReportDescriptor[2] + "\n VDL4 = " + a.TargetReportDescriptor[3] + "\n UAT = " + a.TargetReportDescriptor[4] + "\n DME = " + a.TargetReportDescriptor[5] + "\n OT = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n SPI = " + a.TargetReportDescriptor[8] + "\n CHN = " + a.TargetReportDescriptor[9] + "\n GBS = " + a.TargetReportDescriptor[10] + "\n CRT = " + a.TargetReportDescriptor[11] + "\n SIM = " + a.TargetReportDescriptor[12] + "\n TST = " + a.TargetReportDescriptor[13], "TARGET REPORT DESCRIPTOR INFORMATION"); }
-                        else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show("x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
-                        else if (pos.Equals(8) && a.TrackStatus.Length < 0) { MessageBox.Show("CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
-                        else if (pos.Equals(9) && a.Mode3A.Length > 0) { MessageBox.Show("V = " + a.Mode3A[0] + "\n G = " + a.Mode3A[1] + "\n L = " + a.Mode3A[2] + "\n Response = " + a.Mode3A[3], "MODE 3A INFORMATION"); }
+                        if (pos.Equals(5) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show(" SSR = " + a.TargetReportDescriptor[0] + "\n MS = " + a.TargetReportDescriptor[1] + "\n HF = " + a.TargetReportDescriptor[2] + "\n VDL4 = " + a.TargetReportDescriptor[3] + "\n UAT = " + a.TargetReportDescriptor[4] + "\n DME = " + a.TargetReportDescriptor[5] + "\n OT = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n SPI = " + a.TargetReportDescriptor[8] + "\n CHN = " + a.TargetReportDescriptor[9] + "\n GBS = " + a.TargetReportDescriptor[10] + "\n CRT = " + a.TargetReportDescriptor[11] + "\n SIM = " + a.TargetReportDescriptor[12] + "\n TST = " + a.TargetReportDescriptor[13], "TARGET REPORT DESCRIPTOR INFORMATION"); }
+                        else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show(" x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
+                        else if (pos.Equals(8) && a.TrackStatus.Length < 0) { MessageBox.Show(" CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
+                        else if (pos.Equals(9) && a.Mode3A.Length > 0) { MessageBox.Show(" V = " + a.Mode3A[0] + "\n G = " + a.Mode3A[1] + "\n L = " + a.Mode3A[2] + "\n Response = " + a.Mode3A[3], "MODE 3A INFORMATION"); }
                         else if (pos.Equals(10) && a.CartesianTrackVelocity.Length > 0) { MessageBox.Show("Vx = " + a.CartesianTrackVelocity[0].ToString() + "\n Vy = " + a.CartesianTrackVelocity[1].ToString(), "CARTESIAN TRACK VELOCITY INFORMATION"); }
-                        else if (pos.Equals(11) && a.FlightLevel.Length > 0) { MessageBox.Show("V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }
-                        else if (pos.Equals(12) && a.modeC.Length > 0) { MessageBox.Show("V = " + a.modeC[0] + "\n G = " + a.modeC[1] + "\n Code C = " + a.modeC[2], "MODE C INFORMATION"); }
-                        else if (pos.Equals(14) && a.TargetId.Length > 0) { MessageBox.Show("STI = " + a.TargetId[0] + "\n TID = " + a.TargetId[1], "TARGET ID INFORMATION"); }
+                        else if (pos.Equals(11) && a.FlightLevel.Length > 0) { MessageBox.Show(" V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }
+                        else if (pos.Equals(12) && a.modeC.Length > 0) { MessageBox.Show(" V = " + a.modeC[0] + "\n G = " + a.modeC[1] + "\n Code C = " + a.modeC[2], "MODE C INFORMATION"); }
+                        else if (pos.Equals(14) && a.TargetId.Length > 0) { MessageBox.Show(" STI = " + a.TargetId[0] + "\n TID = " + a.TargetId[1], "TARGET ID INFORMATION"); }
                         else if (pos.Equals(15) && a.CartesianHeight != null && a.GeometricHeight != null) { MessageBox.Show("Cartesian height = " + a.CartesianHeight.ToString() + "\n Geometric height = " + a.GeometricHeight.ToString(), "MEASURED HEIGHT INFORMATION"); }
-                        else if (pos.Equals(16) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show("x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
-                        else if (pos.Equals(18) && a.PreprogrammedMessage.Length > 0) { MessageBox.Show("TRB = " + a.PreprogrammedMessage[0] + "\n MSG = " + a.PreprogrammedMessage[1], "PREPROGRAMMED MESSAGE INFORMATION"); }
-                        else if (pos.Equals(19) && a.DOPofPosition.Length > 0) { MessageBox.Show("DOPx = " + a.DOPofPosition[0].ToString() + "\n DOPy = " + a.DOPofPosition[1].ToString() + "\n DOPxy = " + a.DOPofPosition[2].ToString(), "DOP OF POSITION INFORMATION"); }
-                        else if (pos.Equals(20) && a.StandardDeviationofPosition.Length > 0) { MessageBox.Show("Standard Deviation in x (sigma x)= " + a.StandardDeviationofPosition[0].ToString() + "\n Standard deviation in y (sigma y) = " + a.StandardDeviationofPosition[1].ToString() + "\n Rho xy = " + a.StandardDeviationofPosition[2].ToString(), "STANDARD DEVIATION OF POSITION INFORMATION"); }
-                        else if (pos.Equals(22) && a.ContributingDevices.Length > 0) { MessageBox.Show("RED = " + a.ContributingDevices[0] + "\n TRx = " + a.ContributingDevices[1], "CONTRIBUTING DEVICES INFORMATION"); }
+                        else if (pos.Equals(16) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show(" x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
+                        else if (pos.Equals(18) && a.PreprogrammedMessage.Length > 0) { MessageBox.Show(" TRB = " + a.PreprogrammedMessage[0] + "\n MSG = " + a.PreprogrammedMessage[1], "PREPROGRAMMED MESSAGE INFORMATION"); }
+                        else if (pos.Equals(19) && a.DOPofPosition.Length > 0) { MessageBox.Show(" DOPx = " + a.DOPofPosition[0].ToString() + "\n DOPy = " + a.DOPofPosition[1].ToString() + "\n DOPxy = " + a.DOPofPosition[2].ToString(), "DOP OF POSITION INFORMATION"); }
+                        else if (pos.Equals(20) && a.StandardDeviationofPosition.Length > 0) { MessageBox.Show(" Standard Deviation in x (sigma x)= " + a.StandardDeviationofPosition[0].ToString() + "\n Standard deviation in y (sigma y) = " + a.StandardDeviationofPosition[1].ToString() + "\n Rho xy = " + a.StandardDeviationofPosition[2].ToString(), "STANDARD DEVIATION OF POSITION INFORMATION"); }
+                        else if (pos.Equals(22) && a.ContributingDevices.Length > 0) { MessageBox.Show(" RED = " + a.ContributingDevices[0] + "\n TRx = " + a.ContributingDevices[1], "CONTRIBUTING DEVICES INFORMATION"); }
                         else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
                     }
                 }
@@ -315,17 +338,31 @@ namespace Idefix
                     int pos = dataGridView1.CurrentCell.ColumnIndex;
                     if (pos.Equals(4) || pos.Equals(5) || pos.Equals(6) || pos.Equals(7) || pos.Equals(8) || pos.Equals(10) || pos.Equals(11) || pos.Equals(13) || pos.Equals(14) || pos.Equals(15) || pos.Equals(16) || pos.Equals(17))
                     {
-                        if (pos.Equals(4) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show("TYP = " + a.TargetReportDescriptor[0] + "\n DCR = " + a.TargetReportDescriptor[1] + "\n CHN = " + a.TargetReportDescriptor[2] + "\n GBS = " + a.TargetReportDescriptor[3] + "\n CRT = " + a.TargetReportDescriptor[4] + "\n SIM = " + a.TargetReportDescriptor[5] + "\n TST = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n LOP = " + a.TargetReportDescriptor[8] + "\n TOT = " + a.TargetReportDescriptor[9] + "\n SPI = " + a.TargetReportDescriptor[10], "TARGET REPORT DESCRIPTOR INFORMATION"); }
-                        else if (pos.Equals(5) && a.PolarPosition.Length > 0) { MessageBox.Show("Rho = " + a.PolarPosition[0].ToString() + "\n Theta = " + a.PolarPosition[1].ToString(), "POLAR POSITION INFORMATION"); }
-                        else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show("x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
-                        else if (pos.Equals(7) && a.PolarTrackVelocity.Length > 0) { MessageBox.Show("Vx = " + a.PolarTrackVelocity[0].ToString() + "\n Vy = " + a.PolarTrackVelocity[1].ToString(), "POLAR TRACK VELOCITY INFORMATION"); }
-                        else if (pos.Equals(8) && a.CartesianTrackVelocity.Length > 0) { MessageBox.Show("Vx = " + a.CartesianTrackVelocity[0].ToString() + "\n Vy = " + a.CartesianTrackVelocity[1].ToString(), "CARTESIAN TRACK VELOCITY INFORMATION"); }
-                        else if (pos.Equals(10) && a.TrackStatus.Length < 0) { MessageBox.Show("CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n MAH = " + a.TrackStatus[3] + "\n TCC = " + a.TrackStatus[4] + "\n STH = " + a.TrackStatus[5] + "\n TOM = " + a.TrackStatus[6] + "\n DOU = " + a.TrackStatus[7] + "\n MRS = " + a.TrackStatus[8] + "\n GHO = " + a.TrackStatus[9], "TRACK STATUS INFORMATION"); }
+                        if (pos.Equals(4) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show(" TYP = " + a.TargetReportDescriptor[0] + "\n DCR = " + a.TargetReportDescriptor[1] + "\n CHN = " + a.TargetReportDescriptor[2] + "\n GBS = " + a.TargetReportDescriptor[3] + "\n CRT = " + a.TargetReportDescriptor[4] + "\n SIM = " + a.TargetReportDescriptor[5] + "\n TST = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n LOP = " + a.TargetReportDescriptor[8] + "\n TOT = " + a.TargetReportDescriptor[9] + "\n SPI = " + a.TargetReportDescriptor[10], "TARGET REPORT DESCRIPTOR INFORMATION"); }
+                        else if (pos.Equals(5) && a.PolarPosition.Length > 0) { MessageBox.Show(" Rho = " + a.PolarPosition[0].ToString() + "\n Theta = " + a.PolarPosition[1].ToString(), "POLAR POSITION INFORMATION"); }
+                        else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show(" x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
+                        else if (pos.Equals(7) && a.PolarTrackVelocity.Length > 0) { MessageBox.Show(" Vx = " + a.PolarTrackVelocity[0].ToString() + "\n Vy = " + a.PolarTrackVelocity[1].ToString(), "POLAR TRACK VELOCITY INFORMATION"); }
+                        else if (pos.Equals(8) && a.CartesianTrackVelocity.Length > 0) { MessageBox.Show(" Vx = " + a.CartesianTrackVelocity[0].ToString() + "\n Vy = " + a.CartesianTrackVelocity[1].ToString(), "CARTESIAN TRACK VELOCITY INFORMATION"); }
+                        else if (pos.Equals(10) && a.TrackStatus.Length < 0) { MessageBox.Show(" CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n MAH = " + a.TrackStatus[3] + "\n TCC = " + a.TrackStatus[4] + "\n STH = " + a.TrackStatus[5] + "\n TOM = " + a.TrackStatus[6] + "\n DOU = " + a.TrackStatus[7] + "\n MRS = " + a.TrackStatus[8] + "\n GHO = " + a.TrackStatus[9], "TRACK STATUS INFORMATION"); }
                         else if (pos.Equals(11) && a.Mode3A.Length > 0) { MessageBox.Show("V = " + a.Mode3A[0] + "\n G = " + a.Mode3A[1] + "\n L = " + a.Mode3A[2] + "\n Response = " + a.Mode3A[3], "MODE 3A INFORMATION"); }
-                        else if (pos.Equals(13) && a.TargetIdentification.Length > 0) { MessageBox.Show("STI = " + a.TargetIdentification[0] + "\n TID = " + a.TargetIdentification[1], "TARGET ID INFORMATION"); }
-                        else if (pos.Equals(14) && a.FlightLevel.Length > 0) { MessageBox.Show("V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }
-                        else if (pos.Equals(11) && a.SystemStatus.Length > 0) { MessageBox.Show("NOGO = " + a.SystemStatus[0] + "\n OVL = " + a.SystemStatus[1] + "\n TSV = " + a.SystemStatus[2] + "\n DIV = " + a.SystemStatus[3] + "\n TTF = " + a.SystemStatus[4], "SYSTEM STATUS INFORMATION"); }
-                        else if (pos.Equals(16) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show("x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
+                        else if (pos.Equals(13) && a.TargetIdentification.Length > 0) { MessageBox.Show(" STI = " + a.TargetIdentification[0] + "\n TID = " + a.TargetIdentification[1], "TARGET ID INFORMATION"); }
+                        else if (pos.Equals(14) && a.FlightLevel.Length > 0) { MessageBox.Show(" V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }
+                        else if (pos.Equals(11) && a.SystemStatus.Length > 0) { MessageBox.Show(" NOGO = " + a.SystemStatus[0] + "\n OVL = " + a.SystemStatus[1] + "\n TSV = " + a.SystemStatus[2] + "\n DIV = " + a.SystemStatus[3] + "\n TTF = " + a.SystemStatus[4], "SYSTEM STATUS INFORMATION"); }
+                        else if (pos.Equals(16) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show(" x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
+                        else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
+                    }
+                }
+                if (radioButton3.Checked)
+                {
+                    CAT21 a = objCat21[e.RowIndex - 1];
+                    int pos = dataGridView1.CurrentCell.ColumnIndex;
+                    if (pos.Equals(3) || pos.Equals(5) || pos.Equals(7) || pos.Equals(10) || pos.Equals(12))
+                    {
+                        if (pos.Equals(4) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show(" DCR = " + a.TargetReportDescriptor[0] + "\n GBS = " + a.TargetReportDescriptor[1] + "\n SIM = " + a.TargetReportDescriptor[2] + "\n TST = " + a.TargetReportDescriptor[3] + "\n RAB = " + a.TargetReportDescriptor[4] + "\n SAA = " + a.TargetReportDescriptor[5] + "\n SPI = " + a.TargetReportDescriptor[6] + "\n ATP = " + a.TargetReportDescriptor[7], "TARGET REPORT DESCRIPTOR INFORMATION"); }
+                        else if (pos.Equals(5) && a.FigureOfMerit.Length > 0) { MessageBox.Show(" AC = " + a.FigureOfMerit[0] + "\n MN = " + a.FigureOfMerit[1] + "\n DC = " + a.FigureOfMerit[2] + "\n PA = " + a.FigureOfMerit[3], "FIGURE OF MERIT INFORMATION"); }
+                        else if (pos.Equals(7) && a.PositionWGS84.Length > 0) { MessageBox.Show(" Latitude = " + a.PositionWGS84[0].ToString() + "\n Longitude = " + a.PositionWGS84[1].ToString(), "POSITION IN WGS84 INFORMATION"); }
+                        else if (pos.Equals(10) && a.AirboneGroundVector.Length > 0) { MessageBox.Show("Ground Speed = " + a.AirboneGroundVector[0].ToString() + "\n Track Angle = " + a.AirboneGroundVector[1].ToString(), "AIRBORNE GROUND VECTOR INFORMATION"); }
+                        else if (pos.Equals(12) && a.LinkTechnologyIndicator.Length > 0) { MessageBox.Show("DTI = " + a.LinkTechnologyIndicator[0] + "\n MDS = " + a.LinkTechnologyIndicator[1] + "\n UAT = " + a.LinkTechnologyIndicator[2] + "\n VDL = " + a.LinkTechnologyIndicator[3] + "\n OTR = " + a.LinkTechnologyIndicator[4], "LINK TECHNOLOGY INFORMATION INFORMATION"); }
                         else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
                     }
                 }

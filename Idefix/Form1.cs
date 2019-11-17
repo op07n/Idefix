@@ -18,12 +18,13 @@ namespace Idefix
         public List<string[]> fspecsCat19 = new List<string[]>();
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
-        public List<int> CAT1920;
+        public List<int> CAT1920 = new List<int>();
         public List<CAT10> objCat10 = new List<CAT10>();
         //public List<CAT19> objCat19 = new List<CAT19>();
         public List<CAT20> objCat20 = new List<CAT20>();
         public List<CAT21> objCat21 = new List<CAT21>();
         public List<Flight> flightList = new List<Flight>();
+        public List<string> readFiles = new List<string>();
 
         public Funciones funcs = new Funciones();
 
@@ -48,8 +49,23 @@ namespace Idefix
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            label2.Text = "To start, please click the 'Read file' button on the left to select an ASTERIX file to be read.\n" +
-                "You will then be able to show the file data on a table or on a map by using the controls on the left.";
+            label2.Text = "To start, please click the 'Read file' button on the left to select ASTERIX files to be read.\n" +
+                "You can select more than one file simultaneously and read various files at the same time.\n" +
+                "You will then be able to show the files' data on a table or on a map by using the controls on the left.\n\n";
+
+            if(readFiles.Count == 0)
+            {
+                label2.Text += "Files read until now: 0";
+            }
+            else
+            {
+                foreach (string file in readFiles)
+                {
+                    label2.Text += "Files read until now:\n";
+                    label2.Text += file.Split('\\').Last();
+                }
+            }
+
             button2.Enabled = false;
             button3.Enabled = false;
             button5.Visible = false;
@@ -64,17 +80,39 @@ namespace Idefix
         private void button1_Click(object sender, EventArgs e)
         {
 
+            label2.Text = "";
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "ASTERIX files (*.ast)|*.ast";
-            label2.Text = "Please wait while we process your request.";
+            openFileDialog1.Multiselect = true;
+            label2.Text = "Please wait while we process your request...";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 Funciones funcs = new Funciones();
-                Archivo fichero = funcs.LeerArchivo(openFileDialog1.FileName);
-                this.msgsCat10 = fichero.GetMsgsCat10();
-                this.msgsCat20 = fichero.GetMsgsCat20();
-                this.msgsCat21 = fichero.GetMsgsCat21();
-                this.CAT1920 = fichero.GetCAT1920();
+                foreach (String file in openFileDialog1.FileNames)
+                {
+                    if (!this.readFiles.Contains(file))
+                    {
+                        Archivo fichero = funcs.LeerArchivo(file);
+
+                        if (fichero.GetMsgsCat10().Count != 0)
+                        {
+                            this.msgsCat10 = this.msgsCat10.Union(fichero.GetMsgsCat10()).ToList();
+                        }
+                        if (fichero.GetMsgsCat20().Count != 0)
+                        {
+                            this.msgsCat20 = this.msgsCat20.Union(fichero.GetMsgsCat20()).ToList();
+                        }
+                        if (fichero.GetMsgsCat21().Count != 0)
+                        {
+                            this.msgsCat21 = this.msgsCat21.Union(fichero.GetMsgsCat21()).ToList();
+                        }
+                        if (fichero.GetCAT1920().Count != 0)
+                        {
+                            this.CAT1920 = this.CAT1920.Union(fichero.GetCAT1920()).ToList();
+                        }
+                        readFiles.Add(file);
+                    }
+                }
                 this.fspecsCat10 = funcs.GetFSPEC(this.msgsCat10);
                 this.fspecsCat19 = funcs.GetFSPEC(this.msgsCat19);
                 this.fspecsCat20 = funcs.GetFSPEC(this.msgsCat20);
@@ -99,10 +137,31 @@ namespace Idefix
                     cnt++;
                 }
 
+                radioButton1.Visible = false;
+                radioButton2.Visible = false;
+                radioButton3.Visible = false;
                 label2.Visible = true;
                 dataGridView1.Visible = false;
                 pictureBox2.Visible = false;
-                label2.Text = "Successfully read file " + openFileDialog1.FileName.Split('\\').Last() + "! Use the buttons on the left to access file data.";
+                label2.Text = "";
+                foreach (String file in openFileDialog1.FileNames)
+                {
+                    label2.Text += "Successfully read file " + openFileDialog1.FileName.Split('\\').Last() + "! Use the buttons on the left to access file data.\n";
+                }
+
+                if (readFiles.Count == 0)
+                {
+                    label2.Text += "\nFiles read until now: 0";
+                }
+                else
+                {
+                    foreach (string file in readFiles)
+                    {
+                        label2.Text += "\nFiles read until now:\n";
+                        label2.Text += file.Split('\\').Last();
+                    }
+                }
+
                 label2.BackColor = System.Drawing.Color.LightGreen;
                 button2.Enabled = true;
                 button3.Enabled = true;
@@ -488,10 +547,12 @@ namespace Idefix
             if (simSpeed == 0)
                 simSpeed = 1;
             label5.Text = "x" + simSpeed.ToString();
-            if(myTimer.Enabled)
+            if (myTimer.Enabled)
+            {
                 myTimer.Elapsed -= new ElapsedEventHandler(simulationStep);
                 myTimer.Stop();
                 pictureBox3_Click(null, null);
+            }
         }
 
         public void simulationStep(object source, ElapsedEventArgs e)
@@ -512,12 +573,12 @@ namespace Idefix
                     if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
                     {
 
-                        double x_original = ((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
+                        double x_original = ((pictureBox2.Width / 2) - (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
                         double y_original = ((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2) + constAdjustY);
                         double o_x = 0;
                         double o_y = 0;
 
-                        double rotation_angle = 0;
+                        double rotation_angle = Math.PI/2;
                         myCanvas.FillEllipse(Brushes.Red, 
                             (float)((x_original-o_x) * Math.Cos(rotation_angle) - (y_original-o_y) * Math.Sin(rotation_angle) + o_x),
                             (float)((y_original-o_y) * Math.Cos(rotation_angle) + (x_original-o_x) * Math.Sin(rotation_angle) + o_y), 

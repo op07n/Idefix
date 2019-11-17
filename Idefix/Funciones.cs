@@ -173,8 +173,8 @@ namespace Idefix
                         val1.Append(va[2]);
                         string val = val1.ToString();
 
-                        if (val.Equals("0")) { TYP = "SSR Multilateration"; }
-                        else if (val.Equals("1")) { TYP = "Mode S Multilateration"; }
+                        if (val.Equals("00")) { TYP = "SSR Multilateration"; }
+                        else if (val.Equals("01")) { TYP = "Mode S Multilateration"; }
                         else if (val.Equals("10")) { TYP = "ADS-B"; }
                         else if (val.Equals("11")) { TYP = "PSR"; }
                         else if (val.Equals("100")) { TYP = "Magnetic Loop System"; }
@@ -373,7 +373,7 @@ namespace Idefix
                             else { STH = "Measured position"; }
                             pos += 1;
 
-                            if (ts[7].Equals(0)) { }
+                            if (ts[7].Equals('0')) { }
                             else
                             {
                                 string ts_1 = Convert2Binary(msgcat10[pos]);
@@ -457,7 +457,7 @@ namespace Idefix
                             ICAO.Append(ICAO3);
                             ICAO_Address = ICAO.ToString();
 
-                            pos += 4;
+                            pos += 3;
                         }// FRN = 13: ICAO address
                         if (FSPEC_2[6] == '1') // FRN = 14: Target Identification
                         {
@@ -466,8 +466,8 @@ namespace Idefix
                             sti.Append(sti1[1]);
                             string STI = string.Empty;
 
-                            if (sti.ToString().Equals("0")) { STI = "Callsign or registration not downlinked from transponder"; }
-                            else if (sti.ToString().Equals("1")) { STI = "Registration downlinked from transponder"; }
+                            if (sti.ToString().Equals("00")) { STI = "Callsign or registration not downlinked from transponder"; }
+                            else if (sti.ToString().Equals("01")) { STI = "Registration downlinked from transponder"; }
                             else if (sti.ToString().Equals("10")) { STI = "Callsign downlinked from transponder"; }
                             else if (sti.ToString().Equals("11")) { STI = "Not defined"; }
 
@@ -1449,6 +1449,7 @@ namespace Idefix
             Int32 horas = (tsegundos / 3600);
             Int32 minutos = ((tsegundos - horas * 3600) / 60);
             Int32 segundos = tsegundos - (horas * 3600 + minutos * 60);
+            horas = horas % 24;
 
             string h = horas.ToString().PadLeft(2, '0');
             string m = minutos.ToString().PadLeft(2, '0');

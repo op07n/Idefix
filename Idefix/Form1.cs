@@ -473,10 +473,12 @@ namespace Idefix
             if (simSpeed == 0)
                 simSpeed = 1;
             label5.Text = "x" + simSpeed.ToString();
-            if(myTimer.Enabled)
+            if (myTimer.Enabled)
+            {
                 myTimer.Elapsed -= new ElapsedEventHandler(simulationStep);
                 myTimer.Stop();
                 pictureBox3_Click(null, null);
+            }
         }
 
         public void simulationStep(object source, ElapsedEventArgs e)
@@ -497,12 +499,12 @@ namespace Idefix
                     if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
                     {
 
-                        double x_original = ((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
+                        double x_original = ((pictureBox2.Width / 2) - (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
                         double y_original = ((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2) + constAdjustY);
                         double o_x = 0;
                         double o_y = 0;
 
-                        double rotation_angle = 0;
+                        double rotation_angle = Math.PI/2;
                         myCanvas.FillEllipse(Brushes.Red, 
                             (float)((x_original-o_x) * Math.Cos(rotation_angle) - (y_original-o_y) * Math.Sin(rotation_angle) + o_x),
                             (float)((y_original-o_y) * Math.Cos(rotation_angle) + (x_original-o_x) * Math.Sin(rotation_angle) + o_y), 

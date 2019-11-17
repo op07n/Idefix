@@ -43,6 +43,7 @@ namespace Idefix
         public Idefix()
         {
             InitializeComponent();
+            dataGridView1.CellClick += dataGridView1_CellClick;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -240,13 +241,6 @@ namespace Idefix
                     }
                     dataGridView1.Rows.Add(vs);
                 }
-                DataGridViewButtonColumn TRD = new DataGridViewButtonColumn();
-                TRD.HeaderText = "";
-                TRD.Name = "Target Report Descriptor";
-                TRD.Text = "More Information";
-                TRD.UseColumnTextForButtonValue = true;
-                dataGridView1.Columns.Add(TRD);
-                dataGridView1.CellClick += new DataGridViewCellEventHandler(dataGridView1_CellClick);
             }
 
 
@@ -267,13 +261,28 @@ namespace Idefix
         {
             if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
             {
-                if (e.RowIndex > 0 && objCat20[e.RowIndex - 1].CAT.Equals("20"))
+                if (radioButton2.Checked && e.RowIndex > 0 && objCat20[e.RowIndex - 1].CAT.Equals("20"))
                 {
                     CAT20 a = objCat20[e.RowIndex - 1];
                     int pos = dataGridView1.CurrentCell.ColumnIndex;
-                    if (pos.Equals(5)) { MessageBox.Show("SSR = " + a.TargetReportDescriptor[0] + "\n MS = " + a.TargetReportDescriptor[1] + "\n HF = " + a.TargetReportDescriptor[2] + "\n VDL4 = " + a.TargetReportDescriptor[3] + "\n UAT = " + a.TargetReportDescriptor[4] + "\n DME = " + a.TargetReportDescriptor[5] + "\n OT = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n SPI = " + a.TargetReportDescriptor[8] + "\n CHN = " + a.TargetReportDescriptor[9] + "\n GBS = " + a.TargetReportDescriptor[10] + "\n CRT = " + a.TargetReportDescriptor[11] + "\n SIM = " + a.TargetReportDescriptor[12] + "\n TST = " + a.TargetReportDescriptor[13], "TARGET REPORT DESCRIPTOR INFORMATION"); }
-                    else if (pos.Equals(6)) { MessageBox.Show("x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
-                    else if (pos.Equals(8)) { MessageBox.Show("CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
+                    if(pos.Equals(5) || pos.Equals(6) || pos.Equals(8) || pos.Equals(9) || pos.Equals(10) || pos.Equals(11) || pos.Equals(12) || pos.Equals(14) || pos.Equals(15) || pos.Equals(16) || pos.Equals(18) || pos.Equals(19) || pos.Equals(20) || pos.Equals(22))
+                    {
+                        if (pos.Equals(5) && a.TargetReportDescriptor.Length > 0) { MessageBox.Show("SSR = " + a.TargetReportDescriptor[0] + "\n MS = " + a.TargetReportDescriptor[1] + "\n HF = " + a.TargetReportDescriptor[2] + "\n VDL4 = " + a.TargetReportDescriptor[3] + "\n UAT = " + a.TargetReportDescriptor[4] + "\n DME = " + a.TargetReportDescriptor[5] + "\n OT = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n SPI = " + a.TargetReportDescriptor[8] + "\n CHN = " + a.TargetReportDescriptor[9] + "\n GBS = " + a.TargetReportDescriptor[10] + "\n CRT = " + a.TargetReportDescriptor[11] + "\n SIM = " + a.TargetReportDescriptor[12] + "\n TST = " + a.TargetReportDescriptor[13], "TARGET REPORT DESCRIPTOR INFORMATION"); }
+                        else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show("x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
+                        else if (pos.Equals(8) && a.TrackStatus.Length < 0) { MessageBox.Show("CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
+                        else if (pos.Equals(9) && a.Mode3A.Length > 0) { MessageBox.Show("V = " + a.Mode3A[0] + "\n G = " + a.Mode3A[1] + "\n L = " + a.Mode3A[2] + "\n Response = " + a.Mode3A[3], "MODE 3A INFORMATION"); }
+                        else if (pos.Equals(10) && a.CartesianTrackVelocity.Length > 0) { MessageBox.Show("Vx = " + a.CartesianTrackVelocity[0].ToString() + "\n Vy = " + a.CartesianTrackVelocity[1].ToString(), "CARTESIAN TRACK VELOCITY INFORMATION"); }
+                        else if (pos.Equals(11) && a.FlightLevel.Length > 0) { MessageBox.Show("V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }
+                        else if (pos.Equals(12) && a.modeC.Length > 0) { MessageBox.Show("V = " + a.modeC[0] + "\n G = " + a.modeC[1] + "\n Code C = " + a.modeC[2], "MODE C INFORMATION"); }
+                        else if (pos.Equals(14) && a.TargetId.Length > 0) { MessageBox.Show("STI = " + a.TargetId[0] + "\n y = " + a.TargetId[1], "TARGET ID INFORMATION"); }
+                        else if (pos.Equals(15) && a.CartesianHeight != null && a.GeometricHeight != null) { MessageBox.Show("Cartesian height = " + a.CartesianHeight.ToString() + "\n Geometric height = " + a.GeometricHeight.ToString(), "MEASURED HEIGHT INFORMATION"); }
+                        else if (pos.Equals(16) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show("x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
+                        else if (pos.Equals(18) && a.PreprogrammedMessage.Length > 0) { MessageBox.Show("TRB = " + a.PreprogrammedMessage[0] + "\n MSG = " + a.PreprogrammedMessage[1], "PREPROGRAMMED MESSAGE INFORMATION"); }
+                        else if (pos.Equals(19) && a.DOPofPosition.Length > 0) { MessageBox.Show("DOPx = " + a.DOPofPosition[0].ToString() + "\n DOPy = " + a.DOPofPosition[1].ToString() + "\n DOPxy = " + a.DOPofPosition[2].ToString(), "DOP OF POSITION INFORMATION"); }
+                        else if (pos.Equals(20) && a.StandardDeviationofPosition.Length > 0) { MessageBox.Show("Standard Deviation in x (sigma x)= " + a.StandardDeviationofPosition[0].ToString() + "\n Standard deviation in y (sigma y) = " + a.StandardDeviationofPosition[1].ToString() + "\n Rho xy = " + a.StandardDeviationofPosition[2].ToString(), "STANDARD DEVIATION OF POSITION INFORMATION"); }
+                        else if (pos.Equals(22) && a.ContributingDevices.Length > 0) { MessageBox.Show("RED = " + a.ContributingDevices[0] + "\n TRx = " + a.ContributingDevices[1], "CONTRIBUTING DEVICES INFORMATION"); }
+                        else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
+                    }
                 }
             }
 

@@ -44,9 +44,9 @@ namespace Idefix
                     else
                     {
                         while (lengthMsg != 0)
-                        {                           
+                        {
                             if (category == 10) msgCAT10.Add(read.BaseStream.ReadByte());
-                            else if (category == 19||category == 20) msgCAT20.Add(read.BaseStream.ReadByte());
+                            else if (category == 19 || category == 20) msgCAT20.Add(read.BaseStream.ReadByte());
                             else if (category == 21) msgCAT21.Add(read.BaseStream.ReadByte());
                             lengthMsg--;
                             pos++;
@@ -126,7 +126,7 @@ namespace Idefix
             string ICAO_Address = string.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] SS = new string[5] { "", "", "", "", "" }; string[] Mode3A = Array.Empty<string>(); string[] TID = Array.Empty<string>(); string[] FL_T = Array.Empty<string>();
+            string[] TRD = Array.Empty<string>(); ; string[] TID = Array.Empty<string>(); string[] FL_T = Array.Empty<string>(); string[] FOM = Array.Empty<string>();
             double[] PP = new double[2] { 0, 0 }; double[] CP = new double[2] { 0, 0 }; double[] PTV = new double[2] { 0, 0 }; double[] CTV = new double[2] { 0, 0 }; double[] TSO = new double[3] { 0, 0, 0 }; double[] CA = new double[2] { 0, 0 };
 
             List<CAT10> listCAT10 = new List<CAT10>();
@@ -1297,9 +1297,9 @@ namespace Idefix
                                         StringBuilder sigmaGH = new StringBuilder(sigmaGH1);
                                         sigmaGH.Append(sigmaGH2);
 
-                                    SIGMA_GH = (Convert.ToDouble(sigmaGH.ToString())) * 0.5;
-                                    pos += 2;
-                                }
+                                        SIGMA_GH = (Convert.ToDouble(sigmaGH.ToString())) * 0.5;
+                                        pos += 2;
+                                    }
 
                                 }//FRN = 19: Position accuracy
 
@@ -1379,6 +1379,421 @@ namespace Idefix
             return listCAT20;
         }
 
+        public List<CAT21> ReadCat21(List<double[]> msgcat21_T, List<string[]> FSPEC_21T)
+        {
+            int a = 0;
+            int SAC = 0; int SIC = 0;
+            double GH;
+            string ICAO_Address = string.Empty; string FL_T = string.Empty; string TID = string.Empty; string VA = string.Empty;
+            TimeSpan TimeOfDay = TimeSpan.Zero;
+            string[] TRD = Array.Empty<string>(); string[] FOM = Array.Empty<string>(); string[] LTI = Array.Empty<string>();
+            double[] WGS84 = Array.Empty<double>(); double[] AGV = Array.Empty<double>(); 
+
+            List<CAT21> listCAT21 = new List<CAT21>();
+
+            if (msgcat21_T != null && FSPEC_21T != null)
+            {
+                while (a < msgcat21_T.Count)
+                {
+
+                    string FSPEC_1 = FSPEC_21T[a][0];
+                    double[] msgcat21 = msgcat21_T[a];
+                    // int n = 0;
+                    int pos = FSPEC_21T[a].Length; // posició de byte en el missatge rebut de categoria 20 SENSE cat,lenght,Fspec.
+
+                    if (FSPEC_1[0] == '1')// FRN = 1: Data Source ID
+                    {
+                        SAC = Convert.ToInt32(msgcat21[pos]);
+                        SIC = Convert.ToInt32(msgcat21[pos + 1]);
+                        pos = pos + 2;
+                    }// FRN = 1: Data Source ID
+
+                    if (FSPEC_1[1] == '1')// FRN = 2: Target Report Description
+                    {
+                        string va = Convert2Binary(msgcat21[pos]);
+
+                        string DCR = String.Empty;
+                        if (va[0].Equals('0')) { DCR = "No differential correction (ADS-B)"; }
+                        else { DCR = "Differential correction (ADS-B)"; }
+
+                        string GBS = String.Empty;
+                        if (va[1].Equals('0')) { GBS = "Transponder Ground Bit Not Set"; }
+                        else { GBS = "Transponder Ground Bit Set"; }
+
+                        string SIM = String.Empty;
+                        if (va[2].Equals('0')) { SIM = "Actual Target Report"; }
+                        else { SIM = "Simulated Target Report"; }
+
+                        string TST = String.Empty;
+                        if (va[3].Equals('0')) { TST = "Default"; }
+                        else { TST = "Test Target"; }
+
+                        string RAB = String.Empty;
+                        if (va[4].Equals('0')) { RAB = "Report from Target Responder"; }
+                        else { RAB = "Report From Field Monitor (fixed transpoder)"; }
+
+                        string SAA = String.Empty;
+                        if (va[5].Equals('0')) { SAA = "Equipement not capable to provide Selected Altitude"; }
+                        else { SAA = "Equipement  capable to provide Selected Altitude"; }
+
+                        string SPI = String.Empty;
+                        if (va[6].Equals('0')) { SPI = "Absence of SPI"; }
+                        else { SPI = "Special Position Identification"; }
+
+                        va = Convert2Binary(msgcat21[pos + 1]);
+
+                        StringBuilder atp = new StringBuilder(va[0]);
+                        atp.Append(va[1]);
+                        atp.Append(va[2]);
+                        string ATP;
+                        if (atp.ToString().Equals("00"))
+                        {
+                            ATP = "Non unique address";
+                        }
+                        else if (atp.ToString().Equals("01"))
+                        {
+                            ATP = "24-bit ICAO address";
+                        }
+                        else if (atp.ToString().Equals("10"))
+                        {
+                            ATP = "Surface vehicle address";
+                        }
+                        else if (atp.ToString().Equals("11"))
+                        {
+                            ATP = "Annonymous address";
+                        }
+                        else
+                        {
+                            ATP = "Reserved for future use";
+                        }
+
+                        pos += 2;
+
+                        TRD = new string[8] { DCR, GBS, SIM, TST, RAB, SAA, SPI, ATP};
+
+                    }// FRN = 2: Target Report Description
+
+                    if (FSPEC_1[2] == '1') //FRN = 3: Time Of Day
+                    {
+                        string a1 = Convert2Binary(msgcat21[pos]);
+                        string a2 = Convert2Binary(msgcat21[pos + 1]);
+                        string a3 = Convert2Binary(msgcat21[pos + 2]);
+                        StringBuilder hour = new StringBuilder(a1);
+                        hour.Append(a2);
+                        hour.Append(a3);
+                        string hour_in_seconds = hour.ToString();
+                        int Hour = (int)Convert.ToInt64(hour_in_seconds, 2);
+                        Hour /= 128;
+                        TimeOfDay = TimeSpan.FromSeconds(Hour); // hh:mm:ss
+                        pos += 3;
+                    }//FRN = 3: Time Of Day
+
+                    if (FSPEC_1[3] == '1')//FRN = 4: WGS84_Position
+                    {
+                        string lat1 = Convert2Binary(msgcat21[pos]);
+                        string lat2 = Convert2Binary(msgcat21[pos + 1]);
+                        string lat3 = Convert2Binary(msgcat21[pos + 2]);
+                        StringBuilder lat = new StringBuilder(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1[0]);
+                        lat.Append(lat1);
+                        lat.Append(lat2);
+                        lat.Append(lat3);
+
+                        double LAT = Convert.ToDouble(Convert.ToInt32(lat.ToString(), 2)) * (180 / 2 ^ 23);
+
+                        string lon1 = Convert2Binary(msgcat21[pos + 3]);
+                        string lon2 = Convert2Binary(msgcat21[pos + 4]);
+                        string lon3 = Convert2Binary(msgcat21[pos + 5]);
+                        StringBuilder lon = new StringBuilder(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1[0]);
+                        lon.Append(lon1);
+                        lon.Append(lon2);
+                        lon.Append(lon3);
+
+                        double LON = Convert.ToDouble(Convert.ToInt32(lon.ToString(), 2)) * (180 / 2 ^ 23);
+
+                        WGS84 = new double[2] { LAT, LON };
+
+                        pos += 6;
+                    } //FRN = 4: WGS84_Position
+
+                    if (FSPEC_1[4] == '1') // FRN = 5: TargetAddress
+                    {
+                        string ICAO1 = Convert2Binary(msgcat21[pos]);
+                        string ICAO2 = Convert2Binary(msgcat21[pos + 1]);
+                        string ICAO3 = Convert2Binary(msgcat21[pos + 2]);
+                        StringBuilder ICAO = new StringBuilder(ICAO1);
+                        ICAO.Append(ICAO2);
+                        ICAO.Append(ICAO3);
+                        ICAO_Address = ICAO.ToString();
+                        pos += 3;
+                    } // FRN = 5: TargetAddress
+
+                    if (FSPEC_1[5] == '1') { pos += 2; } // FRN = 6: Geometric Altitude
+
+                    if (FSPEC_1[6] == '1')// FRN = 7; Figure of Merit
+                    {
+
+                        string fom1 = Convert2Binary(msgcat21[pos]);
+                        string fom2 = Convert2Binary(msgcat21[pos + 1]);
+
+                        StringBuilder ac = new StringBuilder(fom1[0]);
+                        ac.Append(fom1[1]);
+                        string AC = string.Empty;
+                        if (ac.ToString().Equals("00")) { AC = "Unknown"; }
+                        else if (ac.ToString().Equals("01")) { AC = "ACAS not operational"; }
+                        else if (ac.ToString().Equals("10")) { AC = "ACAS operational"; }
+                        else if (ac.ToString().Equals("11")) { AC = "Invalid"; }
+
+                        StringBuilder mn = new StringBuilder(fom1[2]);
+                        mn.Append(fom1[3]);
+                        string MN = string.Empty;
+                        if (mn.ToString().Equals("00")) { MN = "Unknown"; }
+                        else if (mn.ToString().Equals("01")) { MN = "Multiple navigational aids not operating"; }
+                        else if (mn.ToString().Equals("10")) { MN = "Multiple navigational aids operating"; }
+                        else if (mn.ToString().Equals("11")) { MN = "Invalid"; }
+
+                        StringBuilder dc = new StringBuilder(fom1[2]);
+                        dc.Append(fom1[3]);
+                        string DC = string.Empty;
+                        if (dc.ToString().Equals("00")) { DC = "Unknown"; }
+                        else if (dc.ToString().Equals("01")) { DC = "Differential correction"; }
+                        else if (dc.ToString().Equals("10")) { DC = "No differential correction"; }
+                        else if (dc.ToString().Equals("11")) { DC = "Invalid"; }
+
+                        StringBuilder pa = new StringBuilder(fom2[4]);
+                        pa.Append(fom2[5]);
+                        pa.Append(fom2[6]);
+                        pa.Append(fom2[7]);
+
+                        string PA = pa.ToString();
+
+                        FOM = new string[4] { AC, MN, DC, PA };
+
+
+                        pos += 2;
+                    } // FRN = 7; Figure of Merit
+
+
+                    if (FSPEC_1[7] == '0') { }
+                    else
+                    {
+                        string FSPEC_2 = FSPEC_21T[a][1];
+
+                        //HACER!!
+                        if (FSPEC_2[0] == '1')
+                        {
+                            string lti = Convert2Binary(msgcat21[pos]);
+                            string DTI; string MDS; string UAT; string VDL; string OTR;
+
+                            if(lti[3].Equals('0')) { DTI = "Unknown"; }
+                            else { DTI = "Aircraft equiped with CDTI"; }
+
+                            if (lti[4].Equals('0')) { MDS = "Not used"; }
+                            else { MDS = "Used"; }
+
+                            if (lti[5].Equals('0')) { UAT = "Not used"; }
+                            else { UAT = "Used"; }
+
+                            if (lti[6].Equals('0')) { VDL = "Not used"; }
+                            else { VDL = "Used"; }
+
+                            if (lti[7].Equals('0')) { OTR = "Not used"; }
+                            else { OTR = "Used"; }
+
+                            LTI = new string[5] { DTI, MDS, UAT, VDL, OTR };
+
+                            pos += 1;
+                        }// FRN = 8: Link Technology Indicator
+
+                        if (FSPEC_2[1] == '1') { pos += 2; } // FRN = 9: Roll angle
+
+                        if (FSPEC_2[2] == '1') // FRN = 10: Flight Level
+                        {
+                            int FL = 0;
+
+                            string fl = Convert2Binary(msgcat21[pos]);
+                            string fl_2 = Convert2Binary(msgcat21[pos + 1]);
+
+                            StringBuilder resp = new StringBuilder(fl);
+                            resp.Append(fl_2);
+
+                            string FL1 = Convert2Binary(Convert.ToDouble(resp.ToString()));
+                            FL = Convert.ToInt32(FL1, 2);
+                            FL /= 4;
+
+                            FL_T = FL.ToString();
+                            pos += 2;
+
+                        }// FRN = 10: Flight Level
+
+                        if (FSPEC_2[3] == '1') { pos += 2; } // FRN = 11: Air Speed
+                        if (FSPEC_2[4] == '1') { pos += 2; }// FRN = 12: True Air Speed
+                        if (FSPEC_2[5] == '1') { pos += 2; }// FRN = 13: Magnetic Heading
+                        if (FSPEC_2[6] == '1') { pos += 2; }// FRN = 14: Barometric vertical rate
+
+                        if (FSPEC_2[7] == '0') { }
+                        else
+                        {
+                            string FSPEC_3 = FSPEC_21T[a][2];
+
+                            if (FSPEC_3[0] == '1') // FRN = 15: Geometric Vertical Rate (WGS-84)
+                            {
+                                string gh1 = Convert2Binary(msgcat21[pos]);
+                                string gh2 = Convert2Binary(msgcat21[pos + 1]);
+
+                                StringBuilder gh = new StringBuilder(gh1);
+                                gh.Append(gh2);
+                                GH = Convert.ToDouble(Convert.ToInt16(gh.ToString(), 2)) * 6.25;
+                                pos += 2;
+                            } // FRN = 15: Geometric Vertical Rate (WGS-84)
+
+                            if (FSPEC_3[1] == '1') // FRN = 16: Airborne ground vector
+                            {
+
+                                string ground_speed1 = Convert2Binary(msgcat21[pos]);
+                                string ground_speed2 = Convert2Binary(msgcat21[pos + 1]);
+                                StringBuilder ground_speed_BIN = new StringBuilder(ground_speed1);
+                                ground_speed_BIN.Append(ground_speed2);
+                                string ground_speed_BIN_TOTAL = ground_speed_BIN.ToString();
+                                double ground_speed = ((int)Convert.ToInt16(ground_speed_BIN_TOTAL, 2)) * 0.22; // in m
+                                string track_angle1 = Convert2Binary(msgcat21[pos + 2]);
+                                string track_angle2 = Convert2Binary(msgcat21[pos + 3]);
+                                StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
+                                track_angle_BIN.Append(track_angle2);
+                                string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
+                                double track_angle = ((int)Convert.ToInt16(track_angle_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
+                                AGV = new double[2] { ground_speed, track_angle };
+
+                                pos += 4;
+                            }// FRN = 16: Airborne ground vector
+
+                            if (FSPEC_3[2] == '1')// FRN = 17: Rate of turn
+                            {
+                                string rot = Convert2Binary(msgcat21[pos]);
+                                pos += 1;
+                                if (rot[7].Equals('0')) { }
+                                else
+                                {
+                                    string rot2 = Convert2Binary(msgcat21[pos]);
+                                    pos += 1;
+                                    if (rot2[7].Equals('0')) { }
+                                    else
+                                    {
+                                        string rot3 = Convert2Binary(msgcat21[pos]);
+                                        pos += 1;
+
+                                    }
+                                }
+                            }// FRN = 17: Rate of turn
+
+                            if (FSPEC_3[3] == '1') // FRN = 18: Target Identification
+                            {
+
+                                string byte1 = Convert2Binary(msgcat21[pos]);
+                                StringBuilder tid1 = new StringBuilder(byte1[0]);
+                                tid1.Append(byte1[0]);
+                                tid1.Append(byte1[1]);
+                                tid1.Append(byte1[2]);
+                                tid1.Append(byte1[3]);
+                                tid1.Append(byte1[4]);
+                                char TID1 = ConvertToIA5(tid1);
+
+                                string byte2 = Convert2Binary(msgcat21[pos + 1]);
+                                StringBuilder tid2 = new StringBuilder(byte1[6]);
+                                tid2.Append(byte1[7]);
+                                tid2.Append(byte2[0]);
+                                tid2.Append(byte2[1]);
+                                tid2.Append(byte2[2]);
+                                tid2.Append(byte2[3]);
+                                char TID2 = ConvertToIA5(tid2);
+
+                                string byte3 = Convert2Binary(msgcat21[pos + 2]);
+                                StringBuilder tid3 = new StringBuilder(byte2[4]);
+                                tid3.Append(byte2[5]);
+                                tid3.Append(byte2[6]);
+                                tid3.Append(byte2[7]);
+                                tid3.Append(byte3[0]);
+                                tid3.Append(byte3[1]);
+                                char TID3 = ConvertToIA5(tid3);
+
+                                StringBuilder tid4 = new StringBuilder(byte3[2]);
+                                tid4.Append(byte3[3]);
+                                tid4.Append(byte3[4]);
+                                tid4.Append(byte3[5]);
+                                tid4.Append(byte3[6]);
+                                tid4.Append(byte3[7]);
+                                char TID4 = ConvertToIA5(tid4);
+
+                                string byte4 = Convert2Binary(msgcat21[pos + 3]);
+                                StringBuilder tid5 = new StringBuilder(byte4[0]);
+                                tid5.Append(byte4[1]);
+                                tid5.Append(byte4[2]);
+                                tid5.Append(byte4[3]);
+                                tid5.Append(byte4[4]);
+                                tid5.Append(byte4[5]);
+                                char TID5 = ConvertToIA5(tid5);
+
+                                string byte5 = Convert2Binary(msgcat21[pos + 4]);
+                                StringBuilder tid6 = new StringBuilder(byte4[6]);
+                                tid6.Append(byte4[7]);
+                                tid6.Append(byte5[0]);
+                                tid6.Append(byte5[1]);
+                                tid6.Append(byte5[2]);
+                                tid6.Append(byte5[3]);
+                                char TID6 = ConvertToIA5(tid6);
+
+                                string byte6 = Convert2Binary(msgcat21[pos + 5]);
+                                StringBuilder tid7 = new StringBuilder(byte5[4]);
+                                tid7.Append(byte5[5]);
+                                tid7.Append(byte5[6]);
+                                tid7.Append(byte5[7]);
+                                tid7.Append(byte6[0]);
+                                tid7.Append(byte6[1]);
+                                char TID7 = ConvertToIA5(tid7);
+
+                                StringBuilder tid8 = new StringBuilder(byte6[2]);
+                                tid8.Append(byte6[3]);
+                                tid8.Append(byte6[4]);
+                                tid8.Append(byte6[5]);
+                                tid8.Append(byte6[6]);
+                                tid8.Append(byte6[7]);
+                                char TID8 = ConvertToIA5(tid8);
+
+                                TID = string.Concat(TID1, TID2, TID3, TID4, TID5, TID6, TID7, TID8);
+
+                                pos += 6;
+                            }// FRN = 18: Target Identification
+
+                            if (FSPEC_3[4] == '1') //FRN = 19: Velocity accuracy
+                            {
+                                VA = Convert2Binary(msgcat21[pos]);
+                                pos += 1;
+                            } //FRN = 19: Velocity accuracy
+                        }
+                    }
+
+                    //CAT21 obj = new CAT21
+
+                    //listCAT21.Add(obj);
+                    a += 1;
+                }
+            }
+            return listCAT21;
+        }
+
         public List<Flight> DistributeFlights(List<CAT10> cat10, List<CAT20> cat20, List<CAT21> cat21)
         {
             List<Flight> listFlights = new List<Flight>();
@@ -1399,7 +1814,7 @@ namespace Idefix
             {
                 foreach (CAT20 flight in cat20)
                 {
-                    if (flight.CAT.Equals("20")) { 
+                    if (flight.CAT.Equals("20")) {
                         Flight f = new Flight();
                         f.ID = flight.SIC.ToString();
                         f.TimeofDay = flight.TimeofDay;
@@ -1423,7 +1838,7 @@ namespace Idefix
             }
             //List<Flight> listFlightsFinal = ordenar(listFlights);
             return listFlights;
-                }
+        }
 
         public string Convert2Binary(double input)
         {
@@ -1478,245 +1893,166 @@ namespace Idefix
             }
             return b;
         }
-            
+
         public char ConvertToIA5(StringBuilder Code)
+        {
+            char letter = '\0';
+            if (Code != null)
+            {
+                string code = Code.ToString();
+
+                if (code.Equals("000001"))
                 {
-                    char letter = '\0';
-                    if (Code != null) {
-                        string code = Code.ToString();
-
-                        if (code.Equals("000001"))
-                        {
-                            letter = 'A';
-                        }
-                        else if (code.Equals("000010"))
-                        {
-                            letter = 'B';
-                        }
-                        else if (code.Equals("000011"))
-                        {
-                            letter = 'C';
-                        }
-                        else if (code.Equals("000100"))
-                        {
-                            letter = 'D';
-                        }
-                        else if (code.Equals("000101"))
-                        {
-                            letter = 'E';
-                        }
-                        else if (code.Equals("000110"))
-                        {
-                            letter = 'F';
-                        }
-                        else if (code.Equals("000111"))
-                        {
-                            letter = 'G';
-                        }
-                        else if (code.Equals("001000"))
-                        {
-                            letter = 'H';
-                        }
-                        else if (code.Equals("001001"))
-                        {
-                            letter = 'I';
-                        }
-                        else if (code.Equals("001010"))
-                        {
-                            letter = 'J';
-                        }
-                        else if (code.Equals("001011"))
-                        {
-                            letter = 'K';
-                        }
-                        else if (code.Equals("001100"))
-                        {
-                            letter = 'L';
-                        }
-                        else if (code.Equals("001101"))
-                        {
-                            letter = 'M';
-                        }
-                        else if (code.Equals("001110"))
-                        {
-                            letter = 'N';
-                        }
-                        else if (code.Equals("001111"))
-                        {
-                            letter = 'O';
-                        }
-                        else if (code.Equals("010000"))
-                        {
-                            letter = 'P';
-                        }
-                        else if (code.Equals("010001"))
-                        {
-                            letter = 'Q';
-                        }
-                        else if (code.Equals("010010"))
-                        {
-                            letter = 'R';
-                        }
-                        else if (code.Equals("010011"))
-                        {
-                            letter = 'S';
-                        }
-                        else if (code.Equals("010100"))
-                        {
-                            letter = 'T';
-                        }
-                        else if (code.Equals("010101"))
-                        {
-                            letter = 'U';
-                        }
-                        else if (code.Equals("010110"))
-                        {
-                            letter = 'V';
-                        }
-                        else if (code.Equals("010111"))
-                        {
-                            letter = 'W';
-                        }
-                        else if (code.Equals("011000"))
-                        {
-                            letter = 'X';
-                        }
-                        else if (code.Equals("011001"))
-                        {
-                            letter = 'Y';
-                        }
-                        else if (code.Equals("011010"))
-                        {
-                            letter = 'Z';
-                        }
-                        else if (code.Equals("100000"))
-                        {
-                            letter = ' ';
-                        }
-                        else if (code.Equals("110000"))
-                        {
-                            letter = '0';
-                        }
-                        else if (code.Equals("110001"))
-                        {
-                            letter = '1';
-                        }
-                        else if (code.Equals("110010"))
-                        {
-                            letter = '2';
-                        }
-                        else if (code.Equals("110011"))
-                        {
-                            letter = '3';
-                        }
-                        else if (code.Equals("110100"))
-                        {
-                            letter = '4';
-                        }
-                        else if (code.Equals("110101"))
-                        {
-                            letter = '5';
-                        }
-                        else if (code.Equals("110110"))
-                        {
-                            letter = '6';
-                        }
-                        else if (code.Equals("110111"))
-                        {
-                            letter = '7';
-                        }
-                        else if (code.Equals("111000"))
-                        {
-                            letter = '8';
-                        }
-                        else if (code.Equals("111001"))
-                        {
-                            letter = '9';
-                        }
-                    }
-
-                    return letter;
+                    letter = 'A';
                 }
-
-
-                /*public static string[] SepararMensajes(double[] ar, string path, string filename)
+                else if (code.Equals("000010"))
                 {
-                    string d = path + @"\" + filename + ".txt";
-                    string a = path + @"\Cat10-" + filename + ".txt";
-                    string b = path + @"\Cat20-" + filename + ".txt";
-                    string c = path + @"\Cat21-" + filename + ".txt";
-                    string[] archivos = new string[4];
-                    archivos[0] = d;
-                    archivos[1] = a;
-                    archivos[2] = b;
-                    archivos[3] = c;
-                    if (!File.Exists(path))
-                    {
-                        using (StreamWriter sa = File.CreateText(a))
-                        using (StreamWriter sb = File.CreateText(b))
-                        using (StreamWriter sc = File.CreateText(c))
-                        using (StreamWriter sd = File.CreateText(d))
-                        {
-                            int pos = 0;
-                            int length = (int)ar.Length;
-                            int len = Convert.ToInt32(ar[2]);
-                            int cat = Convert.ToInt32(ar[0]);
-                            while ((pos + 1) < length)
-                            {
-                                if (pos == len)
-                                {
-                                    cat = Convert.ToInt32(ar[len]);
-                                    len = len + Convert.ToInt32(ar[pos + 2]);
-                                }
-                                string line = null;
-                                while (pos < len)
-                                {
-                                    if (pos == len - 1)
-                                    {
-                                        line = line + Convert.ToString(ar[pos]);
-                                    }
-                                    else
-                                    {
-                                        line = line + Convert.ToString(ar[pos] + " ");
-                                    }
-                                    pos++;
-                                }
-                                if (cat == 10)
-                                {
-                                    sa.WriteLine(line);
-                                }
-                                else if (cat == 20)
-                                {
-                                    sb.WriteLine(line);
-                                }
-                                else if (cat == 21)
-                                {
-                                    sc.WriteLine(line);
-                                }
-                                sd.WriteLine(line);
-                            }
-                        }
-
-                        FileInfo fa = new FileInfo(a);
-                        FileInfo fb = new FileInfo(b);
-                        FileInfo fc = new FileInfo(c);
-                        if (fa.Length == 0)
-                        {
-                            File.Delete(a);
-                        }
-                        if (fb.Length == 0)
-                        {
-                            File.Delete(b);
-                        }
-                        if (fc.Length == 0)
-                        {
-                            File.Delete(c);
-                        }
-                    }
-                    return archivos;
+                    letter = 'B';
                 }
-                */
+                else if (code.Equals("000011"))
+                {
+                    letter = 'C';
+                }
+                else if (code.Equals("000100"))
+                {
+                    letter = 'D';
+                }
+                else if (code.Equals("000101"))
+                {
+                    letter = 'E';
+                }
+                else if (code.Equals("000110"))
+                {
+                    letter = 'F';
+                }
+                else if (code.Equals("000111"))
+                {
+                    letter = 'G';
+                }
+                else if (code.Equals("001000"))
+                {
+                    letter = 'H';
+                }
+                else if (code.Equals("001001"))
+                {
+                    letter = 'I';
+                }
+                else if (code.Equals("001010"))
+                {
+                    letter = 'J';
+                }
+                else if (code.Equals("001011"))
+                {
+                    letter = 'K';
+                }
+                else if (code.Equals("001100"))
+                {
+                    letter = 'L';
+                }
+                else if (code.Equals("001101"))
+                {
+                    letter = 'M';
+                }
+                else if (code.Equals("001110"))
+                {
+                    letter = 'N';
+                }
+                else if (code.Equals("001111"))
+                {
+                    letter = 'O';
+                }
+                else if (code.Equals("010000"))
+                {
+                    letter = 'P';
+                }
+                else if (code.Equals("010001"))
+                {
+                    letter = 'Q';
+                }
+                else if (code.Equals("010010"))
+                {
+                    letter = 'R';
+                }
+                else if (code.Equals("010011"))
+                {
+                    letter = 'S';
+                }
+                else if (code.Equals("010100"))
+                {
+                    letter = 'T';
+                }
+                else if (code.Equals("010101"))
+                {
+                    letter = 'U';
+                }
+                else if (code.Equals("010110"))
+                {
+                    letter = 'V';
+                }
+                else if (code.Equals("010111"))
+                {
+                    letter = 'W';
+                }
+                else if (code.Equals("011000"))
+                {
+                    letter = 'X';
+                }
+                else if (code.Equals("011001"))
+                {
+                    letter = 'Y';
+                }
+                else if (code.Equals("011010"))
+                {
+                    letter = 'Z';
+                }
+                else if (code.Equals("100000"))
+                {
+                    letter = ' ';
+                }
+                else if (code.Equals("110000"))
+                {
+                    letter = '0';
+                }
+                else if (code.Equals("110001"))
+                {
+                    letter = '1';
+                }
+                else if (code.Equals("110010"))
+                {
+                    letter = '2';
+                }
+                else if (code.Equals("110011"))
+                {
+                    letter = '3';
+                }
+                else if (code.Equals("110100"))
+                {
+                    letter = '4';
+                }
+                else if (code.Equals("110101"))
+                {
+                    letter = '5';
+                }
+                else if (code.Equals("110110"))
+                {
+                    letter = '6';
+                }
+                else if (code.Equals("110111"))
+                {
+                    letter = '7';
+                }
+                else if (code.Equals("111000"))
+                {
+                    letter = '8';
+                }
+                else if (code.Equals("111001"))
+                {
+                    letter = '9';
+                }
+            }
 
+            return letter;
+        }
     }
 }
 

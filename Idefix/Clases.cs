@@ -171,16 +171,34 @@ namespace Idefix
         public int SAC;
         public int SIC;
         public TimeSpan TimeofDay;
-        public string TargetReportDescriptor;
+        public string[] TargetReportDescriptor;
         public string TargetAddress;
-        public string FigureOfMerit;
+        public string[] FigureOfMerit;
         public string VelocityAccuracy;
         public double[] PositionWGS84; //LAT i LON
         public string FlightLevel;
-        public string GeometricalVerticalRate;
-        public string AirboneGroundVector; //GroundSpeed&TrackAngle
+        public double GeometricalVerticalRate;
+        public double[] AirboneGroundVector; //GroundSpeed&TrackAngle
         public string TargetId;
         public string LinkTechnologyIndicator;
+
+        public CAT21(int SAC, int SIC, TimeSpan TimeofDay, string[] TargetReportDescriptor, string TargetAddress, string FigureOfMerit, string VelocityAccuracy, double[] PositionWGS84, string FlightLevel, double GeometricalVerticalRate, double[] AirboneGroundVector, string TargetId, string LinkTechnologyIndicator)
+        {
+            this.SAC = SAC;
+            this.SIC = SIC;
+            this.TimeofDay = TimeofDay;
+            this.TargetReportDescriptor = TargetReportDescriptor;
+            this.TargetAddress = TargetAddress;
+            this.FigureOfMerit = FigureOfMerit;
+            this.VelocityAccuracy = VelocityAccuracy;
+            this.PositionWGS84 = PositionWGS84; //LAT i LON
+            this.FlightLevel = FlightLevel;
+            this.GeometricalVerticalRate = GeometricalVerticalRate;
+            this.AirboneGroundVector= AirboneGroundVector; //GroundSpeed&TrackAngle
+            this.TargetId = TargetId;
+            this.LinkTechnologyIndicator = LinkTechnologyIndicator;
+    }
+
     }
 
     public class Flight

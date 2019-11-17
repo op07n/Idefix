@@ -401,6 +401,9 @@ namespace Idefix
 
         private void button3_Click(object sender, EventArgs e)
         {
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            radioButton3.Visible = false;
             label2.Visible = true;
             label2.BackColor = default(Color);
             label2.Text = "Choose a map";
@@ -500,16 +503,26 @@ namespace Idefix
                 label4.Text = horaSim; // runs on UI thread
                 int x = 0;
                 bool ended = false;
-                while(x < flightList.Count || !ended)
+
+                int constAdjustX = 0;
+                int constAdjustY = 0;
+                while(x < flightList.Count && !ended)
                 {
                     //myCanvas.FillEllipse(Brushes.Blue, (pictureBox2.Width / 2), (pictureBox2.Height / 2), 5, 5);
                     if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
-                    { 
+                    {
+
+                        double x_original = ((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
+                        double y_original = ((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2) + constAdjustY);
+                        double o_x = 0;
+                        double o_y = 0;
+
+                        double rotation_angle = 0;
                         myCanvas.FillEllipse(Brushes.Red, 
-                            (float)((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2)),
-                            (float)((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2)), 
-                            5, 
-                            5);
+                            (float)((x_original-o_x) * Math.Cos(rotation_angle) - (y_original-o_y) * Math.Sin(rotation_angle) + o_x),
+                            (float)((y_original-o_y) * Math.Cos(rotation_angle) + (x_original-o_x) * Math.Sin(rotation_angle) + o_y), 
+                            4, 
+                            4);
                     }
                     else if ((int)flightList[x].TimeofDay.TotalSeconds > Convert.ToInt32(simTime))
                     {
@@ -554,6 +567,13 @@ namespace Idefix
             dataGridView1.Refresh();
             firsttimebutton2 = 1;
             button2_Click(sender, e);
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            MouseEventArgs me = (MouseEventArgs)e;
+            Point coordinates = me.Location;
+            MessageBox.Show("X: " + coordinates.X + " Y: " + coordinates.Y);
         }
     }
 }

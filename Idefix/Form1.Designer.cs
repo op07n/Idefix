@@ -172,7 +172,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(177, 46);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.dataGridView1.Size = new System.Drawing.Size(650, 616);
+            this.dataGridView1.Size = new System.Drawing.Size(783, 616);
             this.dataGridView1.TabIndex = 12;
             this.dataGridView1.Visible = false;
             // 
@@ -236,7 +236,7 @@
             // 
             this.pictureBox7.BackgroundImage = global::Idefix.Properties.Resources.down_arrow;
             this.pictureBox7.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox7.Location = new System.Drawing.Point(848, 613);
+            this.pictureBox7.Location = new System.Drawing.Point(997, 612);
             this.pictureBox7.Name = "pictureBox7";
             this.pictureBox7.Size = new System.Drawing.Size(40, 40);
             this.pictureBox7.TabIndex = 26;
@@ -248,7 +248,7 @@
             // 
             this.pictureBox6.BackgroundImage = global::Idefix.Properties.Resources.up_arrow;
             this.pictureBox6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox6.Location = new System.Drawing.Point(848, 554);
+            this.pictureBox6.Location = new System.Drawing.Point(997, 553);
             this.pictureBox6.Name = "pictureBox6";
             this.pictureBox6.Size = new System.Drawing.Size(40, 40);
             this.pictureBox6.TabIndex = 25;
@@ -306,7 +306,7 @@
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox2.Location = new System.Drawing.Point(177, 46);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(650, 616);
+            this.pictureBox2.Size = new System.Drawing.Size(650, 650);
             this.pictureBox2.TabIndex = 0;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Visible = false;
@@ -315,7 +315,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(848, 597);
+            this.label6.Location = new System.Drawing.Point(997, 596);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(24, 13);
             this.label6.TabIndex = 27;

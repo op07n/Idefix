@@ -47,6 +47,25 @@ namespace Idefix
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            button5.Visible = false;
+            button6.Visible = false;
+            button7.Visible = false;
+            label4.Visible = false;
+            pictureBox3.Visible = false;
+            pictureBox4.Visible = false;
+            pictureBox5.Visible = false;
+            label5.Visible = false;
+            pictureBox2.Visible = false;
+
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            radioButton3.Visible = false;
+            dataGridView1.Visible = false;
+
+            label2.Visible = true;
+            button2.Enabled = false;
+            button3.Enabled = false;
+
             label2.Text = "To start, please click the 'Read file' button on the left to select ASTERIX files to be read.\n" +
                 "You can select more than one file simultaneously and read various files at the same time.\n" +
                 "You will then be able to show the files' data on a table or on a map by using the controls on the left.\n\n";
@@ -64,20 +83,29 @@ namespace Idefix
                 }
             }
 
-            button2.Enabled = false;
-            button3.Enabled = false;
-            button5.Visible = false;
-            button6.Visible = false;
-            button7.Visible = false;
-            radioButton1.Visible = false;
-            radioButton2.Visible = false;
-            radioButton3.Visible = false;
             firsttimebutton2 = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            button5.Visible = false;
+            button6.Visible = false;
+            button7.Visible = false;
+            label4.Visible = false;
+            pictureBox3.Visible = false;
+            pictureBox4.Visible = false;
+            pictureBox5.Visible = false;
+            label5.Visible = false;
+            pictureBox2.Visible = false;
 
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            radioButton3.Visible = false;
+            dataGridView1.Visible = false;
+
+            label2.Visible = true;
+
+            label2.BackColor = default(Color);
             label2.Text = "";
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "ASTERIX files (*.ast)|*.ast";
@@ -98,15 +126,12 @@ namespace Idefix
                         }
                         if (fichero.GetMsgsCat20().Count != 0)
                         {
-                            this.msgsCat20 = this.msgsCat20.Union(fichero.GetMsgsCat20()).ToList();
+                            this.msgsCat20 = fichero.GetMsgsCat20();
+                            this.CAT1920 = fichero.GetCAT1920();
                         }
                         if (fichero.GetMsgsCat21().Count != 0)
                         {
                             this.msgsCat21 = this.msgsCat21.Union(fichero.GetMsgsCat21()).ToList();
-                        }
-                        if (fichero.GetCAT1920().Count != 0)
-                        {
-                            this.CAT1920 = this.CAT1920.Union(fichero.GetCAT1920()).ToList();
                         }
                         readFiles.Add(file);
                     }
@@ -117,6 +142,9 @@ namespace Idefix
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
                 this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
+                this.objCat10 = this.objCat10.OrderBy(o => o.TimeofDay).ToList();
+                this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
+
                 this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
                 label4.Text = this.flightList[0].TimeofDay.ToString();
@@ -135,42 +163,21 @@ namespace Idefix
                     cnt++;
                 }
 
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-                label2.Visible = true;
-                dataGridView1.Visible = false;
-                pictureBox2.Visible = false;
                 label2.Text = "";
                 foreach (String file in openFileDialog1.FileNames)
                 {
-                    label2.Text += "Successfully read file " + openFileDialog1.FileName.Split('\\').Last() + "! Use the buttons on the left to access file data.\n";
+                    label2.Text += "Successfully read file " + file.Split('\\').Last() + "! Use the buttons on the left to access file data.\n";
                 }
 
-                if (readFiles.Count == 0)
+                label2.Text += "\nFiles read until now:\n";
+                foreach (string file in readFiles)
                 {
-                    label2.Text += "\nFiles read until now: 0";
-                }
-                else
-                {
-                    foreach (string file in readFiles)
-                    {
-                        label2.Text += "\nFiles read until now:\n";
-                        label2.Text += file.Split('\\').Last();
-                    }
+                    label2.Text += file.Split('\\').Last() + "\n";
                 }
 
                 label2.BackColor = System.Drawing.Color.LightGreen;
                 button2.Enabled = true;
                 button3.Enabled = true;
-                button5.Visible = false;
-                button6.Visible = false;
-                button7.Visible = false;
-                label4.Visible = false;
-                pictureBox3.Visible = false;
-                pictureBox4.Visible = false;
-                pictureBox5.Visible = false;
-                label5.Visible = false;
             }
         }
 

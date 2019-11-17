@@ -22,6 +22,10 @@ namespace Idefix
         //public List<CAT19> objCat19 = new List<CAT19>();
         public List<CAT20> objCat20 = new List<CAT20>();
         public List<CAT21> objCat21 = new List<CAT21>();
+        public List<CAT10> objCat10disorder = new List<CAT10>();
+        //public List<CAT19> objCat19disorder = new List<CAT19>();
+        public List<CAT20> objCat20disorder = new List<CAT20>();
+        public List<CAT21> objCat21disorder = new List<CAT21>();
         public List<Flight> flightList = new List<Flight>();
         public List<string> readFiles = new List<string>();
 
@@ -72,6 +76,7 @@ namespace Idefix
             label6.Visible = false;
 
             label2.Visible = true;
+            button8.Enabled = false;
             button2.Enabled = false;
             button3.Enabled = false;
 
@@ -153,24 +158,28 @@ namespace Idefix
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
                 this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
                 this.objCat21 = funcs.ReadCat21(msgsCat21, fspecsCat21);
+                this.objCat10disorder = this.objCat10;
                 this.objCat10 = this.objCat10.OrderBy(o => o.TimeofDay).ToList();
                 this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
                 this.objCat21 = this.objCat21.OrderBy(o => o.TimeofDay).ToList();
 
-                this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
+                this.flightList = funcs.DistributeFlights(objCat10disorder, null, null);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
                 label4.Text = this.flightList[0].TimeofDay.ToString();
 
                 int cnt = 0;
                 while (cnt < this.flightList.Count)
                 {
-                    if (Math.Abs(this.flightList[cnt].CartesianPosition[0]) > flightsXmax)
+                    if (this.flightList[cnt].ID.Equals("7"))
                     {
-                        flightsXmax = Math.Abs(this.flightList[cnt].CartesianPosition[0]);
-                    }
-                    if (Math.Abs(this.flightList[cnt].CartesianPosition[1]) > flightsYmax)
-                    {
-                        flightsYmax = Math.Abs(this.flightList[cnt].CartesianPosition[1]);
+                        if (Math.Abs(this.flightList[cnt].CartesianPosition[0]) > flightsXmax)
+                        {
+                            flightsXmax = Math.Abs(this.flightList[cnt].CartesianPosition[0]);
+                        }
+                        if (Math.Abs(this.flightList[cnt].CartesianPosition[1]) > flightsYmax)
+                        {
+                            flightsYmax = Math.Abs(this.flightList[cnt].CartesianPosition[1]);
+                        }
                     }
                     cnt++;
                 }
@@ -188,6 +197,7 @@ namespace Idefix
                 }
 
                 label2.BackColor = System.Drawing.Color.LightGreen;
+                button8.Enabled = true;
                 button2.Enabled = true;
                 button3.Enabled = true;
             }
@@ -369,6 +379,8 @@ namespace Idefix
                         else if (pos.Equals(7) && a.PositionWGS84.Length > 0) { MessageBox.Show(" Latitude = " + a.PositionWGS84[0].ToString() + "\n Longitude = " + a.PositionWGS84[1].ToString(), "POSITION IN WGS84 INFORMATION"); }
                         else if (pos.Equals(10) && a.AirboneGroundVector.Length > 0) { MessageBox.Show("Ground Speed = " + a.AirboneGroundVector[0].ToString() + "\n Track Angle = " + a.AirboneGroundVector[1].ToString(), "AIRBORNE GROUND VECTOR INFORMATION"); }
                         else if (pos.Equals(12) && a.LinkTechnologyIndicator.Length > 0) { MessageBox.Show("DTI = " + a.LinkTechnologyIndicator[0] + "\n MDS = " + a.LinkTechnologyIndicator[1] + "\n UAT = " + a.LinkTechnologyIndicator[2] + "\n VDL = " + a.LinkTechnologyIndicator[3] + "\n OTR = " + a.LinkTechnologyIndicator[4], "LINK TECHNOLOGY INFORMATION INFORMATION"); }
+
+
                         else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
                     }
                 }
@@ -568,6 +580,9 @@ namespace Idefix
             radioButton1.Visible = false;
             radioButton2.Visible = false;
             radioButton3.Visible = false;
+            pictureBox6.Visible = false;
+            pictureBox7.Visible = false;
+            label6.Visible = false;
             label2.Visible = true;
             label2.BackColor = default(Color);
             label2.Text = "Choose a map";
@@ -575,10 +590,11 @@ namespace Idefix
             pictureBox2.Visible = true;
             button5.Visible = true;
             button5.BackColor = default(Color);
+            /*
             button6.Visible = true;
             button6.BackColor = default(Color);
             button7.Visible = true;
-            button7.BackColor = default(Color);
+            button7.BackColor = default(Color);*/
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -591,19 +607,21 @@ namespace Idefix
             label2.Visible = false;
             pictureBox2.Visible = true;
             button5.Visible = true;
+            /*
             button5.BackColor = Color.SteelBlue;
             button6.Visible = true;
             button6.BackColor = default(Color);
             button7.Visible = true;
             button7.BackColor = default(Color);
-            string[] mapasAeropuerto = new string[1] { "Aeropuerto_Barcelonanue.map" };
-            myCanvas = pictureBox2.CreateGraphics();
-            pintarMapaLEBL();
+            */
             label4.Visible = true;
             pictureBox3.Visible = true;
             pictureBox4.Visible = true;
             pictureBox5.Visible = true;
             label5.Visible = true;
+            string[] mapasAeropuerto = new string[1] { "Aeropuerto_Barcelonanue.map" };
+            myCanvas = pictureBox2.CreateGraphics();
+            pintarMapaLEBL();
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -670,31 +688,34 @@ namespace Idefix
                 int x = 0;
                 bool ended = false;
 
-                int constAdjustX = 0;
-                int constAdjustY = 0;
+                int constAdjustX = 454-280;
+                int constAdjustY = 126-102;
                 while(x < flightList.Count && !ended)
                 {
-                    //myCanvas.FillEllipse(Brushes.Blue, (pictureBox2.Width / 2), (pictureBox2.Height / 2), 5, 5);
-                    if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
+                    // We take only SMR
+                    if (flightList[x].ID.Equals("7"))
                     {
+                        //myCanvas.FillEllipse(Brushes.Blue, (pictureBox2.Width / 2), (pictureBox2.Height / 2), 5, 5);
+                        if ((int)flightList[x].TimeofDay.TotalSeconds == Convert.ToInt32(simTime))
+                        {
 
-                        double x_original = ((pictureBox2.Width / 2) - (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
-                        double y_original = ((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2) + constAdjustY);
-                        double o_x = 0;
-                        double o_y = 0;
+                            double x_original = ((pictureBox2.Width / 2) + (flightList[x].CartesianPosition[0] / flightsXmax) * (pictureBox2.Width / 2) + constAdjustX);
+                            double y_original = ((pictureBox2.Height / 2) - (flightList[x].CartesianPosition[1] / flightsYmax) * (pictureBox2.Height / 2) + constAdjustY);
+                            double o_x = 0;
+                            double o_y = 0;
 
-                        double rotation_angle = Math.PI/2;
-                        myCanvas.FillEllipse(Brushes.Red, 
-                            (float)((x_original-o_x) * Math.Cos(rotation_angle) - (y_original-o_y) * Math.Sin(rotation_angle) + o_x),
-                            (float)((y_original-o_y) * Math.Cos(rotation_angle) + (x_original-o_x) * Math.Sin(rotation_angle) + o_y), 
-                            4, 
-                            4);
+                            double rotation_angle = 0;
+                            myCanvas.FillEllipse(Brushes.Red,
+                                (float)((x_original - o_x) * Math.Cos(rotation_angle) - (y_original - o_y) * Math.Sin(rotation_angle) + o_x),
+                                (float)((y_original - o_y) * Math.Cos(rotation_angle) + (x_original - o_x) * Math.Sin(rotation_angle) + o_y),
+                                4,
+                                4);
+                        }
+                        else if ((int)flightList[x].TimeofDay.TotalSeconds > Convert.ToInt32(simTime))
+                        {
+                            ended = true;
+                        }
                     }
-                    else if ((int)flightList[x].TimeofDay.TotalSeconds > Convert.ToInt32(simTime))
-                    {
-                        ended = true;
-                    }
-                       
                     x++;
                 }
             });
@@ -763,6 +784,26 @@ namespace Idefix
             else if (this.whereIAm == 1020)
                 this.theActualPageCat1020 += 1;
             button2_Click(null, null);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            label2.BackColor = default(Color);
+            this.msgsCat10.Clear();
+            this.msgsCat19.Clear();
+            this.msgsCat20.Clear();
+            this.msgsCat21.Clear();
+            this.fspecsCat10.Clear();
+            this.fspecsCat19.Clear();
+            this.fspecsCat20.Clear();
+            this.fspecsCat21.Clear();
+            this.CAT1920.Clear();
+            this.objCat10.Clear();
+            this.objCat20.Clear();
+            this.objCat21.Clear();
+            this.flightList.Clear();
+            this.readFiles.Clear();
+            this.Form1_Load(null, null);
         }
     }
 }

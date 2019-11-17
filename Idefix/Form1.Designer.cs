@@ -55,6 +55,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.button8 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
@@ -77,7 +78,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(31, 70);
+            this.button1.Location = new System.Drawing.Point(35, 70);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -97,7 +98,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(31, 99);
+            this.button2.Location = new System.Drawing.Point(35, 128);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 3;
@@ -107,7 +108,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(31, 128);
+            this.button3.Location = new System.Drawing.Point(35, 157);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 4;
@@ -117,7 +118,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(31, 157);
+            this.button4.Location = new System.Drawing.Point(35, 186);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 5;
@@ -295,7 +296,7 @@
             // pictureBox1
             // 
             this.pictureBox1.BackgroundImage = global::Idefix.Properties.Resources.idefix;
-            this.pictureBox1.Location = new System.Drawing.Point(31, 199);
+            this.pictureBox1.Location = new System.Drawing.Point(35, 228);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(83, 104);
             this.pictureBox1.TabIndex = 6;
@@ -303,10 +304,9 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox2.Location = new System.Drawing.Point(177, 46);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(650, 650);
+            this.pictureBox2.Size = new System.Drawing.Size(620, 620);
             this.pictureBox2.TabIndex = 0;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Visible = false;
@@ -321,12 +321,23 @@
             this.label6.TabIndex = 27;
             this.label6.Text = "0/0";
             // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(35, 99);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 28;
+            this.button8.Text = "Delete files";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // Idefix
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1064, 681);
+            this.Controls.Add(this.button8);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.pictureBox7);
             this.Controls.Add(this.pictureBox6);
@@ -398,6 +409,7 @@
         private System.Windows.Forms.PictureBox pictureBox6;
         private System.Windows.Forms.PictureBox pictureBox7;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button8;
     }
 }
 

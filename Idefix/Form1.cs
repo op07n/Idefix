@@ -146,6 +146,20 @@ namespace Idefix
                 {
                     label2.Text += "Successfully read file " + openFileDialog1.FileName.Split('\\').Last() + "! Use the buttons on the left to access file data.\n";
                 }
+
+                if (readFiles.Count == 0)
+                {
+                    label2.Text += "\nFiles read until now: 0";
+                }
+                else
+                {
+                    foreach (string file in readFiles)
+                    {
+                        label2.Text += "\nFiles read until now:\n";
+                        label2.Text += file.Split('\\').Last();
+                    }
+                }
+
                 label2.BackColor = System.Drawing.Color.LightGreen;
                 button2.Enabled = true;
                 button3.Enabled = true;

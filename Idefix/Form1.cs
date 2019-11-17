@@ -9,6 +9,7 @@ namespace Idefix
 {
     public partial class Idefix : Form
     {
+        public event System.Windows.Forms.DataGridViewCellEventHandler CellClick;
         public List<double[]> msgsCat10 = new List<double[]>();
         public List<double[]> msgsCat19 = new List<double[]>();
         public List<double[]> msgsCat20 = new List<double[]>();
@@ -34,7 +35,7 @@ namespace Idefix
         public double flightsXmax = 0;
         public double flightsYmax = 0;
 
-        public int firsttimebutton2 = 0;
+        public bool firsttimebutton2;
         public int simSpeed = 1;
         public System.Timers.Timer myTimer = new System.Timers.Timer();
         public int simTime = 0;
@@ -42,6 +43,7 @@ namespace Idefix
         public Idefix()
         {
             InitializeComponent();
+            dataGridView1.CellClick += DataGridView1_CellClick;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -56,7 +58,7 @@ namespace Idefix
             radioButton1.Visible = false;
             radioButton2.Visible = false;
             radioButton3.Visible = false;
-            firsttimebutton2 = 0;
+            firsttimebutton2 = true;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -135,11 +137,13 @@ namespace Idefix
             radioButton2.Text = "CAT20";
             radioButton3.Text = "CAT10 & CAT 20";
             radioButton3.Enabled = false;//under construction
-            if (firsttimebutton2 == 0) { radioButton1.Checked = true; }
+            if (objCat10.Count != 0 && firsttimebutton2) { radioButton1.Checked = true; }
+            else if(objCat20.Count != 0 && firsttimebutton2) { radioButton2.Checked = true; }
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
             dataGridView1.RowHeadersVisible = false;
             dataGridView1.ColumnHeadersVisible = false;
             dataGridView1.ReadOnly = true;
+            firsttimebutton2 = false;
 
             if (radioButton1.Checked)
             {
@@ -147,7 +151,7 @@ namespace Idefix
                 string[] tits = new string[44] { "SIC", "SAC", "Message Type", "Time of Day", "TYP", "DCR", "CHN", "GBS", "CRT", "SIM", "TST", "RAB", "LOP", "TOT", "SIP", "rho", "theta", "x", "y", "ground speed", "track angle", "vx", "vy", "Track Number", "CNF", "TRT", "CST", "MAH", "TCC", "STH", "TOM", "DOU", "MRS", "GHO", "Length", "Orientation", "Width", "NOGO", "OVL", "TSV", "DIV", "TTF", "ax", "ay" };
                 dataGridView1.Rows.Add(tits);
 
-                foreach (CAT10 a in objCat10.Take(50))
+                foreach (CAT10 a in objCat10.Take(1000))
                 {
                     string[] vs = new string[44] { a.SIC.ToString(), a.SAC.ToString(), a.MessageType, a.TimeofDay.ToString(), a.TargetReportDescriptor[0], a.TargetReportDescriptor[1], a.TargetReportDescriptor[2], a.TargetReportDescriptor[3], a.TargetReportDescriptor[4], a.TargetReportDescriptor[5], a.TargetReportDescriptor[6], a.TargetReportDescriptor[7], a.TargetReportDescriptor[8], a.TargetReportDescriptor[9], a.TargetReportDescriptor[10], a.PolarPosition[0].ToString(), a.PolarPosition[1].ToString(), a.CartesianPosition[0].ToString(), a.CartesianPosition[1].ToString(), a.PolarTrackVelocity[0].ToString(), a.PolarTrackVelocity[1].ToString(), a.CartesianTrackVelocity[0].ToString(), a.CartesianTrackVelocity[1].ToString(), a.TrackNumber.ToString(), a.TrackStatus[0], a.TrackStatus[1], a.TrackStatus[2], a.TrackStatus[3], a.TrackStatus[4], a.TrackStatus[5], a.TrackStatus[6], a.TrackStatus[7], a.TrackStatus[8], a.TrackStatus[9], a.TargetSizeAndOrientation[0].ToString(), a.TargetSizeAndOrientation[1].ToString(), a.TargetSizeAndOrientation[2].ToString(), a.SystemStatus[0], a.SystemStatus[1], a.SystemStatus[2], a.SystemStatus[3], a.SystemStatus[4], a.CalculatedAcceleration[0].ToString(), a.CalculatedAcceleration[1].ToString() };
                     dataGridView1.Rows.Add(vs);
@@ -157,11 +161,11 @@ namespace Idefix
 
             if (radioButton2.Checked)
             {
-                dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
+                dataGridView1.ColumnCount = 23;//numero de paràmetres que vull mostrar
                 string[] tits = new string[23] {"CAT", "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
                 dataGridView1.Rows.Add(tits);
 
-                foreach (CAT20 a in objCat20.Take(50))
+                foreach (CAT20 a in objCat20.Take(100))
                 {
                     string[] vs;
                     if (a.CAT.Equals("20"))
@@ -174,15 +178,7 @@ namespace Idefix
                     }
                     dataGridView1.Rows.Add(vs);
                 }
-                DataGridViewButtonColumn TRD = new DataGridViewButtonColumn();
-                TRD.HeaderText = "";
-                TRD.Name = "Target Report Descriptor";
-                TRD.Text = "More Information";
-                TRD.UseColumnTextForButtonValue = true;
-                dataGridView1.Columns.Add(TRD);
-                dataGridView1.CellClick += new DataGridViewCellEventHandler(dataGridView1_CellClick);
             }
-
 
             DataGridViewCellStyle style = new DataGridViewCellStyle();
             style.BackColor = Color.CadetBlue;
@@ -191,6 +187,10 @@ namespace Idefix
             dataGridView1.Name = "CAT 10 info";
             dataGridView1.AutoResizeColumnHeadersHeight();
             dataGridView1.CurrentRow.Selected = false;
+            foreach (DataGridViewColumn item in dataGridView1.Columns)
+            {
+                item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
             /*
             var bindingList = new BindingList<CAT10>(objCat10);
             dataGridView1.DataSource = typeof(List<>);
@@ -199,15 +199,15 @@ namespace Idefix
             dataGridView1.Refresh();*/
         }
 
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int error = dataGridView1.CurrentCell.ColumnIndex;
             if (radioButton2.Checked)
             {
-                if (dataGridView1.CurrentCell.ColumnIndex.Equals(2) && e.RowIndex != -1)
+                if (dataGridView1.CurrentCell.ColumnIndex.Equals(5) && e.RowIndex > 0 && objCat20[e.RowIndex-1].CAT.Equals("20"))
                 {
                     if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
-                        MessageBox.Show("SSR = " + objCat20[e.RowIndex].TargetReportDescriptor[0] + "\n MS =" + objCat20[e.RowIndex].TargetReportDescriptor[1]);
+                        MessageBox.Show("SSR = " + objCat20[e.RowIndex-1].TargetReportDescriptor[0] + "\n MS =" + objCat20[e.RowIndex-1].TargetReportDescriptor[1], "TARGET REPORT DESCRIPTOR INFORMATION");
                 }
             }
         }
@@ -558,14 +558,12 @@ namespace Idefix
         {
             dataGridView1.Rows.Clear();
             dataGridView1.Refresh();
-            firsttimebutton2 = 1;
             button2_Click(sender,e);
         }
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             dataGridView1.Rows.Clear();
             dataGridView1.Refresh();
-            firsttimebutton2 = 1;
             button2_Click(sender, e);
         }
 

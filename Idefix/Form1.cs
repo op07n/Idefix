@@ -9,7 +9,6 @@ namespace Idefix
 {
     public partial class Idefix : Form
     {
-        public event System.Windows.Forms.DataGridViewCellEventHandler CellClick;
         public List<double[]> msgsCat10 = new List<double[]>();
         public List<double[]> msgsCat19 = new List<double[]>();
         public List<double[]> msgsCat20 = new List<double[]>();
@@ -36,7 +35,7 @@ namespace Idefix
         public double flightsXmax = 0;
         public double flightsYmax = 0;
 
-        public bool firsttimebutton2;
+        public int firsttimebutton2 = 0;
         public int simSpeed = 1;
         public System.Timers.Timer myTimer = new System.Timers.Timer();
         public int simTime = 0;
@@ -44,11 +43,29 @@ namespace Idefix
         public Idefix()
         {
             InitializeComponent();
-            dataGridView1.CellClick += DataGridView1_CellClick;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            button5.Visible = false;
+            button6.Visible = false;
+            button7.Visible = false;
+            label4.Visible = false;
+            pictureBox3.Visible = false;
+            pictureBox4.Visible = false;
+            pictureBox5.Visible = false;
+            label5.Visible = false;
+            pictureBox2.Visible = false;
+
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            radioButton3.Visible = false;
+            dataGridView1.Visible = false;
+
+            label2.Visible = true;
+            button2.Enabled = false;
+            button3.Enabled = false;
+
             label2.Text = "To start, please click the 'Read file' button on the left to select ASTERIX files to be read.\n" +
                 "You can select more than one file simultaneously and read various files at the same time.\n" +
                 "You will then be able to show the files' data on a table or on a map by using the controls on the left.\n\n";
@@ -66,20 +83,29 @@ namespace Idefix
                 }
             }
 
-            button2.Enabled = false;
-            button3.Enabled = false;
-            button5.Visible = false;
-            button6.Visible = false;
-            button7.Visible = false;
-            radioButton1.Visible = false;
-            radioButton2.Visible = false;
-            radioButton3.Visible = false;
-            firsttimebutton2 = true;
+            firsttimebutton2 = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            button5.Visible = false;
+            button6.Visible = false;
+            button7.Visible = false;
+            label4.Visible = false;
+            pictureBox3.Visible = false;
+            pictureBox4.Visible = false;
+            pictureBox5.Visible = false;
+            label5.Visible = false;
+            pictureBox2.Visible = false;
 
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            radioButton3.Visible = false;
+            dataGridView1.Visible = false;
+
+            label2.Visible = true;
+
+            label2.BackColor = default(Color);
             label2.Text = "";
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "ASTERIX files (*.ast)|*.ast";
@@ -100,15 +126,12 @@ namespace Idefix
                         }
                         if (fichero.GetMsgsCat20().Count != 0)
                         {
-                            this.msgsCat20 = this.msgsCat20.Union(fichero.GetMsgsCat20()).ToList();
+                            this.msgsCat20 = fichero.GetMsgsCat20();
+                            this.CAT1920 = fichero.GetCAT1920();
                         }
                         if (fichero.GetMsgsCat21().Count != 0)
                         {
                             this.msgsCat21 = this.msgsCat21.Union(fichero.GetMsgsCat21()).ToList();
-                        }
-                        if (fichero.GetCAT1920().Count != 0)
-                        {
-                            this.CAT1920 = this.CAT1920.Union(fichero.GetCAT1920()).ToList();
                         }
                         readFiles.Add(file);
                     }
@@ -119,6 +142,9 @@ namespace Idefix
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
                 this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
+                this.objCat10 = this.objCat10.OrderBy(o => o.TimeofDay).ToList();
+                this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
+
                 this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
                 label4.Text = this.flightList[0].TimeofDay.ToString();
@@ -137,42 +163,21 @@ namespace Idefix
                     cnt++;
                 }
 
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-                label2.Visible = true;
-                dataGridView1.Visible = false;
-                pictureBox2.Visible = false;
                 label2.Text = "";
                 foreach (String file in openFileDialog1.FileNames)
                 {
-                    label2.Text += "Successfully read file " + openFileDialog1.FileName.Split('\\').Last() + "! Use the buttons on the left to access file data.\n";
+                    label2.Text += "Successfully read file " + file.Split('\\').Last() + "! Use the buttons on the left to access file data.\n";
                 }
 
-                if (readFiles.Count == 0)
+                label2.Text += "\nFiles read until now:\n";
+                foreach (string file in readFiles)
                 {
-                    label2.Text += "\nFiles read until now: 0";
-                }
-                else
-                {
-                    foreach (string file in readFiles)
-                    {
-                        label2.Text += "\nFiles read until now:\n";
-                        label2.Text += file.Split('\\').Last();
-                    }
+                    label2.Text += file.Split('\\').Last() + "\n";
                 }
 
                 label2.BackColor = System.Drawing.Color.LightGreen;
                 button2.Enabled = true;
                 button3.Enabled = true;
-                button5.Visible = false;
-                button6.Visible = false;
-                button7.Visible = false;
-                label4.Visible = false;
-                pictureBox3.Visible = false;
-                pictureBox4.Visible = false;
-                pictureBox5.Visible = false;
-                label5.Visible = false;
             }
         }
 
@@ -196,13 +201,11 @@ namespace Idefix
             radioButton2.Text = "CAT20";
             radioButton3.Text = "CAT10 & CAT 20";
             radioButton3.Enabled = false;//under construction
-            if (objCat10.Count != 0 && firsttimebutton2) { radioButton1.Checked = true; }
-            else if(objCat20.Count != 0 && firsttimebutton2) { radioButton2.Checked = true; }
+            if (firsttimebutton2 == 0) { radioButton1.Checked = true; }
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
             dataGridView1.RowHeadersVisible = false;
             dataGridView1.ColumnHeadersVisible = false;
             dataGridView1.ReadOnly = true;
-            firsttimebutton2 = false;
 
             if (radioButton1.Checked)
             {
@@ -210,7 +213,7 @@ namespace Idefix
                 string[] tits = new string[44] { "SIC", "SAC", "Message Type", "Time of Day", "TYP", "DCR", "CHN", "GBS", "CRT", "SIM", "TST", "RAB", "LOP", "TOT", "SIP", "rho", "theta", "x", "y", "ground speed", "track angle", "vx", "vy", "Track Number", "CNF", "TRT", "CST", "MAH", "TCC", "STH", "TOM", "DOU", "MRS", "GHO", "Length", "Orientation", "Width", "NOGO", "OVL", "TSV", "DIV", "TTF", "ax", "ay" };
                 dataGridView1.Rows.Add(tits);
 
-                foreach (CAT10 a in objCat10.Take(1000))
+                foreach (CAT10 a in objCat10.Take(50))
                 {
                     string[] vs = new string[44] { a.SIC.ToString(), a.SAC.ToString(), a.MessageType, a.TimeofDay.ToString(), a.TargetReportDescriptor[0], a.TargetReportDescriptor[1], a.TargetReportDescriptor[2], a.TargetReportDescriptor[3], a.TargetReportDescriptor[4], a.TargetReportDescriptor[5], a.TargetReportDescriptor[6], a.TargetReportDescriptor[7], a.TargetReportDescriptor[8], a.TargetReportDescriptor[9], a.TargetReportDescriptor[10], a.PolarPosition[0].ToString(), a.PolarPosition[1].ToString(), a.CartesianPosition[0].ToString(), a.CartesianPosition[1].ToString(), a.PolarTrackVelocity[0].ToString(), a.PolarTrackVelocity[1].ToString(), a.CartesianTrackVelocity[0].ToString(), a.CartesianTrackVelocity[1].ToString(), a.TrackNumber.ToString(), a.TrackStatus[0], a.TrackStatus[1], a.TrackStatus[2], a.TrackStatus[3], a.TrackStatus[4], a.TrackStatus[5], a.TrackStatus[6], a.TrackStatus[7], a.TrackStatus[8], a.TrackStatus[9], a.TargetSizeAndOrientation[0].ToString(), a.TargetSizeAndOrientation[1].ToString(), a.TargetSizeAndOrientation[2].ToString(), a.SystemStatus[0], a.SystemStatus[1], a.SystemStatus[2], a.SystemStatus[3], a.SystemStatus[4], a.CalculatedAcceleration[0].ToString(), a.CalculatedAcceleration[1].ToString() };
                     dataGridView1.Rows.Add(vs);
@@ -220,11 +223,11 @@ namespace Idefix
 
             if (radioButton2.Checked)
             {
-                dataGridView1.ColumnCount = 23;//numero de paràmetres que vull mostrar
+                dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
                 string[] tits = new string[23] {"CAT", "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
                 dataGridView1.Rows.Add(tits);
 
-                foreach (CAT20 a in objCat20.Take(100))
+                foreach (CAT20 a in objCat20.Take(50))
                 {
                     string[] vs;
                     if (a.CAT.Equals("20"))
@@ -237,7 +240,15 @@ namespace Idefix
                     }
                     dataGridView1.Rows.Add(vs);
                 }
+                DataGridViewButtonColumn TRD = new DataGridViewButtonColumn();
+                TRD.HeaderText = "";
+                TRD.Name = "Target Report Descriptor";
+                TRD.Text = "More Information";
+                TRD.UseColumnTextForButtonValue = true;
+                dataGridView1.Columns.Add(TRD);
+                dataGridView1.CellClick += new DataGridViewCellEventHandler(dataGridView1_CellClick);
             }
+
 
             DataGridViewCellStyle style = new DataGridViewCellStyle();
             style.BackColor = Color.CadetBlue;
@@ -252,7 +263,7 @@ namespace Idefix
             }
         }
 
-        private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
             {
@@ -616,12 +627,14 @@ namespace Idefix
         {
             dataGridView1.Rows.Clear();
             dataGridView1.Refresh();
+            firsttimebutton2 = 1;
             button2_Click(sender,e);
         }
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             dataGridView1.Rows.Clear();
             dataGridView1.Refresh();
+            firsttimebutton2 = 1;
             button2_Click(sender, e);
         }
 

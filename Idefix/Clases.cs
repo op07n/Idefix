@@ -182,7 +182,7 @@ namespace Idefix
         public string TargetId;
         public string LinkTechnologyIndicator;
 
-        public CAT21(int SAC, int SIC, TimeSpan TimeofDay, string[] TargetReportDescriptor, string TargetAddress, string FigureOfMerit, string VelocityAccuracy, double[] PositionWGS84, string FlightLevel, double GeometricalVerticalRate, double[] AirboneGroundVector, string TargetId, string LinkTechnologyIndicator)
+        public CAT21(int SAC, int SIC, TimeSpan TimeofDay, string[] TargetReportDescriptor, string TargetAddress, string[] FigureOfMerit, string VelocityAccuracy, double[] PositionWGS84, string FlightLevel, double GeometricalVerticalRate, double[] AirboneGroundVector, string TargetId, string LinkTechnologyIndicator)
         {
             this.SAC = SAC;
             this.SIC = SIC;

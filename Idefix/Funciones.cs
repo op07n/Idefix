@@ -126,7 +126,7 @@ namespace Idefix
             string ICAO_Address = string.Empty;
             TimeSpan TimeOfDay = TimeSpan.Zero;
             int TN = 0;
-            string[] TRD = Array.Empty<string>(); ; string[] TID = Array.Empty<string>(); string[] FL_T = Array.Empty<string>(); string[] FOM = Array.Empty<string>();
+            string[] TRD = Array.Empty<string>(); string[] TS = Array.Empty<string>(); string[] TID = Array.Empty<string>(); string[] FL_T = Array.Empty<string>(); string[] SS = Array.Empty<string>(); string[] Mode3A = Array.Empty<string>();
             double[] PP = new double[2] { 0, 0 }; double[] CP = new double[2] { 0, 0 }; double[] PTV = new double[2] { 0, 0 }; double[] CTV = new double[2] { 0, 0 }; double[] TSO = new double[3] { 0, 0, 0 }; double[] CA = new double[2] { 0, 0 };
 
             List<CAT10> listCAT10 = new List<CAT10>();

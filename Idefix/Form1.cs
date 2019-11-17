@@ -69,7 +69,6 @@ namespace Idefix
                 Funciones funcs = new Funciones();
                 Archivo fichero = funcs.LeerArchivo(openFileDialog1.FileName);
                 this.msgsCat10 = fichero.GetMsgsCat10();
-                this.msgsCat19 = fichero.GetMsgsCat19();
                 this.msgsCat20 = fichero.GetMsgsCat20();
                 this.msgsCat21 = fichero.GetMsgsCat21();
                 this.fspecsCat10 = funcs.GetFSPEC(this.msgsCat10);
@@ -77,7 +76,7 @@ namespace Idefix
                 this.fspecsCat20 = funcs.GetFSPEC(this.msgsCat20);
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
-                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20);
+                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, );
                 this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
                 label4.Text = this.flightList[0].TimeofDay.ToString();

@@ -93,23 +93,6 @@ namespace Idefix
          
     }
 
-    /*public class CAT19
-    {
-        public int SIC;
-        public int SAC;
-        public string MessageType;
-        public TimeSpan TimeOfDay;
-
-        public CAT19 (int SIC, int SAC, string MsgType, TimeSpan TimeofDay)
-        {
-            this.SIC = SIC;
-            this.SAC = SAC;
-            this.MessageType = MsgType;
-            this.TimeOfDay = TimeofDay;
-        }
-    }
-    */
-
     public class CAT20
     {
         public string CAT;
@@ -180,9 +163,9 @@ namespace Idefix
         public double GeometricalVerticalRate;
         public double[] AirboneGroundVector; //GroundSpeed&TrackAngle
         public string TargetId;
-        public string LinkTechnologyIndicator;
+        public string[] LinkTechnologyIndicator;
 
-        public CAT21(int SAC, int SIC, TimeSpan TimeofDay, string[] TargetReportDescriptor, string TargetAddress, string[] FigureOfMerit, string VelocityAccuracy, double[] PositionWGS84, string FlightLevel, double GeometricalVerticalRate, double[] AirboneGroundVector, string TargetId, string LinkTechnologyIndicator)
+        public CAT21(int SAC, int SIC, TimeSpan TimeofDay, string[] TargetReportDescriptor, string TargetAddress, string[] FigureOfMerit, string VelocityAccuracy, double[] PositionWGS84, string FlightLevel, double GeometricalVerticalRate, double[] AirboneGroundVector, string TargetId, string[] LinkTechnologyIndicator)
         {
             this.SAC = SAC;
             this.SIC = SIC;

@@ -1785,9 +1785,9 @@ namespace Idefix
                         }
                     }
 
-                    //CAT21 obj = new CAT21
+                    CAT21 obj = new CAT21(SAC, SIC, TimeOfDay, TRD, ICAO_Address, FOM, VA, WGS84, FL_T, GH, AGV, TID, LTI);
 
-                    //listCAT21.Add(obj);
+                    listCAT21.Add(obj);
                     a += 1;
                 }
             }

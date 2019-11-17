@@ -1427,7 +1427,7 @@ namespace Idefix
             n = Convert.ToInt32(input);
             int[] a = new int[8];
             string b = null;
-            if (input == 0)
+            if (input.Equals(0))
                 b = "00000000";
             else
             {
@@ -1438,7 +1438,7 @@ namespace Idefix
                 }
                 for (int i = 0; i <= 7; i++)
                 {
-                    b = b + Convert.ToString(a[i]);
+                    b += Convert.ToString(a[i]);
                 }
             }
             return b;

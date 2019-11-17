@@ -35,6 +35,10 @@ namespace Idefix
         {
             return this.MensajesCAT20;
         }
+        public int[] GetCAT1920()
+        {
+            return this.CAT1920;
+        }
         public List<double[]> GetMsgsCat21()
         {
             return this.MensajesCAT21;

@@ -17,6 +17,7 @@ namespace Idefix
         public List<string[]> fspecsCat19 = new List<string[]>();
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
+        public int[] CAT1920;
         public List<CAT10> objCat10 = new List<CAT10>();
         //public List<CAT19> objCat19 = new List<CAT19>();
         public List<CAT20> objCat20 = new List<CAT20>();
@@ -71,12 +72,13 @@ namespace Idefix
                 this.msgsCat10 = fichero.GetMsgsCat10();
                 this.msgsCat20 = fichero.GetMsgsCat20();
                 this.msgsCat21 = fichero.GetMsgsCat21();
+                this.CAT1920 = fichero.GetCAT1920();
                 this.fspecsCat10 = funcs.GetFSPEC(this.msgsCat10);
                 this.fspecsCat19 = funcs.GetFSPEC(this.msgsCat19);
                 this.fspecsCat20 = funcs.GetFSPEC(this.msgsCat20);
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
-                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, );
+                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
                 this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
                 label4.Text = this.flightList[0].TimeofDay.ToString();

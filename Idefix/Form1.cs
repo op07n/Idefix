@@ -250,25 +250,22 @@ namespace Idefix
             {
                 item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
-            /*
-            var bindingList = new BindingList<CAT10>(objCat10);
-            dataGridView1.DataSource = typeof(List<>);
-            dataGridView1.DataSource = bindingList;
-            dataGridView1.AutoResizeColumns();
-            dataGridView1.Refresh();*/
         }
 
         private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            int error = dataGridView1.CurrentCell.ColumnIndex;
-            if (radioButton2.Checked)
+            if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
             {
-                if (dataGridView1.CurrentCell.ColumnIndex.Equals(5) && e.RowIndex > 0 && objCat20[e.RowIndex-1].CAT.Equals("20"))
+                if (e.RowIndex > 0 && objCat20[e.RowIndex - 1].CAT.Equals("20"))
                 {
-                    if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
-                        MessageBox.Show("SSR = " + objCat20[e.RowIndex-1].TargetReportDescriptor[0] + "\n MS =" + objCat20[e.RowIndex-1].TargetReportDescriptor[1], "TARGET REPORT DESCRIPTOR INFORMATION");
+                    CAT20 a = objCat20[e.RowIndex - 1];
+                    int pos = dataGridView1.CurrentCell.ColumnIndex;
+                    if (pos.Equals(5)) { MessageBox.Show("SSR = " + a.TargetReportDescriptor[0] + "\n MS = " + a.TargetReportDescriptor[1] + "\n HF = " + a.TargetReportDescriptor[2] + "\n VDL4 = " + a.TargetReportDescriptor[3] + "\n UAT = " + a.TargetReportDescriptor[4] + "\n DME = " + a.TargetReportDescriptor[5] + "\n OT = " + a.TargetReportDescriptor[6] + "\n RAB = " + a.TargetReportDescriptor[7] + "\n SPI = " + a.TargetReportDescriptor[8] + "\n CHN = " + a.TargetReportDescriptor[9] + "\n GBS = " + a.TargetReportDescriptor[10] + "\n CRT = " + a.TargetReportDescriptor[11] + "\n SIM = " + a.TargetReportDescriptor[12] + "\n TST = " + a.TargetReportDescriptor[13], "TARGET REPORT DESCRIPTOR INFORMATION"); }
+                    else if (pos.Equals(6)) { MessageBox.Show("x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
+                    else if (pos.Equals(8)) { MessageBox.Show("CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n CDM = " + a.TrackStatus[3] + "\n MAH = " + a.TrackStatus[4] + "\n STA = " + a.TrackStatus[5] + "\n GHO = " + a.TrackStatus[6], "TRACK STATUS INFORMATION"); }
                 }
             }
+
         }
 
         public void pintarMapaLEBL()

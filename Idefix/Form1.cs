@@ -17,7 +17,7 @@ namespace Idefix
         public List<string[]> fspecsCat19 = new List<string[]>();
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
-        public int[] CAT1920;
+        public List<int> CAT1920;
         public List<CAT10> objCat10 = new List<CAT10>();
         //public List<CAT19> objCat19 = new List<CAT19>();
         public List<CAT20> objCat20 = new List<CAT20>();
@@ -163,9 +163,24 @@ namespace Idefix
 
                 foreach (CAT20 a in objCat20.Take(50))
                 {
-                    string[] vs = new string[23] {a.CAT ,a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), a.MessageType, "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
+                    string[] vs;
+                    if (a.CAT.Equals("20"))
+                    {
+                        vs = new string[23] { a.CAT, a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), "--", "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
+                    }
+                    else
+                    {
+                        vs = new string[23] { a.CAT, a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), a.MessageType, "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"};
+                    }
                     dataGridView1.Rows.Add(vs);
                 }
+                DataGridViewButtonColumn TRD = new DataGridViewButtonColumn();
+                TRD.HeaderText = "";
+                TRD.Name = "Target Report Descriptor";
+                TRD.Text = "More Information";
+                TRD.UseColumnTextForButtonValue = true;
+                dataGridView1.Columns.Add(TRD);
+                dataGridView1.CellClick += new DataGridViewCellEventHandler(dataGridView1_CellClick);
             }
 
 
@@ -186,8 +201,8 @@ namespace Idefix
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
-            if(radioButton2.Checked)
+            int error = dataGridView1.CurrentCell.ColumnIndex;
+            if (radioButton2.Checked)
             {
                 if (dataGridView1.CurrentCell.ColumnIndex.Equals(2) && e.RowIndex != -1)
                 {

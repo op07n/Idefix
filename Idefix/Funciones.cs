@@ -1506,8 +1506,12 @@ namespace Idefix
                         lat.Append(lat1);
                         lat.Append(lat2);
                         lat.Append(lat3);
+                        int latint = Convert.ToInt32(lat.ToString(), 2);
+                        double latdouble = Convert.ToDouble(latint);
+                        double LAT = (latdouble * 180) / 8388608;
 
-                        double LAT = Convert.ToDouble(Convert.ToInt32(lat.ToString(), 2)) * (180 / 2 ^ 23);
+
+                        //double LAT = Convert.ToDouble(Convert.ToInt32(lat.ToString(), 2)) * (180 / (2 ^ 23));
 
                         string lon1 = Convert2Binary(msgcat21[pos + 3]);
                         string lon2 = Convert2Binary(msgcat21[pos + 4]);
@@ -1524,7 +1528,9 @@ namespace Idefix
                         lon.Append(lon2);
                         lon.Append(lon3);
 
-                        double LON = Convert.ToDouble(Convert.ToInt32(lon.ToString(), 2)) * (180 / 2 ^ 23);
+                        int lonint = Convert.ToInt32(lon.ToString(), 2);
+                        double londouble = Convert.ToDouble(lonint);
+                        double LON = (londouble * 180) / 8388608;
 
                         WGS84 = new double[2] { LAT, LON };
 
@@ -1554,7 +1560,7 @@ namespace Idefix
                         StringBuilder ac = new StringBuilder(fom1[0]);
                         ac.Append(fom1[1]);
                         string AC = string.Empty;
-                        if (ac.ToString().Equals("00")) { AC = "Unknown"; }
+                        if (ac.ToString().Equals("0")) { AC = "Unknown"; }
                         else if (ac.ToString().Equals("01")) { AC = "ACAS not operational"; }
                         else if (ac.ToString().Equals("10")) { AC = "ACAS operational"; }
                         else if (ac.ToString().Equals("11")) { AC = "Invalid"; }
@@ -1562,7 +1568,7 @@ namespace Idefix
                         StringBuilder mn = new StringBuilder(fom1[2]);
                         mn.Append(fom1[3]);
                         string MN = string.Empty;
-                        if (mn.ToString().Equals("00")) { MN = "Unknown"; }
+                        if (mn.ToString().Equals("0")) { MN = "Unknown"; }
                         else if (mn.ToString().Equals("01")) { MN = "Multiple navigational aids not operating"; }
                         else if (mn.ToString().Equals("10")) { MN = "Multiple navigational aids operating"; }
                         else if (mn.ToString().Equals("11")) { MN = "Invalid"; }
@@ -1570,7 +1576,7 @@ namespace Idefix
                         StringBuilder dc = new StringBuilder(fom1[2]);
                         dc.Append(fom1[3]);
                         string DC = string.Empty;
-                        if (dc.ToString().Equals("00")) { DC = "Unknown"; }
+                        if (dc.ToString().Equals("0")) { DC = "Unknown"; }
                         else if (dc.ToString().Equals("01")) { DC = "Differential correction"; }
                         else if (dc.ToString().Equals("10")) { DC = "No differential correction"; }
                         else if (dc.ToString().Equals("11")) { DC = "Invalid"; }
@@ -1631,7 +1637,7 @@ namespace Idefix
                             StringBuilder resp = new StringBuilder(fl);
                             resp.Append(fl_2);
 
-                            string FL1 = Convert2Binary(Convert.ToDouble(resp.ToString()));
+                            string FL1 = resp.ToString();
                             FL = Convert.ToInt32(FL1, 2);
                             FL /= 4;
 
@@ -1675,7 +1681,8 @@ namespace Idefix
                                 StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
                                 track_angle_BIN.Append(track_angle2);
                                 string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
-                                double track_angle = ((int)Convert.ToInt16(track_angle_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
+                                int ta_int = Convert.ToInt16(track_angle_BIN_TOTAL, 2);
+                                double track_angle =  ta_int * 360 / 65536; // in degrees
                                 AGV = new double[2] { ground_speed, track_angle };
 
                                 pos += 4;
@@ -1704,16 +1711,18 @@ namespace Idefix
                             {
 
                                 string byte1 = Convert2Binary(msgcat21[pos]);
-                                StringBuilder tid1 = new StringBuilder(byte1[0]);
+                                StringBuilder tid1 = new StringBuilder();
                                 tid1.Append(byte1[0]);
                                 tid1.Append(byte1[1]);
                                 tid1.Append(byte1[2]);
                                 tid1.Append(byte1[3]);
                                 tid1.Append(byte1[4]);
+                                tid1.Append(byte1[5]);
                                 char TID1 = ConvertToIA5(tid1);
 
                                 string byte2 = Convert2Binary(msgcat21[pos + 1]);
-                                StringBuilder tid2 = new StringBuilder(byte1[6]);
+                                StringBuilder tid2 = new StringBuilder();
+                                tid2.Append(byte1[6]);
                                 tid2.Append(byte1[7]);
                                 tid2.Append(byte2[0]);
                                 tid2.Append(byte2[1]);
@@ -1722,7 +1731,8 @@ namespace Idefix
                                 char TID2 = ConvertToIA5(tid2);
 
                                 string byte3 = Convert2Binary(msgcat21[pos + 2]);
-                                StringBuilder tid3 = new StringBuilder(byte2[4]);
+                                StringBuilder tid3 = new StringBuilder();
+                                tid3.Append(byte2[4]);
                                 tid3.Append(byte2[5]);
                                 tid3.Append(byte2[6]);
                                 tid3.Append(byte2[7]);
@@ -1730,7 +1740,8 @@ namespace Idefix
                                 tid3.Append(byte3[1]);
                                 char TID3 = ConvertToIA5(tid3);
 
-                                StringBuilder tid4 = new StringBuilder(byte3[2]);
+                                StringBuilder tid4 = new StringBuilder();
+                                tid4.Append(byte3[2]);
                                 tid4.Append(byte3[3]);
                                 tid4.Append(byte3[4]);
                                 tid4.Append(byte3[5]);
@@ -1739,7 +1750,8 @@ namespace Idefix
                                 char TID4 = ConvertToIA5(tid4);
 
                                 string byte4 = Convert2Binary(msgcat21[pos + 3]);
-                                StringBuilder tid5 = new StringBuilder(byte4[0]);
+                                StringBuilder tid5 = new StringBuilder();
+                                tid5.Append(byte4[0]);
                                 tid5.Append(byte4[1]);
                                 tid5.Append(byte4[2]);
                                 tid5.Append(byte4[3]);
@@ -1748,7 +1760,8 @@ namespace Idefix
                                 char TID5 = ConvertToIA5(tid5);
 
                                 string byte5 = Convert2Binary(msgcat21[pos + 4]);
-                                StringBuilder tid6 = new StringBuilder(byte4[6]);
+                                StringBuilder tid6 = new StringBuilder();
+                                tid6.Append(byte4[6]);
                                 tid6.Append(byte4[7]);
                                 tid6.Append(byte5[0]);
                                 tid6.Append(byte5[1]);
@@ -1757,7 +1770,8 @@ namespace Idefix
                                 char TID6 = ConvertToIA5(tid6);
 
                                 string byte6 = Convert2Binary(msgcat21[pos + 5]);
-                                StringBuilder tid7 = new StringBuilder(byte5[4]);
+                                StringBuilder tid7 = new StringBuilder();
+                                tid7.Append(byte5[4]);
                                 tid7.Append(byte5[5]);
                                 tid7.Append(byte5[6]);
                                 tid7.Append(byte5[7]);
@@ -1765,7 +1779,8 @@ namespace Idefix
                                 tid7.Append(byte6[1]);
                                 char TID7 = ConvertToIA5(tid7);
 
-                                StringBuilder tid8 = new StringBuilder(byte6[2]);
+                                StringBuilder tid8 = new StringBuilder();
+                                tid8.Append(byte6[2]);
                                 tid8.Append(byte6[3]);
                                 tid8.Append(byte6[4]);
                                 tid8.Append(byte6[5]);
@@ -1844,9 +1859,17 @@ namespace Idefix
         public string Convert2Binary(double input)
         {
             int n;
-            n = Convert.ToInt32(input);
             int[] a = new int[8];
             string b = null;
+            try
+            {
+                n = Convert.ToInt32(input);
+            }
+            catch (OverflowException)
+            {
+                b = input.ToString();
+                return b;
+            }
             if (input.Equals(0))
                 b = "00000000";
             else

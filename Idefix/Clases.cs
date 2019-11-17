@@ -9,21 +9,18 @@ namespace Idefix
     public class Archivo
     {
         public List<double[]> MensajesCAT10 = new List<double[]>();
-        public List<double[]> MensajesCAT19 = new List<double[]>();
         public List<double[]> MensajesCAT20 = new List<double[]>();
         public List<double[]> MensajesCAT21 = new List<double[]>();
+        public int[] CAT1920;
 
         public void SetMsgCat10(List<double> msgCat10)
         {
             this.MensajesCAT10.Add(msgCat10.ToArray());
         }
-        public void SetMsgCat19(List<double> msgCat19)
-        {
-            this.MensajesCAT19.Add(msgCat19.ToArray());
-        }
-        public void SetMsgCat20(List<double> msgCat20)
+        public void SetMsgCat20(List<double> msgCat20, int[] CAT1920)
         {
             this.MensajesCAT20.Add(msgCat20.ToArray());
+            this.CAT1920 = CAT1920;
         }
         public void SetMsgCat21(List<double> msgCat21)
         {
@@ -34,10 +31,6 @@ namespace Idefix
         {
             return this.MensajesCAT10;
         }
-        public List<double[]> GetMsgsCat19()
-        {
-            return this.MensajesCAT19;
-        }
         public List<double[]> GetMsgsCat20()
         {
             return this.MensajesCAT20;
@@ -47,6 +40,7 @@ namespace Idefix
             return this.MensajesCAT21;
         }
     }
+
     public class CAT10
     {
         // el SAC y el SIC son el DataSourceIdentifier
@@ -94,16 +88,36 @@ namespace Idefix
          }
          
     }
+
+    /*public class CAT19
+    {
+        public int SIC;
+        public int SAC;
+        public string MessageType;
+        public TimeSpan TimeOfDay;
+
+        public CAT19 (int SIC, int SAC, string MsgType, TimeSpan TimeofDay)
+        {
+            this.SIC = SIC;
+            this.SAC = SAC;
+            this.MessageType = MsgType;
+            this.TimeOfDay = TimeofDay;
+        }
+    }
+    */
+
     public class CAT20
     {
+        public string CAT;
         public int SAC;
         public int SIC;
         public string[] TargetReportDescriptor;
+        public string MessageType;
         public TimeSpan TimeofDay;
         public double[] CartesianPosition;
         public int TrackNumber;
-        public string TrackStatus;
-        public string Mode3A;
+        public string[] TrackStatus;
+        public string[] Mode3A;
         public double[] CartesianTrackVelocity;
         public string[] FlightLevel;
         public string[] modeC;
@@ -113,43 +127,41 @@ namespace Idefix
         public double GeometricHeight;
         public double[] CalculatedAcceleration;
         public string VehicleFleetId;
-        public string PreprogrammedMessage;
+        public string[] PreprogrammedMessage;
         public double[] DOPofPosition;
         public double[] StandardDeviationofPosition;
-        public double[] StandardDeviationofHeigh;
+        public double StandardDeviationofHeigh;
         public string[] ContributingDevices;
 
-<<<<<<< Updated upstream
-        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, string[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
-=======
-
-        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string TrackStatus,string Mode3A, double[] CartesianTrackVelocity, string[] FlightLevel, string[] modeC, string TargetAddress, string[] TargetID, double CartesianH, double GeometricH, double[] CalculatedAcceleration, string VehicleFleetId, string PreprogrammedMessage, double[] DOPofPosition, double[] StandardDeviationofPosition, double[] StandardDeviationofHeigh, string[] CD)
->>>>>>> Stashed changes
+        public CAT20(string CAT, int SIC, int SAC, String[] TargetReportDescriptor, string MsgType, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, string[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
         {
+            this.CAT = CAT;
+            this.SIC = SIC;
             this.SAC = SAC;
-            this.SIC=SIC;
             this.TargetReportDescriptor = TargetReportDescriptor;
+            this.MessageType = MsgType;
             this.TimeofDay = TimeofDay;
-            this.CartesianPosition =CartesianPosition;
+            this.CartesianPosition = CartesianPosition;
             this.TrackNumber = TrackNumber;
             this.TrackStatus = TrackStatus;
             this.Mode3A = Mode3A;
-            this.CartesianTrackVelocity = CartesianTrackVelocity;
+            this.CartesianTrackVelocity = CTV;
             this.FlightLevel = FlightLevel;
             this.modeC = modeC;
-            this.TargetAddress = TargetAddress;
+            this.TargetAddress = ICAO_Addr;
             this.TargetId = TargetID;
-            this.CartesianHeight = CartesianH;
-            this.GeometricHeight = GeometricH;
-            this.CalculatedAcceleration = CalculatedAcceleration;
-            this.VehicleFleetId = VehicleFleetId;
-            this.PreprogrammedMessage = PreprogrammedMessage;
-            this.DOPofPosition = DOPofPosition;
-            this.StandardDeviationofPosition = StandardDeviationofPosition;
-            this.StandardDeviationofHeigh = StandardDeviationofHeigh;
+            this.CartesianHeight = cartesianH;
+            this.GeometricHeight = geometricH;
+            this.CalculatedAcceleration = CalculatedAcc;
+            this.VehicleFleetId = VFId;
+            this.PreprogrammedMessage = PPM;
+            this.DOPofPosition = DOP;
+            this.StandardDeviationofPosition = SDEV;
+            this.StandardDeviationofHeigh = S_GH;
             this.ContributingDevices = CD;
         }
     }
+
     public class CAT21
     {
         public int SAC;
@@ -158,7 +170,7 @@ namespace Idefix
         public string TargetReportDescriptor;
         public string TargetAddress;
         public string FigureOfMerit;
-        public string VelocityAccurancy;
+        public string VelocityAccuracy;
         public double[] PositionWGS84; //LAT i LON
         public string FlightLevel;
         public string GeometricalVerticalRate;

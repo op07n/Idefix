@@ -9,21 +9,18 @@ namespace Idefix
     public class Archivo
     {
         public List<double[]> MensajesCAT10 = new List<double[]>();
-        public List<double[]> MensajesCAT19 = new List<double[]>();
         public List<double[]> MensajesCAT20 = new List<double[]>();
         public List<double[]> MensajesCAT21 = new List<double[]>();
+        public int[] CAT1920;
 
         public void SetMsgCat10(List<double> msgCat10)
         {
             this.MensajesCAT10.Add(msgCat10.ToArray());
         }
-        public void SetMsgCat19(List<double> msgCat19)
-        {
-            this.MensajesCAT19.Add(msgCat19.ToArray());
-        }
-        public void SetMsgCat20(List<double> msgCat20)
+        public void SetMsgCat20(List<double> msgCat20, int[] CAT1920)
         {
             this.MensajesCAT20.Add(msgCat20.ToArray());
+            this.CAT1920 = CAT1920;
         }
         public void SetMsgCat21(List<double> msgCat21)
         {
@@ -34,19 +31,20 @@ namespace Idefix
         {
             return this.MensajesCAT10;
         }
-        public List<double[]> GetMsgsCat19()
-        {
-            return this.MensajesCAT19;
-        }
         public List<double[]> GetMsgsCat20()
         {
             return this.MensajesCAT20;
+        }
+        public int[] GetCAT1920()
+        {
+            return this.CAT1920;
         }
         public List<double[]> GetMsgsCat21()
         {
             return this.MensajesCAT21;
         }
     }
+
     public class CAT10
     {
         // el SAC y el SIC son el DataSourceIdentifier
@@ -95,11 +93,30 @@ namespace Idefix
          
     }
 
+    /*public class CAT19
+    {
+        public int SIC;
+        public int SAC;
+        public string MessageType;
+        public TimeSpan TimeOfDay;
+
+        public CAT19 (int SIC, int SAC, string MsgType, TimeSpan TimeofDay)
+        {
+            this.SIC = SIC;
+            this.SAC = SAC;
+            this.MessageType = MsgType;
+            this.TimeOfDay = TimeofDay;
+        }
+    }
+    */
+
     public class CAT20
     {
+        public string CAT;
         public int SAC;
         public int SIC;
         public string[] TargetReportDescriptor;
+        public string MessageType;
         public TimeSpan TimeofDay;
         public double[] CartesianPosition;
         public int TrackNumber;
@@ -120,11 +137,13 @@ namespace Idefix
         public double StandardDeviationofHeigh;
         public string[] ContributingDevices;
 
-        public CAT20(int SIC, int SAC, String[] TargetReportDescriptor, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, string[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
+        public CAT20(string CAT, int SIC, int SAC, String[] TargetReportDescriptor, string MsgType, TimeSpan TimeofDay, double[] CartesianPosition, int TrackNumber, string[] TrackStatus, string[] Mode3A, double[] CTV, string[] FlightLevel, string[] modeC, string ICAO_Addr, string[] TargetID, double cartesianH, double geometricH, double[] CalculatedAcc, string VFId, string[] PPM, double[] DOP, double[] SDEV, double S_GH, string[] CD )
         {
+            this.CAT = CAT;
             this.SIC = SIC;
             this.SAC = SAC;
             this.TargetReportDescriptor = TargetReportDescriptor;
+            this.MessageType = MsgType;
             this.TimeofDay = TimeofDay;
             this.CartesianPosition = CartesianPosition;
             this.TrackNumber = TrackNumber;
@@ -147,8 +166,6 @@ namespace Idefix
         }
     }
 
-
- 
     public class CAT21
     {
         public int SAC;
@@ -157,7 +174,7 @@ namespace Idefix
         public string TargetReportDescriptor;
         public string TargetAddress;
         public string FigureOfMerit;
-        public string VelocityAccurancy;
+        public string VelocityAccuracy;
         public double[] PositionWGS84; //LAT i LON
         public string FlightLevel;
         public string GeometricalVerticalRate;

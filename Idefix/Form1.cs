@@ -17,6 +17,7 @@ namespace Idefix
         public List<string[]> fspecsCat19 = new List<string[]>();
         public List<string[]> fspecsCat20 = new List<string[]>();
         public List<string[]> fspecsCat21 = new List<string[]>();
+        public int[] CAT1920;
         public List<CAT10> objCat10 = new List<CAT10>();
         //public List<CAT19> objCat19 = new List<CAT19>();
         public List<CAT20> objCat20 = new List<CAT20>();
@@ -69,15 +70,15 @@ namespace Idefix
                 Funciones funcs = new Funciones();
                 Archivo fichero = funcs.LeerArchivo(openFileDialog1.FileName);
                 this.msgsCat10 = fichero.GetMsgsCat10();
-                this.msgsCat19 = fichero.GetMsgsCat19();
                 this.msgsCat20 = fichero.GetMsgsCat20();
                 this.msgsCat21 = fichero.GetMsgsCat21();
+                this.CAT1920 = fichero.GetCAT1920();
                 this.fspecsCat10 = funcs.GetFSPEC(this.msgsCat10);
                 this.fspecsCat19 = funcs.GetFSPEC(this.msgsCat19);
                 this.fspecsCat20 = funcs.GetFSPEC(this.msgsCat20);
                 this.fspecsCat21 = funcs.GetFSPEC(this.msgsCat21);
                 this.objCat10 = funcs.ReadCat10(msgsCat10, fspecsCat10);
-                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20);
+                this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
                 this.flightList = funcs.DistributeFlights(objCat10, objCat20, objCat21);
                 this.simTime = (int)this.flightList[0].TimeofDay.TotalSeconds;
                 label4.Text = this.flightList[0].TimeofDay.ToString();
@@ -157,15 +158,17 @@ namespace Idefix
             if (radioButton2.Checked)
             {
                 dataGridView1.ColumnCount = 21;//numero de paràmetres que vull mostrar
-                string[] tits = new string[21] { "SIC", "SAC", "TRD", "Time of Day", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
+                string[] tits = new string[23] {"CAT", "SIC", "SAC", "Time of Day", "Message Type", "TRD", "Cartesian Position", "Track Number", "Track Status", "Mode 3A", "Cartesian Track Velocity", "Flight Level", "Mode C Code", "Target Address", "Target ID", "Measured Height", "Calculated Acceleration", "Vehicle Fleet ID", "Pre-Programmed Message", "DOP", "SDEV", "Standar Deviation of height", "Contributing Devices" };
                 dataGridView1.Rows.Add(tits);
 
                 foreach (CAT20 a in objCat20.Take(50))
                 {
-                    string[] vs = new string[21] { a.SIC.ToString(), a.SAC.ToString(), "More Information", a.TimeofDay.ToString(), "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
+                    string[] vs = new string[23] {a.CAT ,a.SIC.ToString(), a.SAC.ToString(), a.TimeofDay.ToString(), a.MessageType, "More Information", "More Information", a.TrackNumber.ToString(), "More Information", "More Information", "More Information", "More Information", "More Information", a.TargetAddress, "More Information", "More Information", "More Information", a.VehicleFleetId, "More Information", "More Information", "More Information", a.StandardDeviationofHeigh.ToString(), "More Information" };
                     dataGridView1.Rows.Add(vs);
                 }
             }
+
+
             DataGridViewCellStyle style = new DataGridViewCellStyle();
             style.BackColor = Color.CadetBlue;
             style.Font = new Font(dataGridView1.Font, FontStyle.Bold);
@@ -179,6 +182,19 @@ namespace Idefix
             dataGridView1.DataSource = bindingList;
             dataGridView1.AutoResizeColumns();
             dataGridView1.Refresh();*/
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if(radioButton2.Checked)
+            {
+                if (dataGridView1.CurrentCell.ColumnIndex.Equals(2) && e.RowIndex != -1)
+                {
+                    if (dataGridView1.CurrentCell != null && dataGridView1.CurrentCell.Value != null)
+                        MessageBox.Show("SSR = " + objCat20[e.RowIndex].TargetReportDescriptor[0] + "\n MS =" + objCat20[e.RowIndex].TargetReportDescriptor[1]);
+                }
+            }
         }
 
         public void pintarMapaLEBL()

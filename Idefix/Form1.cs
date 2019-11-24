@@ -351,7 +351,7 @@ namespace Idefix
                         else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
                     }
                 }
-                if (radioButton1.Checked)
+                else if (radioButton1.Checked)
                 {
                     CAT10 a = objCat10[e.RowIndex - 1];
                     int pos = dataGridView1.CurrentCell.ColumnIndex;
@@ -362,16 +362,17 @@ namespace Idefix
                         else if (pos.Equals(6) && a.CartesianPosition.Length > 0) { MessageBox.Show(" x = " + a.CartesianPosition[0].ToString() + "\n y = " + a.CartesianPosition[1].ToString(), "CARTESIAN POSITION INFORMATION"); }
                         else if (pos.Equals(7) && a.PolarTrackVelocity.Length > 0) { MessageBox.Show(" Vx = " + a.PolarTrackVelocity[0].ToString() + "\n Vy = " + a.PolarTrackVelocity[1].ToString(), "POLAR TRACK VELOCITY INFORMATION"); }
                         else if (pos.Equals(8) && a.CartesianTrackVelocity.Length > 0) { MessageBox.Show(" Vx = " + a.CartesianTrackVelocity[0].ToString() + "\n Vy = " + a.CartesianTrackVelocity[1].ToString(), "CARTESIAN TRACK VELOCITY INFORMATION"); }
-                        else if (pos.Equals(10) && a.TrackStatus.Length < 0) { MessageBox.Show(" CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n MAH = " + a.TrackStatus[3] + "\n TCC = " + a.TrackStatus[4] + "\n STH = " + a.TrackStatus[5] + "\n TOM = " + a.TrackStatus[6] + "\n DOU = " + a.TrackStatus[7] + "\n MRS = " + a.TrackStatus[8] + "\n GHO = " + a.TrackStatus[9], "TRACK STATUS INFORMATION"); }
+                        else if (pos.Equals(10) && a.TrackStatus.Length > 0) { MessageBox.Show(" CNF = " + a.TrackStatus[0] + "\n TRE = " + a.TrackStatus[1] + "\n CST = " + a.TrackStatus[2] + "\n MAH = " + a.TrackStatus[3] + "\n TCC = " + a.TrackStatus[4] + "\n STH = " + a.TrackStatus[5] + "\n TOM = " + a.TrackStatus[6] + "\n DOU = " + a.TrackStatus[7] + "\n MRS = " + a.TrackStatus[8] + "\n GHO = " + a.TrackStatus[9], "TRACK STATUS INFORMATION"); }
                         else if (pos.Equals(11) && a.Mode3A.Length > 0) { MessageBox.Show("V = " + a.Mode3A[0] + "\n G = " + a.Mode3A[1] + "\n L = " + a.Mode3A[2] + "\n Response = " + a.Mode3A[3], "MODE 3A INFORMATION"); }
                         else if (pos.Equals(13) && a.TargetIdentification.Length > 0) { MessageBox.Show(" STI = " + a.TargetIdentification[0] + "\n TID = " + a.TargetIdentification[1], "TARGET ID INFORMATION"); }
                         else if (pos.Equals(14) && a.FlightLevel.Length > 0) { MessageBox.Show(" V = " + a.FlightLevel[0] + "\n G = " + a.FlightLevel[1] + "\n Flight Level = " + a.FlightLevel[2], "FLIGHT LEVEL INFORMATION"); }
-                        else if (pos.Equals(11) && a.SystemStatus.Length > 0) { MessageBox.Show(" NOGO = " + a.SystemStatus[0] + "\n OVL = " + a.SystemStatus[1] + "\n TSV = " + a.SystemStatus[2] + "\n DIV = " + a.SystemStatus[3] + "\n TTF = " + a.SystemStatus[4], "SYSTEM STATUS INFORMATION"); }
-                        else if (pos.Equals(16) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show(" x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
+                        else if (pos.Equals(15) && a.TargetSizeAndOrientation.Length > 0) { MessageBox.Show("Length = " + a.TargetSizeAndOrientation[0] + "\n Width = " + a.TargetSizeAndOrientation[1] + "\n Heading = " + a.TargetSizeAndOrientation[2], "TARGET SIZE AND ORIENTATION INFORMATION"); }
+                        else if (pos.Equals(16) && a.SystemStatus.Length > 0) { MessageBox.Show(" NOGO = " + a.SystemStatus[0] + "\n OVL = " + a.SystemStatus[1] + "\n TSV = " + a.SystemStatus[2] + "\n DIV = " + a.SystemStatus[3] + "\n TTF = " + a.SystemStatus[4], "SYSTEM STATUS INFORMATION"); }
+                        else if (pos.Equals(17) && a.CalculatedAcceleration.Length > 0) { MessageBox.Show(" x = " + a.CalculatedAcceleration[0].ToString() + "\n y = " + a.CalculatedAcceleration[1].ToString(), "CALCULATED ACCELERATION INFORMATION"); }
                         else { MessageBox.Show("The requested data was not part of the recived message. \n Please try with another message or field.", "Missing Data"); }
                     }
                 }
-                if (radioButton3.Checked)
+                else if (radioButton3.Checked)
                 {
                     CAT21 a = objCat21[e.RowIndex - 1];
                     int pos = dataGridView1.CurrentCell.ColumnIndex;

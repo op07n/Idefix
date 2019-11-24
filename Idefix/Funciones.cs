@@ -285,7 +285,7 @@ namespace Idefix
                         string theta2 = Convert2Binary(msgcat10[pos + 3]);
                         StringBuilder theta_BIN = new StringBuilder(theta1);
                         theta_BIN.Append(theta2);
-                        string theta_BIN_TOTAL = theta_BIN.ToString();
+                        string theta_BIN_TOTAL = '0' + theta_BIN.ToString();
                         int theta_int = Convert.ToInt16(theta_BIN_TOTAL, 2);
                         double theta = theta_int * 360 / 65536; // in degrees
                         PP = new double[2] { rho, theta };
@@ -326,7 +326,7 @@ namespace Idefix
                             string track_angle2 = Convert2Binary(msgcat10[pos + 3]);
                             StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
                             track_angle_BIN.Append(track_angle2);
-                            string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
+                            string track_angle_BIN_TOTAL = '0' + track_angle_BIN.ToString();
                             int ta_int = Convert.ToInt16(track_angle_BIN_TOTAL, 2);
                             double track_angle = ta_int * 360 / 65536; // in degrees
                             PTV = new double[2] { ground_speed, track_angle };
@@ -334,20 +334,21 @@ namespace Idefix
                         }// FRN = 8: Polar Track Velocity
                         if (FSPEC_2[1] == '1') // FRN = 9: Cartesian Track Velocity
                         {
-                            if(SIC.Equals('7'))
+                            double Vx, Vy;
+                            if(SIC.Equals(7))
                             { 
                                 string Vx1 = Convert2Binary(msgcat10[pos]);
                                 string Vx2 = Convert2Binary(msgcat10[pos + 1]);
                                 StringBuilder Vx_BIN = new StringBuilder(Vx1);
                                 Vx_BIN.Append(Vx2);
                                 string Vx_BIN_TOTAL = Vx_BIN.ToString();
-                                double Vx = Convert.ToInt16(Vx_BIN_TOTAL, 2) / 4; // in m/s
+                                Vx = Convert.ToInt16(Vx_BIN_TOTAL, 2) * 0.25; // in m/s
                                 string Vy1 = Convert2Binary(msgcat10[pos + 2]);
                                 string Vy2 = Convert2Binary(msgcat10[pos + 3]);
                                 StringBuilder Vy_BIN = new StringBuilder(Vy1);
                                 Vy_BIN.Append(Vy2);
                                 string Vy_BIN_TOTAL = Vy_BIN.ToString();
-                                double Vy = Convert.ToInt16(Vy_BIN_TOTAL, 2) / 4; // in m/s
+                                Vy = Convert.ToInt16(Vy_BIN_TOTAL, 2) / 4; // in m/s
                             }
                             else
                             {
@@ -356,13 +357,13 @@ namespace Idefix
                                 StringBuilder Vx_BIN = new StringBuilder(Vx1);
                                 Vx_BIN.Append(Vx2);
                                 string Vx_BIN_TOTAL = Vx_BIN.ToString();
-                                double Vx = (int)Convert.ToInt16(Vx_BIN_TOTAL, 2); // in m/s
+                                Vx = (int)Convert.ToInt16(Vx_BIN_TOTAL, 2); // in m/s
                                 string Vy1 = Convert2Binary(msgcat10[pos + 2]);
                                 string Vy2 = Convert2Binary(msgcat10[pos + 3]);
                                 StringBuilder Vy_BIN = new StringBuilder(Vy1);
                                 Vy_BIN.Append(Vy2);
                                 string Vy_BIN_TOTAL = Vy_BIN.ToString();
-                                double Vy = ((int)Convert.ToInt16(Vy_BIN_TOTAL, 2)); // in m/s
+                                Vy = ((int)Convert.ToInt16(Vy_BIN_TOTAL, 2)); // in m/s
                             }
                             CTV = new double[2] { Vx, Vy };
                             pos += 4;
@@ -394,8 +395,8 @@ namespace Idefix
 
                             StringBuilder cst = new StringBuilder(ts[2]);
                             cst.Append(ts[3]);
-                            if (cst.ToString().Equals("0")) { CST = "No Extrapolation"; }
-                            else if (cst.ToString().Equals("1")) { CST = "Predictable extrapolation due to sensor refresh period"; }
+                            if (cst.ToString().Equals("00")) { CST = "No Extrapolation"; }
+                            else if (cst.ToString().Equals("01")) { CST = "Predictable extrapolation due to sensor refresh period"; }
                             else if (cst.ToString().Equals("10")) { CST = "Predictable extrapolation in masked area"; }
                             else if (cst.ToString().Equals("11")) { CST = "Extrapolation due to unpredictable absence of detection"; }
 
@@ -413,20 +414,21 @@ namespace Idefix
                             else
                             {
                                 string ts_1 = Convert2Binary(msgcat10[pos]);
-                                StringBuilder tom = new StringBuilder(ts_1[0]);
-                                cst.Append(ts_1[1]);
-                                if (tom.ToString().Equals("0")) { TOM = "Unknown type of movement "; }
-                                else if (tom.ToString().Equals("1")) { TOM = "Taking-off "; }
+                                StringBuilder tom = new StringBuilder();
+                                tom.Append(ts_1[0]);
+                                tom.Append(ts_1[1]);
+                                if (tom.ToString().Equals("00")) { TOM = "Unknown type of movement "; }
+                                else if (tom.ToString().Equals("01")) { TOM = "Taking-off "; }
                                 else if (tom.ToString().Equals("10")) { TOM = "Landing"; }
                                 else if (tom.ToString().Equals("11")) { TOM = "Other types of movement"; }
 
                                 StringBuilder dou = new StringBuilder(ts_1[2]);
                                 dou.Append(ts_1[3]);
                                 dou.Append(ts_1[4]);
-                                if (dou.ToString().Equals("0")) { DOU = "No doubt "; }
-                                else if (dou.ToString().Equals("01")) { DOU = "Doubtful correlation (undetermined reason)"; }
-                                else if (dou.ToString().Equals("10")) { DOU = "Doubtful correlation in clutter"; }
-                                else if (dou.ToString().Equals("11")) { DOU = "Loss of accuracy"; }
+                                if (dou.ToString().Equals("00")) { DOU = "No doubt "; }
+                                else if (dou.ToString().Equals("001")) { DOU = "Doubtful correlation (undetermined reason)"; }
+                                else if (dou.ToString().Equals("010")) { DOU = "Doubtful correlation in clutter"; }
+                                else if (dou.ToString().Equals("011")) { DOU = "Loss of accuracy"; }
                                 else if (dou.ToString().Equals("100")) { DOU = "Loss of accuracy in clutter"; }
                                 else if (dou.ToString().Equals("101")) { DOU = "HF Multilateration"; }
                                 else if (dou.ToString().Equals("110")) { DOU = "Unstable track "; }

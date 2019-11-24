@@ -159,9 +159,9 @@ namespace Idefix
                 this.objCat20 = funcs.ReadCat20(msgsCat20, fspecsCat20, CAT1920);
                 this.objCat21 = funcs.ReadCat21(msgsCat21, fspecsCat21);
                 this.objCat10disorder = this.objCat10;
-                this.objCat10 = this.objCat10.OrderBy(o => o.TimeofDay).ToList();
-                this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
-                this.objCat21 = this.objCat21.OrderBy(o => o.TimeofDay).ToList();
+                //this.objCat10 = this.objCat10.OrderBy(o => o.TimeofDay).ToList();
+                //this.objCat20 = this.objCat20.OrderBy(o => o.TimeofDay).ToList();
+                //this.objCat21 = this.objCat21.OrderBy(o => o.TimeofDay).ToList();
 
                 if (this.objCat10disorder.Count != 0)
                 {

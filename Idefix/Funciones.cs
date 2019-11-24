@@ -132,8 +132,17 @@ namespace Idefix
             List<CAT10> listCAT10 = new List<CAT10>();
             if (msgcat10_T != null && FSPEC_T != null)
             {
+                
                 while (a < msgcat10_T.Count)
                 {
+                    SAC = 0; SIC = 0;
+                    MsgType = string.Empty;
+                    ICAO_Address = string.Empty;
+                    TimeOfDay = TimeSpan.Zero;
+                    TN = 0;
+                    TRD = Array.Empty<string>(); TS = Array.Empty<string>(); TID = Array.Empty<string>(); FL_T = Array.Empty<string>(); SS = Array.Empty<string>(); Mode3A = Array.Empty<string>();
+                    PP = new double[2] { 0, 0 }; CP = new double[2] { 0, 0 }; PTV = new double[2] { 0, 0 }; CTV = new double[2] { 0, 0 }; TSO = new double[3] { 0, 0, 0 }; CA = new double[2] { 0, 0 };
+
                     string FSPEC_1 = FSPEC_T[a][0];
                     double[] msgcat10 = msgcat10_T[a];
                     // int n = 0;
@@ -227,7 +236,7 @@ namespace Idefix
                             StringBuilder val3 = new StringBuilder(va2[5]);
                             val3.Append(va2[6]);
 
-                            if (val3.Equals("00")) { TOT = "Undetermined"; }
+                            if (val3.Equals("0")) { TOT = "Undetermined"; }
                             else if (val3.ToString().Equals("01")) { TOT = "Aircraft"; }
                             else if (val3.ToString().Equals("10")) { TOT = "Ground Vehicle"; }
                             else if (val3.ToString().Equals("11")) { TOT = "Helicopter"; }
@@ -275,7 +284,8 @@ namespace Idefix
                         StringBuilder theta_BIN = new StringBuilder(theta1);
                         theta_BIN.Append(theta2);
                         string theta_BIN_TOTAL = theta_BIN.ToString();
-                        double theta = ((int)Convert.ToInt64(theta_BIN_TOTAL, 10)) * 360 / 2 ^ 16; // in degrees
+                        int theta_int = Convert.ToInt16(theta_BIN_TOTAL, 2);
+                        double theta = theta_int * 360 / 65536; // in degrees
                         PP = new double[2] { rho, theta };
                         pos += 4;
                     } // FRN = 6: Polar Position
@@ -315,24 +325,43 @@ namespace Idefix
                             StringBuilder track_angle_BIN = new StringBuilder(track_angle1);
                             track_angle_BIN.Append(track_angle2);
                             string track_angle_BIN_TOTAL = track_angle_BIN.ToString();
-                            double track_angle = ((int)Convert.ToInt16(track_angle_BIN_TOTAL, 2)) * 360 / 2 ^ 16; // in degrees
+                            int ta_int = Convert.ToInt16(track_angle_BIN_TOTAL, 2);
+                            double track_angle = ta_int * 360 / 65536; // in degrees
                             PTV = new double[2] { ground_speed, track_angle };
                             pos += 4;
                         }// FRN = 8: Polar Track Velocity
                         if (FSPEC_2[1] == '1') // FRN = 9: Cartesian Track Velocity
                         {
-                            string Vx1 = Convert2Binary(msgcat10[pos]);
-                            string Vx2 = Convert2Binary(msgcat10[pos + 1]);
-                            StringBuilder Vx_BIN = new StringBuilder(Vx1);
-                            Vx_BIN.Append(Vx2);
-                            string Vx_BIN_TOTAL = Vx_BIN.ToString();
-                            double Vx = (int)Convert.ToInt16(Vx_BIN_TOTAL, 2); // in m
-                            string Vy1 = Convert2Binary(msgcat10[pos + 2]);
-                            string Vy2 = Convert2Binary(msgcat10[pos + 3]);
-                            StringBuilder Vy_BIN = new StringBuilder(Vy1);
-                            Vy_BIN.Append(Vy2);
-                            string Vy_BIN_TOTAL = Vy_BIN.ToString();
-                            double Vy = ((int)Convert.ToInt16(Vy_BIN_TOTAL, 2)); // in degrees
+                            if(SIC.Equals('7'))
+                            { 
+                                string Vx1 = Convert2Binary(msgcat10[pos]);
+                                string Vx2 = Convert2Binary(msgcat10[pos + 1]);
+                                StringBuilder Vx_BIN = new StringBuilder(Vx1);
+                                Vx_BIN.Append(Vx2);
+                                string Vx_BIN_TOTAL = Vx_BIN.ToString();
+                                double Vx = Convert.ToInt16(Vx_BIN_TOTAL, 2) / 4; // in m/s
+                                string Vy1 = Convert2Binary(msgcat10[pos + 2]);
+                                string Vy2 = Convert2Binary(msgcat10[pos + 3]);
+                                StringBuilder Vy_BIN = new StringBuilder(Vy1);
+                                Vy_BIN.Append(Vy2);
+                                string Vy_BIN_TOTAL = Vy_BIN.ToString();
+                                double Vy = Convert.ToInt16(Vy_BIN_TOTAL, 2) / 4; // in m/s
+                            }
+                            else
+                            {
+                                string Vx1 = Convert2Binary(msgcat10[pos]);
+                                string Vx2 = Convert2Binary(msgcat10[pos + 1]);
+                                StringBuilder Vx_BIN = new StringBuilder(Vx1);
+                                Vx_BIN.Append(Vx2);
+                                string Vx_BIN_TOTAL = Vx_BIN.ToString();
+                                double Vx = (int)Convert.ToInt16(Vx_BIN_TOTAL, 2); // in m/s
+                                string Vy1 = Convert2Binary(msgcat10[pos + 2]);
+                                string Vy2 = Convert2Binary(msgcat10[pos + 3]);
+                                StringBuilder Vy_BIN = new StringBuilder(Vy1);
+                                Vy_BIN.Append(Vy2);
+                                string Vy_BIN_TOTAL = Vy_BIN.ToString();
+                                double Vy = ((int)Convert.ToInt16(Vy_BIN_TOTAL, 2)); // in m/s
+                            }
                             CTV = new double[2] { Vx, Vy };
                             pos += 4;
                         }// FRN = 9: Cartesian Track Velocity
@@ -340,7 +369,8 @@ namespace Idefix
                         {
                             string tn_1 = Convert2Binary(msgcat10[pos]);
                             string tn_2 = Convert2Binary(msgcat10[pos + 1]);
-                            StringBuilder tn_t = new StringBuilder(tn_1[4]);
+                            StringBuilder tn_t = new StringBuilder();
+                            tn_t.Append(tn_1[4]);
                             tn_t.Append(tn_1[5]);
                             tn_t.Append(tn_1[6]);
                             tn_t.Append(tn_1[7]);
@@ -349,6 +379,7 @@ namespace Idefix
                             TN = (int)Convert.ToInt32(tn_tot, 2);
                             pos += 2;
                         }// FRN = 10: Track Number
+
                         if (FSPEC_2[3] == '1') // FRN = 11: Track Status
                         {
                             string ts = Convert2Binary(msgcat10[pos]);
@@ -436,14 +467,15 @@ namespace Idefix
 
 
 
-                            StringBuilder resp = new StringBuilder(mode3A[4]);
+                            StringBuilder resp = new StringBuilder();
+                            resp.Append(mode3A[4]);
                             resp.Append(mode3A[5]);
                             resp.Append(mode3A[6]);
                             resp.Append(mode3A[7]);
                             resp.Append(mode3A_2);
 
                             string resp1 = resp.ToString();
-                            int resp2 = (int)Convert.ToInt32(resp1, 2);
+                            int resp2 = Convert.ToInt16(resp1, 2);
 
                             Response = Convert.ToString(resp2, 8);
 
@@ -469,23 +501,25 @@ namespace Idefix
                             sti.Append(sti1[1]);
                             string STI = string.Empty;
 
-                            if (sti.ToString().Equals("0")) { STI = "Callsign or registration not downlinked from transponder"; }
-                            else if (sti.ToString().Equals("1")) { STI = "Registration downlinked from transponder"; }
-                            else if (sti.ToString().Equals("10")) { STI = "Callsign downlinked from transponder"; }
+                            if (sti.ToString().Equals("0")) { STI = "Callsign or registration downlinked from transponder"; }
+                            else if (sti.ToString().Equals("1")) { STI = "Registration not downlinked from transponder"; }
+                            else if (sti.ToString().Equals("10")) { STI = "Callsign not downlinked from transponder"; }
                             else if (sti.ToString().Equals("11")) { STI = "Not defined"; }
 
 
                             string byte2 = Convert2Binary(msgcat10[pos + 1]);
-                            StringBuilder tid1 = new StringBuilder(byte2[0]);
+                            StringBuilder tid1 = new StringBuilder();
                             tid1.Append(byte2[0]);
                             tid1.Append(byte2[1]);
                             tid1.Append(byte2[2]);
                             tid1.Append(byte2[3]);
                             tid1.Append(byte2[4]);
+                            tid1.Append(byte2[5]);
                             char TID1 = ConvertToIA5(tid1);
 
                             string byte3 = Convert2Binary(msgcat10[pos + 2]);
-                            StringBuilder tid2 = new StringBuilder(byte2[6]);
+                            StringBuilder tid2 = new StringBuilder();
+                            tid1.Append(byte2[6]);
                             tid2.Append(byte2[7]);
                             tid2.Append(byte3[0]);
                             tid2.Append(byte3[1]);
@@ -494,7 +528,8 @@ namespace Idefix
                             char TID2 = ConvertToIA5(tid2);
 
                             string byte4 = Convert2Binary(msgcat10[pos + 3]);
-                            StringBuilder tid3 = new StringBuilder(byte3[4]);
+                            StringBuilder tid3 = new StringBuilder();
+                            tid3.Append(byte3[4]);
                             tid3.Append(byte3[5]);
                             tid3.Append(byte3[6]);
                             tid3.Append(byte3[7]);
@@ -502,7 +537,8 @@ namespace Idefix
                             tid3.Append(byte4[1]);
                             char TID3 = ConvertToIA5(tid3);
 
-                            StringBuilder tid4 = new StringBuilder(byte4[2]);
+                            StringBuilder tid4 = new StringBuilder();
+                            tid4.Append(byte4[2]);
                             tid4.Append(byte4[3]);
                             tid4.Append(byte4[4]);
                             tid4.Append(byte4[5]);
@@ -511,7 +547,8 @@ namespace Idefix
                             char TID4 = ConvertToIA5(tid4);
 
                             string byte5 = Convert2Binary(msgcat10[pos + 4]);
-                            StringBuilder tid5 = new StringBuilder(byte5[0]);
+                            StringBuilder tid5 = new StringBuilder();
+                            tid5.Append(byte5[0]);
                             tid5.Append(byte5[1]);
                             tid5.Append(byte5[2]);
                             tid5.Append(byte5[3]);
@@ -520,7 +557,8 @@ namespace Idefix
                             char TID5 = ConvertToIA5(tid5);
 
                             string byte6 = Convert2Binary(msgcat10[pos + 5]);
-                            StringBuilder tid6 = new StringBuilder(byte5[6]);
+                            StringBuilder tid6 = new StringBuilder();
+                            tid6.Append(byte5[6]);
                             tid6.Append(byte5[7]);
                             tid6.Append(byte6[0]);
                             tid6.Append(byte6[1]);
@@ -529,15 +567,17 @@ namespace Idefix
                             char TID6 = ConvertToIA5(tid6);
 
                             string byte7 = Convert2Binary(msgcat10[pos + 6]);
-                            StringBuilder tid7 = new StringBuilder(byte6[4]);
-                            tid7.Append(byte6[5]);
+                            StringBuilder tid7 = new StringBuilder();
+                            tid7.Append(byte6[4]);
+                            tid7.Append(byte6[5]); 
                             tid7.Append(byte6[6]);
                             tid7.Append(byte6[7]);
                             tid7.Append(byte7[0]);
                             tid7.Append(byte7[1]);
                             char TID7 = ConvertToIA5(tid7);
 
-                            StringBuilder tid8 = new StringBuilder(byte7[2]);
+                            StringBuilder tid8 = new StringBuilder();
+                            tid8.Append(byte7[2]);
                             tid8.Append(byte7[3]);
                             tid8.Append(byte7[4]);
                             tid8.Append(byte7[5]);
@@ -558,7 +598,7 @@ namespace Idefix
 
                                 string V = "";
                                 string G = "";
-                                long FL = 0;
+                                int FL = 0;
 
                                 string fl = Convert2Binary(msgcat10[pos]);
                                 string fl_2 = Convert2Binary(msgcat10[pos + 1]);
@@ -568,7 +608,8 @@ namespace Idefix
                                 else G = "Garbled code";
 
 
-                                StringBuilder resp = new StringBuilder(fl[2]);
+                                StringBuilder resp = new StringBuilder();
+                                resp.Append(fl[2]);
                                 resp.Append(fl[3]);
                                 resp.Append(fl[4]);
                                 resp.Append(fl[5]);
@@ -579,7 +620,7 @@ namespace Idefix
                                 int resp1 = Convert.ToInt32(resp.ToString());
 
                                 string FL1 = Convert2Binary(Convert.ToDouble(resp1));
-                                FL = Convert.ToInt64(FL1, 2);
+                                FL = Convert.ToInt32(FL1, 2);
                                 FL /= 4;
 
                                 FL_T = new string[3] { V, G, FL.ToString() };
@@ -891,6 +932,7 @@ namespace Idefix
 
                                 string mode3A = Convert2Binary(msgcat20[pos]);
                                 string mode3A_2 = Convert2Binary(msgcat20[pos + 1]);
+
                                 if (mode3A[0].Equals('0')) V = "Code validated";
                                 else V = "Code not validated";
                                 if (mode3A[1].Equals('0')) G = "Default";
@@ -898,8 +940,9 @@ namespace Idefix
                                 if (mode3A[2].Equals('0')) L = "Mode-3/A code derived from the reply of the transponder";
                                 else L = "Mode-3/A code not extracted during the last update period";
 
-                                StringBuilder resp = new StringBuilder(mode3A[4]);
-                                resp.Append(mode3A[5]);
+                                StringBuilder resp = new StringBuilder();
+                                resp.Append(mode3A[4]);
+                                resp.Append(mode3A[5]); 
                                 resp.Append(mode3A[6]);
                                 resp.Append(mode3A[7]);
                                 resp.Append(mode3A_2);
@@ -1600,7 +1643,7 @@ namespace Idefix
                     {
                         string FSPEC_2 = FSPEC_21T[a][1];
 
-                        if (FSPEC_2[0] == '1') // FRN = 8: Link Technology Indicator
+                        if (FSPEC_2[0] == '1')// FRN = 8: Link Technology Indicator
                         {
                             string lti = Convert2Binary(msgcat21[pos]);
                             string DTI; string MDS; string UAT; string VDL; string OTR;

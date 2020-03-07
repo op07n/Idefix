@@ -23,4 +23,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: artifact
-          path: ./Idefix/bin/Release
+          path: ./Idefix/bin/Debug
